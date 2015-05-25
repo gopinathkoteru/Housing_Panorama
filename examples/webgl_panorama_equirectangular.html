@@ -50,7 +50,7 @@
 		lat = 0, onMouseDownLat = 0,
 		phi = 0, theta = 0;
 
-		var hotspots_angle = [[[1,109,47]], [[2,52,48], [4,111,98], [5,122,51], [0,303,43]], [[3,107,58], [1,230,48]], [[2,293,58], [4,185,41]], [[3,5,41], [1,288,93], [5,278,45]], [[1,307,51], [4,105,46]]]; 
+		var hotspots_angle = [[[1,109,47]], [[2,52,48], [4,111,98], [0,303,43]], [[3,107,58], [1,230,48]], [[2,293,58], [4,185,45]], [[3,5,41], [1,288,93] ]]; 
 
 		init('panos/1/resized_1.jpg');
 		animate();
@@ -294,7 +294,7 @@
 			lon = lon + cam_pos*2;
 			angle = angle - cam_pos*2;
 
-			setTimeout(function(){move_camera(angle,mesh_pano_id,mesh_distance, mesh_angle);}, 5); 
+			setTimeout(function(){move_camera(angle,mesh_pano_id,mesh_distance, mesh_angle);}, 15); 
 		}
 
 		function onDocumentMouseDown( event ) {
