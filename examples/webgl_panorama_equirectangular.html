@@ -30,10 +30,6 @@
 <body>
 
 	<div id="container"></div>
-	<div id="info">
-		<a href="http://threejs.org" target="_blank">three.js webgl</a> - equirectangular panorama demo. photo by <a href="http://www.flickr.com/photos/jonragnarsson/2294472375/" target="_blank">Jón Ragnarsson</a>.<br />
-		drag equirectangular texture into the page.
-	</div>
 
 	<script src="../build/three.min.js"></script>
 
@@ -138,7 +134,6 @@
 			{
 				scene.remove(old_pano);
 				count = 0;
-
 				remove = true;
 
 			}
@@ -289,18 +284,17 @@
 			renderer.setSize( window.innerWidth, window.innerHeight );
 
 		}
-		function move_camera(angle,mesh)
+		function move_camera(angle,mesh_pano_id,mesh_distance, mesh_angle)
 		{
 			if(cam_pos*angle<=0)
 			{
-				removemesh(mesh.pano_id,mesh.dist,mesh.angle);
-				scene.remove(mesh);
+				removemesh(mesh_pano_id,mesh_distance,mesh_angle);
 				return;
 			}
 			lon = lon + cam_pos*2;
 			angle = angle - cam_pos*2;
 
-			setTimeout(function(){move_camera(angle,mesh);}, 5); 
+			setTimeout(function(){move_camera(angle,mesh_pano_id,mesh_distance, mesh_angle);}, 5); 
 		}
 
 		function onDocumentMouseDown( event ) {
@@ -327,6 +321,10 @@
 			if ( intersects.length > 0  && intersects[0].object.name=="current_hotspot") {
 
 				var angle = intersects[0].object.angle - lon;
+				if(angle>180)
+					angle-=360;
+				else if(angle<-180)
+					angle+=360;
 				if(angle > 0)
 				{
 					cam_pos = 1;
@@ -335,7 +333,7 @@
 				{
 					cam_pos = -1;
 				}
-				move_camera(angle,intersects[0].object);
+				move_camera(angle,intersects[0].object.pano_id, intersects[0].object.dist, intersects[0].object.angle);
 
 
 			}
@@ -411,7 +409,21 @@
 					}
 					if(flag == true)
 					{
-						removemesh(hotspots_angle[current_pano][near_id][0], hotspots_angle[current_pano][near_id][2], near_angle);
+						var angle = near_angle - lon;
+						if(angle>180)
+							angle-=360;
+						else if(angle<-180)
+							angle+=360;
+						if(angle > 0)
+						{
+							cam_pos = 1;
+						}
+						else
+						{
+							cam_pos = -1;
+						}
+						move_camera(angle, hotspots_angle[current_pano][near_id][0], hotspots_angle[current_pano][near_id][2], near_angle);
+						//removemesh(hotspots_angle[current_pano][near_id][0], hotspots_angle[current_pano][near_id][2], near_angle);
 					}
 					done = true;
 				}
