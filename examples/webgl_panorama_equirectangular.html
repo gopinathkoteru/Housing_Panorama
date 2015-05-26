@@ -58,23 +58,25 @@
 	init('panos/1/resized_1.jpg');
 	animate();
 
-	function loadNewmesh(pano_id, path,old_pano,dist,angle)
+	function loadNewmesh(pano_id,old_pano,dist,angle)
 	{
-		var geometry = new THREE.SphereGeometry( 500, 60, 40 );
-		geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
+		//var geometry = new THREE.SphereGeometry( 500, 60, 40 );
+		//geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
 
-		var material = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( path )} );
+		//var material = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( path )} );
 
-		mesh = new THREE.Mesh( geometry, material );
-		mesh.name = "current_mesh";
-		mesh.material.transparent = true;
-		mesh.material.opacity = 1;	
-		mesh.material.blending = THREE.AdditiveBlending;
-		var new_pano = mesh;
-		scene.add( mesh );
+		//mesh = new THREE.Mesh( geometry, material );
+		//mesh.name = "current_mesh";
+		//mesh.material.transparent = true;
+		//mesh.material.opacity = 1;	
+		//mesh.material.blending = THREE.AdditiveBlending;
+		var par = pano_id + 1;
+		var path = "panos/"+par+"/blur_";
+		var new_pano = create_mesh(path,1.0);
+		//scene.add( mesh );
 		curr_speed = 2;
 		time = 40;
-		dist = 5*dist;
+		dist = 1.5*dist;
 		test = false;
 		remove = false;
 
@@ -85,19 +87,20 @@
 	function loadclearmesh(pano_id)
 	{
 		pano_id += 1;
-		var path = "panos/" + pano_id +"/resized_"+pano_id+ ".jpg";
-		var geometry = new THREE.SphereGeometry( 500, 60, 40 );
-		geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
+		//var path = "panos/" + pano_id +"/resized_"+pano_id+ ".jpg";
+		//var geometry = new THREE.SphereGeometry( 500, 60, 40 );
+		//geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
 
-		var material = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( path )} );
+		//var material = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( path )} );
 
-		mesh = new THREE.Mesh( geometry, material );
-		mesh.name = "current_mesh";
-		mesh.material.transparent = true;
-		mesh.material.blending = THREE.AdditiveBlending;
-		mesh.material.opacity = 0;
-		scene.add( mesh );
-		clear_pano = mesh;
+		//mesh = new THREE.Mesh( geometry, material );
+		//mesh.name = "current_mesh";
+		//mesh.material.transparent = true;
+		//mesh.material.blending = THREE.AdditiveBlending;
+		//mesh.material.opacity = 0;
+		//scene.add( mesh );
+		var path = "panos/"+pano_id+"/mobile_";
+		clear_pano = create_mesh(path,0);
 
 		return;
 
@@ -113,33 +116,52 @@
 			old_pano.position.z = speed*Math.sin(THREE.Math.degToRad(angle ));
 
 			count = count + 1;
-			old_pano.material.opacity -= 0.005;
+			for(i=0;i<6;i++)
+			{
+				old_pano.material.materials[i].opacity -= 0.001;
+			}
 		}
 		if(remove==true)
 		{
 			count = count + 1;
-			clear_pano.material.opacity += 1/time;
-			new_pano.material.opacity -= 1/time;
+			for(i=0;i<6;i++)
+			{
+				clear_pano.material.materials[i].opacity += 1/time;
+				new_pano.material.materials[i].opacity -= 1/time;
+			}
 		}
 		if(count==time && remove==false)
-		{
-			
+		{	
 			old_pano.geometry.dispose();
-			old_pano.material.dispose();
-			scene.remove(old_pano);
+			for(i=0;i<6;i++)
+			{
+				old_pano.material.materials[i].map.dispose();
+				old_pano.material.materials[i].dispose();	
+			}
+			//renderer.deallocateObject(old_pano);
+			
 			count = 0;
-			new_pano.material.opacity = 1;
+			for(i=0;i<6;i++)
+			{
+				new_pano.material.materials[i].opacity = 1;
+			}
 			remove = true;
-
+			scene.remove(old_pano);
 		}
 		if(count==time && remove==true)
 		{
-
 			
 			new_pano.geometry.dispose();
-			new_pano.material.dispose();
+			for(i=0;i<6;i++)
+			{
+				new_pano.material.materials[i].map.dispose();
+				new_pano.material.materials[i].dispose();	
+			}
 			scene.remove(new_pano);
-			clear_pano.material.opacity = 1;
+			for(i=0;i<6;i++)
+			{
+				clear_pano.material.materials[i].opacity = 1;
+			}
 			Hotspots(pano_id);
 			return;
 		}
@@ -167,10 +189,41 @@
 				p = p + 1;
 			}
 		}
-		var images_loc = pano_id+1;
-		images_loc = "panos/" + images_loc +"/blur_"+images_loc+ ".jpg";
-		loadNewmesh(pano_id, images_loc,old_pano,dist,angle);
+		//var images_loc = pano_id+1;
+		//images_loc = "panos/" + images_loc +"/blur_"+images_loc+ ".jpg";
+		loadNewmesh(pano_id,old_pano,dist,angle);
 		animate();
+	}
+	function create_mesh(path,opacity)
+	{
+		//pano_id += 1;
+		//path = "panos/"+pano_id+"/";
+		var materials = [
+
+					loadTexture(path+"r.jpg"), // right
+					loadTexture(path+"l.jpg"), // left
+					loadTexture(path+"u.jpg"), // top
+					loadTexture(path+"d.jpg"), // bottom
+					loadTexture(path+"f.jpg"), // front
+					loadTexture(path+"b.jpg")  // back
+
+				];
+		var mesh = new THREE.Mesh( new THREE.BoxGeometry( 300, 300, 300, 7, 7, 7 ), new THREE.MeshFaceMaterial( materials ) );
+		mesh.scale.x = -1;
+
+		console.log(mesh);
+
+		for(i=0;i<6;i++)
+		{
+			mesh.material.materials[i].transparent = true;
+			mesh.material.materials[i].opacity = opacity;
+			mesh.material.materials[i].blending = THREE.AdditiveBlending;
+		}
+		mesh.name = "current_mesh";
+		scene.add(mesh);
+
+		return mesh;
+
 	}
 
 	function init(path) 
@@ -185,20 +238,39 @@
 
 		scene = new THREE.Scene();
 
-		var geometry = new THREE.SphereGeometry( 500, 60, 40 );
-		geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
+		texture_placeholder = document.createElement( 'canvas' );
+		texture_placeholder.width = 128;
+		texture_placeholder.height = 128;
 
-		var material = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( path )} );
+		var context = texture_placeholder.getContext( '2d' );
+		context.fillStyle = 'rgb( 200, 200, 200 )';
+		context.fillRect( 0, 0, texture_placeholder.width, texture_placeholder.height );
 
-		mesh = new THREE.Mesh( geometry, material );
-		mesh.name="current_mesh";
+		/*var materials = [
+
+					loadTexture(right_img), // right
+					loadTexture(left_img ), // left
+					loadTexture(top_img), // top
+					loadTexture(bottom_img), // bottom
+					loadTexture(front_img), // front
+					loadTexture(back_img)  // back
+
+				];
+		mesh = new THREE.Mesh( new THREE.BoxGeometry( 300, 300, 300, 7, 7, 7 ), new THREE.MeshFaceMaterial( materials ) );
+		//var geometry = new THREE.SphereGeometry( 500, 60, 40 );
+		//geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
+
+		//var material = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( path )} );
+
+		//mesh = new THREE.Mesh( geometry, material );*/
+		//mesh.name="current_mesh";
+		var path = "panos/1/mobile_";
+		create_mesh(path,1.0);
 		current_pano = 0;
-		mesh.material.transparent = true;
-		mesh.material.opacity = 1.0;
-		mesh.material.blending = THREE.AdditiveBlending;
-		scene.add( mesh );
-
-		console.log(material);
+		//mesh.material.transparent = true;
+		//mesh.material.opacity = 1.0;
+		//mesh.material.blending = THREE.AdditiveBlending;
+		//scene.add( mesh );
 
 		Hotspots(0);
 
@@ -256,7 +328,23 @@
 		window.addEventListener( 'resize', onWindowResize, false );
 
 	}
+	function loadTexture( path ) {
 
+				var texture = new THREE.Texture( texture_placeholder );
+				var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0.5 } );
+
+				var image = new Image();
+				image.onload = function () {
+
+					texture.image = this;
+					texture.needsUpdate = true;
+
+				};
+				image.src = path;
+
+				return material;
+
+	}
 	function Hotspots(pano_id)
 	{
 		total = hotspots_angle[pano_id].length;
@@ -271,6 +359,7 @@
 		var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
 		var cube = new THREE.Mesh( geometry, material );
 
+		angle = angle - 90;
 		rad_angle = THREE.Math.degToRad( angle );
 		cube.position.x = dist*Math.cos(rad_angle);
 		cube.position.y = -10;
@@ -291,6 +380,14 @@
 		renderer.setSize( window.innerWidth, window.innerHeight );
 
 	}
+	function time_change(count)
+	{
+		if(count==5)
+		{
+			return;
+		}
+		setTimeout(function(){time_change(count+1);}, 15); 
+	}
 	function move_camera_lat () {
 		if(lat > 0)
 		{
@@ -303,9 +400,10 @@
 
 		if(Math.abs(lat) <2)
 		{
+			//time_change(0);
 			return;
 		}
-		setTimeout(function(){move_camera_lat();}, 15); 
+		setTimeout(function(){move_camera_lat();}, 20); 
 	}
 	function move_camera(angle,pano_id,dist,hotspot_angle)
 	{
@@ -317,7 +415,7 @@
 		lon = lon + cam_pos*2;
 		angle = angle - cam_pos*2;
 
-		setTimeout(function(){move_camera(angle,pano_id,dist,hotspot_angle);}, 15); 
+		setTimeout(function(){move_camera(angle,pano_id,dist,hotspot_angle);}, 20); 
 	}
 
 	function onDocumentMouseDown( event ) {
@@ -370,8 +468,8 @@
 
 		if ( isUserInteracting === true ) {
 
-			lon = ( onPointerDownPointerX - event.clientX ) * 0.1 + onPointerDownLon;
-			lat = ( event.clientY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
+			lon = ( onPointerDownPointerX - event.clientX ) * 0.3 + onPointerDownLon;
+			lat = ( event.clientY - onPointerDownPointerY ) * 0.3 + onPointerDownLat;
 
 		}
 
@@ -383,8 +481,8 @@
 
 	}
 
-	var maxspeed = 5;
-	var current_speed = 0.4;
+	var maxspeed = 7;
+	var current_speed = 2;
 	var done = false;
 	function onDocumentKeyDown( event ) {
 
@@ -407,7 +505,7 @@
 
 				for(i=0;i<total;i++)
 				{
-					temp = hotspots_angle[current_pano][i][1];
+					temp = hotspots_angle[current_pano][i][1] - 90;
 					if(temp < 0 )
 					{
 						temp = temp + 360;
@@ -452,6 +550,7 @@
 					{
 						cam_pos = -1;
 					}
+					move_camera_lat();
 					move_camera(angle,hotspots_angle[current_pano][near_id][0], hotspots_angle[current_pano][near_id][2], near_angle);
 				}
 				done = true;
@@ -504,7 +603,7 @@
 			}*/
 			if (isUserInteracting == true) {
 				if(current_speed < maxspeed)
-					current_speed+=0.1;
+					current_speed+=1;
 			}
 			isUserInteracting = true;
 		}
@@ -561,7 +660,7 @@
 			{
 				lon += 360;
 			}
-			lat = Math.max( - 85, Math.min( 85, lat ) );
+			lat = Math.max( - 35, Math.min( 85, lat ) );
 			phi = THREE.Math.degToRad( 90 - lat );
 			theta = THREE.Math.degToRad( lon );
 
