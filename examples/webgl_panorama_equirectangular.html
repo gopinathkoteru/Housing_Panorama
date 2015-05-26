@@ -99,7 +99,7 @@
 		//mesh.material.blending = THREE.AdditiveBlending;
 		//mesh.material.opacity = 0;
 		//scene.add( mesh );
-		var path = "panos/"+pano_id+"/mobile_";
+		var path = "panos/"+pano_id+"/1024/mobile_";
 		clear_pano = create_mesh(path,0);
 
 		return;
@@ -226,7 +226,7 @@
 
 	}
 
-	function init(path) 
+	function init() 
 	{
 		var container, mesh;
 
@@ -264,7 +264,7 @@
 
 		//mesh = new THREE.Mesh( geometry, material );*/
 		//mesh.name="current_mesh";
-		var path = "panos/1/mobile_";
+		var path = "panos/1/1024/mobile_";
 		create_mesh(path,1.0);
 		current_pano = 0;
 		//mesh.material.transparent = true;
@@ -388,7 +388,7 @@
 		}
 		setTimeout(function(){time_change(count+1);}, 15); 
 	}
-	function move_camera_lat () {
+	function move_camera_lat (pano_id, dist, hotspot_angle) {
 		if(lat > 0)
 		{
 			lat = lat - 2;
@@ -400,16 +400,16 @@
 
 		if(Math.abs(lat) <2)
 		{
-			//time_change(0);
+			removemesh(pano_id,dist,hotspot_angle);
 			return;
 		}
-		setTimeout(function(){move_camera_lat();}, 20); 
+		setTimeout(function(){move_camera_lat(pano_id, dist, hotspot_angle);}, 20); 
 	}
 	function move_camera(angle,pano_id,dist,hotspot_angle)
 	{
 		if(cam_pos*angle<=0)
 		{
-			removemesh(pano_id,dist,hotspot_angle);
+			move_camera_lat(pano_id, dist, hotspot_angle);
 			return;
 		}
 		lon = lon + cam_pos*2;
@@ -458,7 +458,7 @@
 			{
 				cam_pos = -1;
 			}
-			move_camera_lat();
+			//move_camera_lat();
 			move_camera(angle,intersects[0].object.pano_id,intersects[0].object.dist,intersects[0].object.angle);
 		}
 
@@ -550,7 +550,7 @@
 					{
 						cam_pos = -1;
 					}
-					move_camera_lat();
+					//move_camera_lat();
 					move_camera(angle,hotspots_angle[current_pano][near_id][0], hotspots_angle[current_pano][near_id][2], near_angle);
 				}
 				done = true;
