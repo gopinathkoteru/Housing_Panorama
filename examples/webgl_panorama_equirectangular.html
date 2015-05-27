@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>three.js webgl - equirectangular panorama demo</title>
+	<title>Housing Panorama</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	<style>
@@ -9,6 +9,7 @@
 		background-color: #000000;
 		margin: 0px;
 		overflow: hidden;
+		opacity: : 0;
 	}
 
 	#info {
@@ -30,10 +31,6 @@
 <body>
 
 	<div id="container"></div>
-	<div id="info">
-		<a href="http://threejs.org" target="_blank">three.js webgl</a> - equirectangular panorama demo. photo by <a href="http://www.flickr.com/photos/jonragnarsson/2294472375/" target="_blank">Jón Ragnarsson</a>.<br />
-		drag equirectangular texture into the page.
-	</div>
 
 	<script src="../build/three.min.js"></script>
 
@@ -42,11 +39,11 @@
 	var raycaster;
 	raycaster = new THREE.Raycaster();
 	var current_pano;
-	var clear_pano;
+	var clear_pano,old_pano,new_pano;
 	var curr_speed,acc,time;
 	var test,remove;
 	var cam_pos;
-
+	var time_out;
 	var isUserInteracting = false,
 	onMouseDownMouseX = 0, onMouseDownMouseY = 0,
 	lon = 0, onMouseDownLon = 0,
@@ -58,7 +55,7 @@
 	init('panos/1/resized_1.jpg');
 	animate();
 
-	function loadNewmesh(pano_id,old_pano,dist,angle)
+	function loadNewmesh(pano_id,dist,angle)
 	{
 		//var geometry = new THREE.SphereGeometry( 500, 60, 40 );
 		//geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
@@ -72,17 +69,17 @@
 		//mesh.material.blending = THREE.AdditiveBlending;
 		var par = pano_id + 1;
 		var path = "panos/"+par+"/blur_";
-		var new_pano = create_mesh(path,1.0);
+		new_pano = create_mesh(path,0.5);
 		//scene.add( mesh );
-		curr_speed = 2;
-		time = 40;
-		dist = 1.5*dist;
+		curr_speed = 3;
+		time = 20;
+		dist = dist + 30;
 		test = false;
 		remove = false;
 
 		acc = (2*(curr_speed*time - dist))/(time*time);
 		loadclearmesh(pano_id);
-		updateOpacity(old_pano,new_pano,dist,angle,pano_id,1);
+		updateOpacity(angle,pano_id,1);
 	}
 	function loadclearmesh(pano_id)
 	{
@@ -105,7 +102,7 @@
 		return;
 
 	}
-	function updateOpacity(old_pano,new_pano,dist,angle,pano_id,count)
+	function updateOpacity(angle,pano_id,count)
 	{ 
 		if(remove==false)
 		{
@@ -118,7 +115,8 @@
 			count = count + 1;
 			for(i=0;i<6;i++)
 			{
-				old_pano.material.materials[i].opacity -= 0.001;
+				old_pano.material.materials[i].opacity -= 0.2/time;
+				new_pano.material.materials[i].opacity += 0.5/time;
 			}
 		}
 		if(remove==true)
@@ -163,14 +161,17 @@
 				clear_pano.material.materials[i].opacity = 1;
 			}
 			Hotspots(pano_id);
+			clearTimeout(time_out);
+			
 			return;
 		}
-
-		setTimeout(function(){updateOpacity(old_pano,new_pano,dist,angle,pano_id,count);}, 20); 
+		var function_name = function(){updateOpacity(angle,pano_id,count);}
+		clearTimeout(time_out);
+		time_out = setTimeout(function_name, 50); 
 	}	
 	function removemesh(pano_id,dist,angle) {
 		current_pano = pano_id;
-		var old_pano = scene.getObjectByName("current_mesh");
+		old_pano = scene.getObjectByName("current_mesh");
 
 		var len = scene.children.length;
 		var p=0;
@@ -191,7 +192,7 @@
 		}
 		//var images_loc = pano_id+1;
 		//images_loc = "panos/" + images_loc +"/blur_"+images_loc+ ".jpg";
-		loadNewmesh(pano_id,old_pano,dist,angle);
+		loadNewmesh(pano_id,dist,angle);
 		animate();
 	}
 	function create_mesh(path,opacity)
@@ -210,8 +211,6 @@
 				];
 		var mesh = new THREE.Mesh( new THREE.BoxGeometry( 300, 300, 300, 7, 7, 7 ), new THREE.MeshFaceMaterial( materials ) );
 		mesh.scale.x = -1;
-
-		console.log(mesh);
 
 		for(i=0;i<6;i++)
 		{
@@ -242,9 +241,9 @@
 		texture_placeholder.width = 128;
 		texture_placeholder.height = 128;
 
-		var context = texture_placeholder.getContext( '2d' );
-		context.fillStyle = 'rgb( 200, 200, 200 )';
-		context.fillRect( 0, 0, texture_placeholder.width, texture_placeholder.height );
+	//	var context = texture_placeholder.getContext( '2d' );
+	//	context.fillStyle = 'rgb( 200, 200, 200 )';
+	//	context.fillRect( 0, 0, texture_placeholder.width, texture_placeholder.height );
 
 		/*var materials = [
 
@@ -380,15 +379,7 @@
 		renderer.setSize( window.innerWidth, window.innerHeight );
 
 	}
-	function time_change(count)
-	{
-		if(count==5)
-		{
-			return;
-		}
-		setTimeout(function(){time_change(count+1);}, 15); 
-	}
-	function move_camera_lat () {
+	function move_camera_lat (pano_id,dist,hotspot_angle) {
 		if(lat > 0)
 		{
 			lat = lat - 2;
@@ -398,24 +389,30 @@
 			lat = lat + 2;
 		}
 
-		if(Math.abs(lat) <2)
+		if(Math.abs(lat) <  2)
 		{
-			//time_change(0);
+			clearTimeout(time_out);
+			removemesh(pano_id,dist,hotspot_angle);
 			return;
 		}
-		setTimeout(function(){move_camera_lat();}, 20); 
+		var function_name = function(){move_camera_lat(pano_id,dist,hotspot_angle);}
+		clearTimeout(time_out);
+		time_out = setTimeout(function_name, 50); 
 	}
 	function move_camera(angle,pano_id,dist,hotspot_angle)
 	{
 		if(cam_pos*angle<=0)
 		{
-			removemesh(pano_id,dist,hotspot_angle);
+			clearTimeout(time_out);
+			move_camera_lat(pano_id,dist,hotspot_angle);	
 			return;
 		}
 		lon = lon + cam_pos*2;
 		angle = angle - cam_pos*2;
 
-		setTimeout(function(){move_camera(angle,pano_id,dist,hotspot_angle);}, 20); 
+		var function_name = function(){move_camera(angle,pano_id,dist,hotspot_angle);}
+		clearTimeout(time_out);
+		time_out = setTimeout(function_name, 50); 
 	}
 
 	function onDocumentMouseDown( event ) {
@@ -458,7 +455,7 @@
 			{
 				cam_pos = -1;
 			}
-			move_camera_lat();
+			//move_camera_lat();
 			move_camera(angle,intersects[0].object.pano_id,intersects[0].object.dist,intersects[0].object.angle);
 		}
 
@@ -550,7 +547,7 @@
 					{
 						cam_pos = -1;
 					}
-					move_camera_lat();
+					//move_camera_lat();
 					move_camera(angle,hotspots_angle[current_pano][near_id][0], hotspots_angle[current_pano][near_id][2], near_angle);
 				}
 				done = true;
