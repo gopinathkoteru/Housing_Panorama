@@ -242,13 +242,13 @@
 			}
 			mouse_speed += 0.02;
 			Hotspots(pano_id);
-			clearTimeout(time_out);
+			//clearTimeout(time_out);
 			
 			return;
 		}
 		var function_name = function(){updateOpacity(dist,angle,pano_id,count);}
-		clearTimeout(time_out);
-		time_out = setTimeout(function_name, 60); 
+		//clearTimeout(time_out);
+		requestAnimationFrame(function_name); 
 	}	
 	function removemesh(pano_id,dist,angle) {
 		current_pano = pano_id;
@@ -484,19 +484,19 @@
 		lat = lat - cam_pos*2;
 		if(Math.abs(lat) <  2)
 		{
-			clearTimeout(time_out);
+			//clearTimeout(time_out);
 			removemesh(pano_id,dist,hotspot_angle);
 			return;
 		}
 		var function_name = function(){move_camera_lat(pano_id,dist,hotspot_angle);}
-		clearTimeout(time_out);
-		time_out = setTimeout(function_name, 50); 
+		//clearTimeout(time_out);
+		requestAnimationFrame(function_name); 
 	}
 	function move_camera(angle,pano_id,dist,hotspot_angle)
 	{
 		if(cam_pos*angle<=0)
 		{
-			clearTimeout(time_out);
+			//clearTimeout(time_out);
 			cam_pos = 1;
 			if(lat < 0)
 			{
@@ -514,8 +514,8 @@
 		angle = angle - cam_pos*2;
 
 		var function_name = function(){move_camera(angle,pano_id,dist,hotspot_angle);}
-		clearTimeout(time_out);
-		time_out = setTimeout(function_name, 50); 
+		//clearTimeout(time_out);
+		requestAnimationFrame(function_name, 50); 
 	}
 
 	function onDocumentMouseDown( event ) {
