@@ -46,8 +46,9 @@ function loadNewmesh(pano_id,dist,angle)
     remove = false;
 
     //acc = (2*(curr_speed*time - dist))/(time*time);
-    loadclearmesh(pano_id);
-    updateOpacity(dist,angle,pano_id,1);
+    var dfd = $.Deferred();
+    dfd.resolve();
+    return dfd;
 }
 
 
@@ -85,7 +86,9 @@ function loadclearmesh(pano_id)
         }
     }
 
-    return;
+    var dfd = $.Deferred();
+    dfd.resolve();
+    return dfd;
 
 }
 
@@ -220,7 +223,18 @@ function removemesh(pano_id,dist,angle) {
             p = p + 1;
         }
     }
-    loadNewmesh(pano_id,dist,angle);
+    $(function(){
+        loadNewmesh(pano_id,dist,angle).done(function(){
+        // function1 is done, we can now call function2
+        console.log('function1 is done!');
+        
+        loadclearmesh(pano_id).done(function(){
+            //function2 is done
+            console.log('function2 is done!');
+            updateOpacity(dist,angle,pano_id,1);
+        });
+        });
+    });
 }
 
 
