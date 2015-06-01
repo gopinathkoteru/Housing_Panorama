@@ -3,11 +3,8 @@ var raycaster;
 var mesh1,mesh2,mesh3;
 raycaster = new THREE.Raycaster();
 var current_pano;
-var clear_pano,old_pano,new_pano;
-var curr_speed,acc,time;
-var test,remove;
+var remove;
 var cam_pos;
-var time_out;
 var mesh_num;
 var isUserInteracting = false;
 var onMouseDownMouseX = 0, onMouseDownMouseY = 0;
@@ -16,6 +13,7 @@ var lat = 0, onMouseDownLat = 0;
 var phi = 0, theta = 0;
 
 var hotspots_angle = [[[1,109,47]], [[2,52,48], [4,111,98], [0,303,43]], [[3,107,58], [1,230,48]], [[2,293,58], [4,185,45]], [[3,5,41], [1,288,93]]]; 
+//var hotspots_angle = [[[1,180,60],[3,270,120]],[[2,220,120],[0,300,60]],[[3,270,60],[1,0,120]],[[0,0,120],[2,90,60]]];
 var mouse_speed = 0.3;
 init();
 animate();
@@ -23,6 +21,7 @@ animate();
 function loadNewmesh(pano_id,dist,angle)
 {
     var par = pano_id + 1;
+    //var path = "NPanos/blur_"+par+"/mobile_";
     var path = "panos/blur_"+par+"/blur_";
 
     mesh2.material.materials[0].map = gettexture(path + "r.jpg");
@@ -31,19 +30,22 @@ function loadNewmesh(pano_id,dist,angle)
     mesh2.material.materials[3].map = gettexture(path + "d.jpg");
     mesh2.material.materials[4].map = gettexture(path + "f.jpg");
     mesh2.material.materials[5].map = gettexture(path + "b.jpg");
+    dist = 50;
+
+    mesh2.position.x = dist*Math.cos(THREE.Math.degToRad(angle ));
+    mesh2.position.z = dist*Math.sin(THREE.Math.degToRad(angle ));
 
     for(i=0;i<6;i++)
     {
         mesh2.material.materials[i].opacity = 0;
     }
 
-    curr_speed = 3;
+    //curr_speed = 3;
     time = 30;
-    dist = dist+30;
-    test = false;
+    //dist = dist+30;
     remove = false;
 
-    acc = (2*(curr_speed*time - dist))/(time*time);
+    //acc = (2*(curr_speed*time - dist))/(time*time);
     loadclearmesh(pano_id);
     updateOpacity(dist,angle,pano_id,1);
 }
@@ -53,6 +55,7 @@ function loadclearmesh(pano_id)
 {
     pano_id += 1;
 
+    //  var path = "NPanos/new_"+pano_id+"/mobile_";
     var path = "panos/"+pano_id+"/mobile_";
 
     if(mesh_num==1)
@@ -92,12 +95,16 @@ function updateOpacity(dist,angle,pano_id,count)
     if(remove==false)
     {
 
-        dist = 30;
-        camera.fov -= dist*0.01;
-        camera.updateProjectionMatrix();    
+        // dist = 30;
+        //  camera.fov -= dist*0.01;
+        // camera.updateProjectionMatrix();    
 
-        mesh2.position.x = dist*Math.cos(THREE.Math.degToRad(angle ));
-        mesh2.position.z = dist*Math.sin(THREE.Math.degToRad(angle ));
+        mesh2.position.x -= (dist/time)*Math.cos(THREE.Math.degToRad(angle ));
+        mesh2.position.z -= (dist/time)*Math.sin(THREE.Math.degToRad(angle ));
+
+        // camera.position.x += 0.03*dist*Math.cos(THREE.Math.degToRad(angle ));
+        //camera.position.z += 0.03*dist*Math.sin(THREE.Math.degToRad(angle ));
+        //camera.updateProjectionMatrix();    
 
 
         count = count + 1;
@@ -149,8 +156,10 @@ function updateOpacity(dist,angle,pano_id,count)
         }
         mesh2.position.x = 0;
         mesh2.position.z = 0;
-        camera.fov = 75;
-        camera.updateProjectionMatrix();
+        // camera.fov = 75;
+        // camera.position.x = 0;
+        //camera.position.z = 0;
+        //camera.updateProjectionMatrix();
 
 
         count = 0;
@@ -181,9 +190,7 @@ function updateOpacity(dist,angle,pano_id,count)
         {
             mesh_num = 1;
         }
-        mouse_speed += 0.02;
         Hotspots(pano_id);
-        //clearTimeout(time_out);
 
         return;
     }
