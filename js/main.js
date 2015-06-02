@@ -99,14 +99,15 @@ function loadclearmesh(pano_id)
 }
 
 
-function updateOpacity(dist,angle,pano_id,count)
+function updateOpacity1(dist,angle,pano_id,count, callback)
 { 
     if(remove==false)
     {
 
         // dist = 30;
         //  camera.fov -= dist*0.01;
-        // camera.updateProjectionMatrix();    
+        // camera.updateProjectionMatrix();
+        console.log(count);    
 
         mesh2.position.x -= (dist/time)*Math.cos(THREE.Math.degToRad(angle ));
         mesh2.position.z -= (dist/time)*Math.sin(THREE.Math.degToRad(angle ));
@@ -130,23 +131,7 @@ function updateOpacity(dist,angle,pano_id,count)
             mesh2.material.materials[i].opacity += 1/time;
         }
     }
-    if(remove==true)
-    {
 
-        count = count + 1;
-        for(i=0;i<6;i++)
-        {
-            mesh2.material.materials[i].opacity -= 1/time;
-            if(mesh_num==1)
-            {
-                mesh3.material.materials[i].opacity += 1/time;
-            }
-            else
-            {
-                mesh1.material.materials[i].opacity += 1/time;
-            }
-        }
-    }
     if(count==time && remove==false)
     {   
         for(i=0;i<6;i++)
@@ -173,7 +158,37 @@ function updateOpacity(dist,angle,pano_id,count)
 
         count = 0;
         remove = true;
+        if (typeof(callback) == 'function')
+            return callback(pano_id);
+
     }
+
+    var function_name = function(){updateOpacity1(dist,angle,pano_id,count, callback);}
+    requestAnimationFrame(function_name); 
+}
+
+function updateOpacity(dist,angle,pano_id,count)
+{ 
+
+    if(remove==true)
+    {
+        console.log("CLEAR" + count)
+
+            count = count + 1;
+        for(i=0;i<6;i++)
+        {
+            mesh2.material.materials[i].opacity -= 1/time;
+            if(mesh_num==1)
+            {
+                mesh3.material.materials[i].opacity += 1/time;
+            }
+            else
+            {
+                mesh1.material.materials[i].opacity += 1/time;
+            }
+        }
+    }
+
     if(count==time && remove==true)
     {
         for(i=0;i<6;i++)
@@ -208,6 +223,7 @@ function updateOpacity(dist,angle,pano_id,count)
 }
 
 
+
 function removemesh(pano_id,dist,angle) {
     current_pano = pano_id;
     old_pano = scene.getObjectByName("current_mesh");
@@ -232,13 +248,19 @@ function removemesh(pano_id,dist,angle) {
     $(function(){
         loadNewmesh(pano_id,dist,angle).done(function(){
 
-            loadclearmesh(pano_id).done(function(){
-            
-                console.log('function2 is done!');
-                updateOpacity(dist,angle,pano_id,1);
-            });
+            updateOpacity1(dist,angle,pano_id,1, callback);
+
         });
     });
+    var callback = function(pano_id){ 
+        loadclearmesh(pano_id).done(function(){
+
+            console.log('function2 is done!');
+
+            updateOpacity(dist,angle,pano_id,0);
+
+        });   
+    }
 }
 
 
