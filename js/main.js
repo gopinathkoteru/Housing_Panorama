@@ -23,13 +23,16 @@ function loadNewmesh(pano_id,dist,angle)
     var par = pano_id + 1;
     //var path = "NPanos/blur_"+par+"/mobile_";
     var path = "panos/blur_"+par+"/blur_";
+    var dfd = [];
+    for(i=0;i<6;i++)
+        dfd[i] = $.Deferred();
 
-    mesh2.material.materials[0].map = gettexture(path + "r.jpg");
-    mesh2.material.materials[1].map = gettexture(path + "l.jpg");
-    mesh2.material.materials[2].map = gettexture(path + "u.jpg");
-    mesh2.material.materials[3].map = gettexture(path + "d.jpg");
-    mesh2.material.materials[4].map = gettexture(path + "f.jpg");
-    mesh2.material.materials[5].map = gettexture(path + "b.jpg");
+    mesh2.material.materials[0].map = gettexture(path + "r.jpg", dfd[0]);
+    mesh2.material.materials[1].map = gettexture(path + "l.jpg", dfd[1]);
+    mesh2.material.materials[2].map = gettexture(path + "u.jpg", dfd[2]);
+    mesh2.material.materials[3].map = gettexture(path + "d.jpg", dfd[3]);
+    mesh2.material.materials[4].map = gettexture(path + "f.jpg", dfd[4]);
+    mesh2.material.materials[5].map = gettexture(path + "b.jpg", dfd[5]);
     dist = 50;
 
     mesh2.position.x = dist*Math.cos(THREE.Math.degToRad(angle ));
@@ -45,10 +48,9 @@ function loadNewmesh(pano_id,dist,angle)
     //dist = dist+30;
     remove = false;
 
-    //acc = (2*(curr_speed*time - dist))/(time*time);
-    var dfd = $.Deferred();
-    dfd.resolve();
-    return dfd;
+    return $.when(dfd[0], dfd[1], dfd[2], dfd[3], dfd[4], dfd[5]).done(function(){
+        console.log('loadNewmesh is done');
+    }).promise();
 }
 
 
@@ -58,15 +60,18 @@ function loadclearmesh(pano_id)
 
     //  var path = "NPanos/new_"+pano_id+"/mobile_";
     var path = "panos/"+pano_id+"/mobile_";
+    var dfd = [];
+    for(i=0;i<6;i++)
+        dfd[i] = $.Deferred();
 
     if(mesh_num==1)
     {
-        mesh3.material.materials[0].map = gettexture(path+"r.jpg");
-        mesh3.material.materials[1].map = gettexture(path+"l.jpg");
-        mesh3.material.materials[2].map = gettexture(path+"u.jpg");
-        mesh3.material.materials[3].map = gettexture(path+"d.jpg");
-        mesh3.material.materials[4].map = gettexture(path+"f.jpg");
-        mesh3.material.materials[5].map = gettexture(path+"b.jpg");
+        mesh3.material.materials[0].map = gettexture(path+"r.jpg", dfd[0]);
+        mesh3.material.materials[1].map = gettexture(path+"l.jpg", dfd[1]);
+        mesh3.material.materials[2].map = gettexture(path+"u.jpg", dfd[2]);
+        mesh3.material.materials[3].map = gettexture(path+"d.jpg", dfd[3]);
+        mesh3.material.materials[4].map = gettexture(path+"f.jpg", dfd[4]);
+        mesh3.material.materials[5].map = gettexture(path+"b.jpg", dfd[5]);
         for(i=0;i<6;i++)
         {
             mesh3.material.materials[i].opacity = 0;
@@ -74,21 +79,21 @@ function loadclearmesh(pano_id)
     }
     else
     {
-        mesh1.material.materials[0].map = gettexture(path+"r.jpg");
-        mesh1.material.materials[1].map = gettexture(path+"l.jpg");
-        mesh1.material.materials[2].map = gettexture(path+"u.jpg");
-        mesh1.material.materials[3].map = gettexture(path+"d.jpg");
-        mesh1.material.materials[4].map = gettexture(path+"f.jpg");
-        mesh1.material.materials[5].map = gettexture(path+"b.jpg");
+        mesh1.material.materials[0].map = gettexture(path+"r.jpg", dfd[0]);
+        mesh1.material.materials[1].map = gettexture(path+"l.jpg", dfd[1]);
+        mesh1.material.materials[2].map = gettexture(path+"u.jpg", dfd[2]);
+        mesh1.material.materials[3].map = gettexture(path+"d.jpg", dfd[3]);
+        mesh1.material.materials[4].map = gettexture(path+"f.jpg", dfd[4]);
+        mesh1.material.materials[5].map = gettexture(path+"b.jpg", dfd[5]);
         for(i=0;i<6;i++)
         {
             mesh1.material.materials[i].opacity = 0;
         }
     }
 
-    var dfd = $.Deferred();
-    dfd.resolve();
-    return dfd;
+    return $.when(dfd[0], dfd[1], dfd[2], dfd[3], dfd[4], dfd[5]).done(function(){
+        console.log('loadclearmesh is done');
+    }).promise();
 
 }
 
@@ -225,14 +230,12 @@ function removemesh(pano_id,dist,angle) {
     }
     $(function(){
         loadNewmesh(pano_id,dist,angle).done(function(){
-        // function1 is done, we can now call function2
-        console.log('function1 is done!');
-        
-        loadclearmesh(pano_id).done(function(){
-            //function2 is done
-            console.log('function2 is done!');
-            updateOpacity(dist,angle,pano_id,1);
-        });
+
+            loadclearmesh(pano_id).done(function(){
+            
+                console.log('function2 is done!');
+                updateOpacity(dist,angle,pano_id,1);
+            });
         });
     });
 }
@@ -286,7 +289,7 @@ function loadTexture( path ) {
 }
 
 
-function gettexture(path)
+function gettexture(path, dfd)
 {
     var texture = new THREE.Texture( texture_placeholder );
 
@@ -295,6 +298,8 @@ function gettexture(path)
 
         texture.image = this;
         texture.needsUpdate = true;
+        //alert("GOne")
+        dfd.resolve();
 
     };
     image.src = path;
