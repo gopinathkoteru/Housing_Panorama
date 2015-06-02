@@ -11,6 +11,7 @@ var onMouseDownMouseX = 0, onMouseDownMouseY = 0;
 var lon = 0, onMouseDownLon = 0;
 var lat = 0, onMouseDownLat = 0;
 var phi = 0, theta = 0;
+var transition = false;
 
 var hotspots_angle = [[[1,109,47]], [[2,52,48], [4,111,98], [0,303,43]], [[3,107,58], [1,230,48]], [[2,293,58], [4,185,45]], [[3,5,41], [1,288,93]]]; 
 //var hotspots_angle = [[[1,180,60],[3,270,120]],[[2,220,120],[0,300,60]],[[3,270,60],[1,0,120]],[[0,0,120],[2,90,60]]];
@@ -396,6 +397,7 @@ function Hotspots(pano_id)
     {
         add_Hotspot(hotspots_angle[pano_id][i][0],hotspots_angle[pano_id][i][1],hotspots_angle[pano_id][i][2]);
     }
+    transition = false;
 }
 
 
@@ -554,7 +556,7 @@ function onDocumentKeyDown( event ) {
     }
     else if (code == 38)
     {
-        if(done == false)
+        if(done == false && transition==false)
         {
             var total = hotspots_angle[current_pano].length;
             var near_angle,near_id;
@@ -607,6 +609,7 @@ function onDocumentKeyDown( event ) {
                 {
                     cam_pos = -1;
                 }
+                transition = true;
                 move_camera(angle,hotspots_angle[current_pano][near_id][0], hotspots_angle[current_pano][near_id][2], near_angle);
             }
             done = true;
