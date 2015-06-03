@@ -7,6 +7,7 @@ function onWindowResize() {
 
 }
 
+
 function onDocumentMouseDown( event ) {
 
     event.preventDefault();
@@ -45,6 +46,7 @@ function onDocumentMouseDown( event ) {
 
 }
 
+
 function onDocumentMouseMove( event ) {
 
     if ( isUserInteracting === true ) {
@@ -56,6 +58,7 @@ function onDocumentMouseMove( event ) {
 
 }
 
+
 function onDocumentMouseUp( event ) {
 
     isUserInteracting = false;
@@ -64,6 +67,7 @@ function onDocumentMouseUp( event ) {
 
 var maxspeed = 7;
 var current_speed = 2;
+
 
 function onDocumentKeyDown( event ) {
 
@@ -149,6 +153,7 @@ function onDocumentKeyUp ( event )
     isUserInteracting = false;
     current_speed = 2;
 }
+
 
 function onDocumentMouseWheel( event ) {
 

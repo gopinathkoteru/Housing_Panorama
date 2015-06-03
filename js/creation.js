@@ -29,6 +29,7 @@ function add_Hotspot(pano_id,angle,dist)
 
 }
 
+
 function create_pano(path,opacity)
 {
     var materials = [
@@ -61,6 +62,7 @@ function create_pano(path,opacity)
 
 }
 
+
 function loadTexture( path ) {
 
     var texture = new THREE.Texture( texture_placeholder );
@@ -80,19 +82,78 @@ function loadTexture( path ) {
 }
 
 
-function gettexture(path, dfd)
+function preload_images()
 {
+    for(i=0;i<hotspots_angle[current_pano].length;i++)
+    {
+        var flag = false;
+        for(j=0;j<images.length;j++)
+        {
+            if(hotspots_angle[current_pano][i][0] == images[j][0][0])
+            {
+                flag = true;
+                break;
+            }
+        }
+        if(flag == false)
+        {   
+            var temp = [];
+            for(j=0;j<6;j++)
+            {
+                var temp1 = [];
+                temp1[0] = hotspots_angle[current_pano][i][0];
+                temp1[1] = new Image();
+                temp.push(temp1);
+            }
+
+            var source = hotspots_angle[current_pano][i][0] + 1;
+            source = "panos/blur_" + source + "/blur_";
+            temp[0][1].src = source + "r.jpg";
+            temp[1][1].src = source + "l.jpg";
+            temp[2][1].src = source + "u.jpg";
+            temp[3][1].src = source + "d.jpg";
+            temp[4][1].src = source + "f.jpg";
+            temp[5][1].src = source + "b.jpg";
+
+            images.push(temp);
+        }
+    }
+    console.log("IMAGES: " + images.length);
+}
+
+
+function gettexture(path, dfd, is_blur, image_index)
+{
+
+    var flag = false;
     var texture = new THREE.Texture( texture_placeholder );
+    if(is_blur == true)
+    {
 
-    var image = new Image();
-    image.onload = function () {
+        for(var i=0;i<images.length;i++)
+            if(current_pano == images[i][image_index][0])
+            {
+                flag = true;
+                image = images[i][image_index][1];
+                console.log(images[i]);
+                texture.image = image;
+                texture.needsUpdate = true;
+                dfd.resolve();
+                break;
+            }
+    }
+    if(flag == false || is_blur == false)
+    {
+        var image = new Image();
+        image.onload = function () {
 
-        texture.image = this;
-        texture.needsUpdate = true;
-        dfd.resolve();
+            texture.image = this;
+            texture.needsUpdate = true;
+            dfd.resolve();
 
-    };
-    image.src = path;
+        };
+        image.src = path;
+    }
 
     return texture;
 }

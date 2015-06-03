@@ -6,6 +6,7 @@ function rotate_camera(angle,pano_id,hotspot_angle)
     TweenLite.to(camera, time, {lon: rotate_angle, lat:0, ease: Power1.easeOut, onComplete:function_name}); 
 }
 
+
 function removemesh(pano_id,angle) {
     current_pano = pano_id;
 
@@ -47,7 +48,7 @@ function loadblurpano(pano_id,angle)
     for(i=0;i<6;i++)
     {
         blur_pano.material.materials[i].map.dispose();
-        blur_pano.material.materials[i].map = gettexture(path + img_name[i]+".jpg", dfd[i]);
+        blur_pano.material.materials[i].map = gettexture(path + img_name[i]+".jpg", dfd[i], true, i);
         blur_pano.material.materials[i].opacity = 0;
     }
 
@@ -76,7 +77,7 @@ function loadclearpano(pano_id)
     for(i=0;i<6;i++)
     {
         clear_pano[pano_num].material.materials[i].map.dispose();
-        clear_pano[pano_num].material.materials[i].map = gettexture(path + img_name[i]+".jpg", dfd[i]);
+        clear_pano[pano_num].material.materials[i].map = gettexture(path + img_name[i]+".jpg", dfd[i], false, i);
         clear_pano[pano_num].material.materials[i].opacity = 0;
     } 
     return $.when(dfd[0], dfd[1], dfd[2], dfd[3], dfd[4], dfd[5]).done(function(){
@@ -84,9 +85,10 @@ function loadclearpano(pano_id)
 
 }
 
+
 function updateOpacity(pano_id,angle)
 {
-    var time=3;
+    var time=2;
     var function_name = function(){updateOpacity1(pano_id)};
     TweenLite.to(blur_pano.position, time, {x:0,z:0,ease: Expo.easeOut,onComplete:function_name});
     var dist = -10;
@@ -102,6 +104,7 @@ function updateOpacity(pano_id,angle)
     }
 
 }
+
 
 function updateOpacity1(pano_id)
 {
@@ -121,9 +124,11 @@ function updateOpacity1(pano_id)
     loadclearpano(pano_id).done(function(){
 
         updateOpacity2(pano_id);
+        preload_images();
 
     });
 }
+
 
 function updateOpacity2(pano_id)
 {

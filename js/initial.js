@@ -10,6 +10,7 @@ var onMouseDownLon = 0;
 var onMouseDownLat = 0;
 var phi = 0, theta = 0;
 var transition = false;
+var images = [];
 
 var hotspots_angle = [[[1,109,47]], [[2,52,48], [4,111,98], [0,303,43]], [[3,107,58], [1,230,48]], [[2,293,58], [4,185,45]], [[3,5,41], [1,288,93]]]; 
 
@@ -45,6 +46,7 @@ function init()
     pano_num = 0;
 
     current_pano = 0;
+    preload_images();
     Hotspots(0);
 
     renderer = new THREE.WebGLRenderer();
@@ -64,6 +66,7 @@ function init()
     window.addEventListener( 'resize', onWindowResize, false );
 
 }
+
 
 function animate() {
 
