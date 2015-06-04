@@ -60,6 +60,10 @@ function init()
     document.addEventListener( 'mousewheel', onDocumentMouseWheel, false );
     document.addEventListener( 'DOMMouseScroll', onDocumentMouseWheel, false);
 
+    document.addEventListener( 'touchstart', touchHandler, false );
+    document.addEventListener( 'touchmove', touchHandler, false );
+    document.addEventListener( 'touchend', touchHandler, false );
+
     document.addEventListener( 'keydown', onDocumentKeyDown, false );
     document.addEventListener( 'keyup', onDocumentKeyUp, false );
 
