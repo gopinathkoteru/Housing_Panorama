@@ -1,23 +1,23 @@
-function rotate_camera(angle,pano_id,hotspot_angle)
+function rotate_camera( angle, pano_id, hotspot_angle )
 {
-    var function_name = function(){removemesh(pano_id,hotspot_angle);};
     var time = 0.5;
     var rotate_angle = camera.lon + angle;
-    TweenLite.to(camera, time, {lon: rotate_angle, lat:0, ease: Power1.easeOut, onComplete:function_name}); 
+    TweenLite.to(camera, time, {lon: rotate_angle, lat: 0, ease: Power1.easeOut, onComplete: remove_hotspots, onCompleteParams: [ pano_id, hotspot_angle ]});
 }
 
 
-function removemesh(pano_id,angle) {
+function remove_hotspots( pano_id, angle )
+{
     current_pano = pano_id;
 
     var len = scene.children.length;
-    var p=0;
-    for ( i = 0; i < len; i ++ ) {
-        var object = scene.children[ p];
+    var p = 0;
+    for (var i = 0; i < len; i ++ )
+    {
+        var object = scene.children[ p ];
 
         if(object.name=="hotspot")
         {
-
             object.geometry.dispose();
             object.material.dispose();
             scene.remove(object);
@@ -28,27 +28,26 @@ function removemesh(pano_id,angle) {
         }
     }
 
-    loadblurpano(pano_id,angle).done(function(){
+    load_blurpano(pano_id,angle).done(function(){
 
-        updateOpacity(pano_id,angle);
+        oldpano_to_blurpano(pano_id, angle);
 
     });
 }
 
 
-function loadblurpano(pano_id,angle)
+function load_blurpano( pano_id, angle )
 {
-    var par = pano_id + 1;
-    var path = "panos/blur_"+par+"/blur_";
+    var path = "panos/blur_" + (pano_id + 1) + "/blur_";
 
-    var dfd = [];
-    for(i=0;i<6;i++)
-        dfd[i] = $.Deferred();
+    var dfrd = [];
+    for(var i = 0; i < 6 ; i++)
+        dfrd[i] = $.Deferred();
 
-    for(i=0;i<6;i++)
+    for(var i = 0; i < 6; i++)
     {
         blur_pano.material.materials[i].map.dispose();
-        blur_pano.material.materials[i].map = gettexture(path + img_name[i]+".jpg", dfd[i], true, i);
+        blur_pano.material.materials[i].map = gettexture(path + img_name[i] + ".jpg", dfrd[i], true, i);
         blur_pano.material.materials[i].opacity = 0;
     }
 
@@ -57,61 +56,59 @@ function loadblurpano(pano_id,angle)
     blur_pano.position.x = dist*Math.cos(THREE.Math.degToRad(angle ));
     blur_pano.position.z = dist*Math.sin(THREE.Math.degToRad(angle ));
 
-    return $.when(dfd[0], dfd[1], dfd[2], dfd[3], dfd[4], dfd[5]).done(function(){
+    return $.when(dfrd[0], dfrd[1], dfrd[2], dfrd[3], dfrd[4], dfrd[5]).done(function(){
         console.log('loadNewmesh is done');
     }).promise();
 }
 
 
-function loadclearpano(pano_id)
+function load_clearpano( pano_id )
 {
-    pano_id += 1;
 
-    var path = "panos/"+pano_id+"/mobile_";
+    var path = "panos/" + (pano_id + 1) + "/mobile_";
 
-    var dfd = [];
-    for(i=0;i<6;i++)
-        dfd[i] = $.Deferred();
+    var dfrd = [];
+    for(var i = 0; i < 6; i++)
+        dfrd[i] = $.Deferred();
 
     clear_pano[pano_num].visible = true;
-    for(i=0;i<6;i++)
+    for(var i = 0; i < 6; i++)
     {
         clear_pano[pano_num].material.materials[i].map.dispose();
-        clear_pano[pano_num].material.materials[i].map = gettexture(path + img_name[i]+".jpg", dfd[i], false, i);
+        clear_pano[pano_num].material.materials[i].map = gettexture(path + img_name[i] + ".jpg", dfrd[i], false, i);
         clear_pano[pano_num].material.materials[i].opacity = 0;
     } 
-    return $.when(dfd[0], dfd[1], dfd[2], dfd[3], dfd[4], dfd[5]).done(function(){
+    return $.when(dfrd[0], dfrd[1], dfrd[2], dfrd[3], dfrd[4], dfrd[5]).done(function(){
     }).promise();
 
 }
 
 
-function updateOpacity(pano_id,angle)
+function oldpano_to_blurpano( pano_id, angle )
 {
-    var time=2;
-    var function_name = function(){updateOpacity1(pano_id)};
-    TweenLite.to(blur_pano.position, time, {x:0,z:0,ease: Expo.easeOut,onComplete:function_name});
+    var time = 2;
+    TweenLite.to(blur_pano.position, time, {x: 0, z: 0, ease: Expo.easeOut, onComplete: check_newpanoload, onCompleteParams: [ pano_id ]});
     var dist = -10;
     //TweenLite.to(clear_pano[pano_num].position, time, {x:dist*Math.cos(THREE.Math.degToRad(angle )),z:dist*Math.sin(THREE.Math.degToRad(angle )),ease: Expo.easeOut});
-    for(i=0;i<6;i++)
+    for(var i = 0; i < 6; i++)
     {
-        TweenLite.to(clear_pano[pano_num].material.materials[i], time, {opacity:0,ease: Expo.easeOut});
+        TweenLite.to(clear_pano[pano_num].material.materials[i], time, {opacity: 0, ease: Expo.easeOut});
     }
 
-    for(i=0;i<6;i++)
+    for(var i = 0; i < 6; i++)
     {
-        TweenLite.to(blur_pano.material.materials[i], time, {opacity:1,ease: Expo.easeOut});
+        TweenLite.to(blur_pano.material.materials[i], time, {opacity: 1, ease: Expo.easeOut});
     }
 
 }
 
 
-function updateOpacity1(pano_id)
+function check_newpanoload( pano_id )
 {
     clear_pano[pano_num].position.x = 0;
     clear_pano[pano_num].position.z = 0;
     clear_pano[pano_num].visible = false;
-    for(i=0;i<6;i++)
+    for(var i = 0; i < 6; i++)
     {
 
         clear_pano[pano_num].material.materials[i].opacity = 0;
@@ -121,32 +118,32 @@ function updateOpacity1(pano_id)
 
     pano_num = (pano_num + 1)%2;
 
-    loadclearpano(pano_id).done(function(){
+    load_clearpano(pano_id).done(function(){
 
-        updateOpacity2(pano_id);
+        blurpano_to_newpano(pano_id);
         preload_images();
 
     });
 }
 
 
-function updateOpacity2(pano_id)
+function blurpano_to_newpano( pano_id )
 {
     var time = 0.5;
-    for(i=0;i<6;i++)
+    for(var i = 0; i < 6; i++)
     {
-        TweenLite.to(blur_pano.material.materials[i], time, {opacity:0,ease: Expo.easeOut});
+        TweenLite.to(blur_pano.material.materials[i], time, {opacity: 0, ease: Expo.easeOut});
     }
-    var function_name = function(){Hotspots(pano_id);};
-    for(i=0;i<6;i++)
+
+    for(var i = 0; i < 6; i++)
     {
-        if(i==5)
+        if(i == 5)
         {
-            TweenLite.to(clear_pano[pano_num].material.materials[i], time, {opacity:1,ease: Expo.easeOut,onComplete:function_name});
+            TweenLite.to(clear_pano[pano_num].material.materials[i], time, {opacity: 1, ease: Expo.easeOut, onComplete: Hotspots, onCompleteParams:[ pano_id ]});
         }
         else
         {
-            TweenLite.to(clear_pano[pano_num].material.materials[i], time, {opacity:1,ease: Expo.easeOut});
+            TweenLite.to(clear_pano[pano_num].material.materials[i], time, {opacity: 1, ease: Expo.easeOut});
         }
     }
 }

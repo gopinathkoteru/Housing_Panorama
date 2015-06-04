@@ -1,7 +1,6 @@
 var camera, scene, renderer;
-var raycaster;
-var clear_pano = [],blur_pano;
-raycaster = new THREE.Raycaster();
+var raycaster = new THREE.Raycaster();;
+var clear_pano = [], blur_pano;
 var current_pano;
 var pano_num;
 var isUserInteracting = false;
@@ -16,6 +15,7 @@ var hotspots_angle = [[[1,109,47]], [[2,52,48], [4,111,98], [0,303,43]], [[3,107
 
 var img_name = ['r','l','u','d','f','b'];
 var mouse_speed = 0.3;
+
 init();
 animate();
 
@@ -68,7 +68,8 @@ function init()
 }
 
 
-function animate() {
+function animate()
+{
 
     requestAnimationFrame( animate );
     update();
@@ -76,7 +77,8 @@ function animate() {
 }
 
 
-function update() {
+function update()
+{
     camera.lat = Math.max( - 35, Math.min( 35,camera.lat ) );
     phi = THREE.Math.degToRad( 90 - camera.lat );
     theta = THREE.Math.degToRad( camera.lon );

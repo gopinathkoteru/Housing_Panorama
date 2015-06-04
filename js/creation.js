@@ -1,15 +1,15 @@
-function Hotspots(pano_id)
+function Hotspots( pano_id )
 {
     var num_hotspots = hotspots_angle[pano_id].length;
-    for(i=0;i<num_hotspots;i++)
+    for(var i = 0; i < num_hotspots; i++)
     {
-        add_Hotspot(hotspots_angle[pano_id][i][0],hotspots_angle[pano_id][i][1],hotspots_angle[pano_id][i][2]);
+        add_Hotspot(hotspots_angle[pano_id][i][0], hotspots_angle[pano_id][i][1], hotspots_angle[pano_id][i][2]);
     }
     transition = false;
 }
 
 
-function add_Hotspot(pano_id,angle,dist)
+function add_Hotspot( pano_id, angle, dist )
 {
     var geometry = new THREE.BoxGeometry( 2,2,2,1,1,1);
     var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
@@ -30,8 +30,9 @@ function add_Hotspot(pano_id,angle,dist)
 }
 
 
-function create_pano(path,opacity)
+function create_pano( path, opacity )
 {
+
     var materials = [
 
         loadTexture(path+"r.jpg"), // right
@@ -41,11 +42,11 @@ function create_pano(path,opacity)
         loadTexture(path+"f.jpg"), // front
         loadTexture(path+"b.jpg")  // back
 
-            ];
+    ];
     var pano = new THREE.Mesh( new THREE.BoxGeometry( 300, 300, 300, 7, 7, 7 ), new THREE.MeshFaceMaterial( materials ) );
     pano.scale.x = -1;
 
-    for(i=0;i<6;i++)
+    for(var i = 0; i < 6; i++)
     {
         pano.material.materials[i].transparent = true;
         pano.material.materials[i].opacity = opacity;
@@ -84,10 +85,10 @@ function loadTexture( path ) {
 
 function preload_images()
 {
-    for(i=0;i<hotspots_angle[current_pano].length;i++)
+    for(var i = 0; i < hotspots_angle[current_pano].length; i++)
     {
         var flag = false;
-        for(j=0;j<images.length;j++)
+        for(var j = 0; j < images.length; j++)
         {
             if(hotspots_angle[current_pano][i][0] == images[j][0][0])
             {
@@ -98,7 +99,7 @@ function preload_images()
         if(flag == false)
         {   
             var temp = [];
-            for(j=0;j<6;j++)
+            for(var j = 0; j < 6; j++)
             {
                 var temp1 = [];
                 temp1[0] = hotspots_angle[current_pano][i][0];
@@ -108,12 +109,10 @@ function preload_images()
 
             var source = hotspots_angle[current_pano][i][0] + 1;
             source = "panos/blur_" + source + "/blur_";
-            temp[0][1].src = source + "r.jpg";
-            temp[1][1].src = source + "l.jpg";
-            temp[2][1].src = source + "u.jpg";
-            temp[3][1].src = source + "d.jpg";
-            temp[4][1].src = source + "f.jpg";
-            temp[5][1].src = source + "b.jpg";
+            for(var j = 0; j < 6; j++)
+            {
+                temp[j][1].src = source + img_name[j] + ".jpg";
+            }
 
             images.push(temp);
         }
@@ -122,7 +121,7 @@ function preload_images()
 }
 
 
-function gettexture(path, dfd, is_blur, image_index)
+function gettexture( path, dfrd, is_blur, image_index )
 {
 
     var flag = false;
@@ -130,7 +129,8 @@ function gettexture(path, dfd, is_blur, image_index)
     if(is_blur == true)
     {
 
-        for(var i=0;i<images.length;i++)
+        for(var i = 0; i < images.length; i++)
+        {
             if(current_pano == images[i][image_index][0])
             {
                 flag = true;
@@ -138,9 +138,10 @@ function gettexture(path, dfd, is_blur, image_index)
                 console.log(images[i]);
                 texture.image = image;
                 texture.needsUpdate = true;
-                dfd.resolve();
+                dfrd.resolve();
                 break;
             }
+        }
     }
     if(flag == false || is_blur == false)
     {
@@ -149,7 +150,7 @@ function gettexture(path, dfd, is_blur, image_index)
 
             texture.image = this;
             texture.needsUpdate = true;
-            dfd.resolve();
+            dfrd.resolve();
 
         };
         image.src = path;
@@ -157,4 +158,3 @@ function gettexture(path, dfd, is_blur, image_index)
 
     return texture;
 }
-

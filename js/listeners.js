@@ -1,4 +1,5 @@
-function onWindowResize() {
+function onWindowResize()
+{
 
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -8,7 +9,8 @@ function onWindowResize() {
 }
 
 
-function onDocumentMouseDown( event ) {
+function onDocumentMouseDown( event )
+{
 
     event.preventDefault();
 
@@ -29,7 +31,8 @@ function onDocumentMouseDown( event ) {
 
     var intersects = raycaster.intersectObjects( scene.children, true );
 
-    if ( intersects.length > 0  && intersects[0].object.name=="hotspot") {
+    if ( intersects.length > 0  && intersects[0].object.name == "hotspot")
+    {
 
         var rotate_angle = intersects[0].object.angle - camera.lon;
 
@@ -47,9 +50,11 @@ function onDocumentMouseDown( event ) {
 }
 
 
-function onDocumentMouseMove( event ) {
+function onDocumentMouseMove( event )
+{
 
-    if ( isUserInteracting === true ) {
+    if ( isUserInteracting === true )
+    {
 
         camera.lon = ( onPointerDownPointerX - event.clientX ) * mouse_speed + onPointerDownLon;
         camera.lat = ( event.clientY - onPointerDownPointerY ) * mouse_speed + onPointerDownLat;
@@ -59,7 +64,8 @@ function onDocumentMouseMove( event ) {
 }
 
 
-function onDocumentMouseUp( event ) {
+function onDocumentMouseUp( event )
+{
 
     isUserInteracting = false;
 
@@ -69,7 +75,8 @@ var maxspeed = 7;
 var current_speed = 2;
 
 
-function onDocumentKeyDown( event ) {
+function onDocumentKeyDown( event )
+{
 
     if (!event)
         event = window.event;
@@ -92,7 +99,7 @@ function onDocumentKeyDown( event ) {
             var flag = false;
             var temp;
 
-            for(i=0;i<num_hotspots;i++)
+            for(var i = 0; i < num_hotspots; i++)
             {
                 temp = hotspots_angle[current_pano][i][1] - 90;
                 var lon = (camera.lon+360) % 360;;
@@ -139,9 +146,10 @@ function onDocumentKeyDown( event ) {
             }
         }
     }
-    if (isUserInteracting == true) {
+    if (isUserInteracting == true)
+    {
         if(current_speed < maxspeed)
-            current_speed+=1;
+            current_speed += 1;
     }
     isUserInteracting = true;
 }
@@ -155,27 +163,22 @@ function onDocumentKeyUp ( event )
 }
 
 
-function onDocumentMouseWheel( event ) {
+function onDocumentMouseWheel( event )
+{
 
-    if ( event.wheelDeltaY ) {
-
+    if ( event.wheelDeltaY )
+    {
         camera.fov -= event.wheelDeltaY * 0.05;
-
-
-
-    } else if ( event.wheelDelta ) {
-
+    }
+    else if ( event.wheelDelta )
+    {
         camera.fov -= event.wheelDelta * 0.05;
-
-
-
-    } else if ( event.detail ) {
-
+    }
+    else if ( event.detail )
+    {
         camera.fov += event.detail * 1.0;
-
     }
 
     camera.updateProjectionMatrix();
 
 }
-
