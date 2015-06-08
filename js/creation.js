@@ -1,18 +1,18 @@
 function Hotspots( pano_id )
 {
-    var num_hotspots = hotspots_angle[pano_id].length;
+    var num_hotspots = Transition.hotspotAngles[pano_id].length;
     for(var i = 0; i < num_hotspots; i++)
     {
-        add_Hotspot(hotspots_angle[pano_id][i][0], hotspots_angle[pano_id][i][1], hotspots_angle[pano_id][i][2]);
+        add_Hotspot(Transition.hotspotAngles[pano_id][i][0], Transition.hotspotAngles[pano_id][i][1], Transition.hotspotAngles[pano_id][i][2]);
     }
-    transition = false;
+    Transition.moving = false;
 }
 
 
 function add_Hotspot( pano_id, angle, dist )
 {
     var geometry = new THREE.BoxGeometry( 2,2,2,1,1,1);
-    var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+    var material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
     var hotspot = new THREE.Mesh( geometry, material );
 
     angle = angle - 90;
@@ -30,44 +30,30 @@ function add_Hotspot( pano_id, angle, dist )
 }
 
 
-function create_pano( path, opacity )
+pano.prototype.createPano = function( path, opacity )
 {
-
-    var materials = [
-
-        loadTexture(path+"r.jpg"), // right
-        loadTexture(path+"l.jpg"), // left
-        loadTexture(path+"u.jpg"), // top
-        loadTexture(path+"d.jpg"), // bottom
-        loadTexture(path+"f.jpg"), // front
-        loadTexture(path+"b.jpg")  // back
-
-    ];
-    var pano = new THREE.Mesh( new THREE.BoxGeometry( 300, 300, 300, 7, 7, 7 ), new THREE.MeshFaceMaterial( materials ) );
-    pano.scale.x = -1;
+    var materials = [];
+    for(i=0;i<6;i++)
+    {
+        materials.push(this.loadTexture(path+img_name[i]+".jpg"));
+    }
+    this.mesh = new THREE.Mesh( new THREE.BoxGeometry( 300, 300, 300, 7, 7, 7 ), new THREE.MeshFaceMaterial( materials ) );
+    this.mesh.scale.x = -1;
 
     for(var i = 0; i < 6; i++)
     {
-        pano.material.materials[i].transparent = true;
-        pano.material.materials[i].opacity = opacity;
-        pano.material.materials[i].blending = THREE.AdditiveBlending;
-
-        pano.material.materials[i].blendSrc = THREE.OneMinusDstColorFactor;
-        pano.material.materials[i].blendDst = THREE.DstAlphaFactor;
-
+        this.mesh.material.materials[i].transparent = true;
+        this.mesh.material.materials[i].opacity = opacity;
     }
-    pano.name = "panorama";
-    scene.add(pano);
-
-    return pano;
-
-}
+    this.name = "panorama";
+    scene.add(this.mesh);
+};
 
 
-function loadTexture( path ) {
+pano.prototype.loadTexture = function( path ) {
 
     var texture = new THREE.Texture( texture_placeholder );
-    var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0.5 } );
+    var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0.5 ,side:THREE.DoubleSide,blending: THREE.AdditiveBlending ,depthTest: false } );
 
     var image = new Image();
     image.onload = function () {
@@ -80,67 +66,45 @@ function loadTexture( path ) {
 
     return material;
 
-}
+};
 
 
 function preload_images()
 {
-    for(var i = 0; i < hotspots_angle[current_pano].length; i++)
+    for(var i = 0; i < Transition.hotspotAngles[Transition.currentPano].length; i++)
     {
-        var flag = false;
-        for(var j = 0; j < images.length; j++)
-        {
-            if(hotspots_angle[current_pano][i][0] == images[j][0][0])
-            {
-                flag = true;
-                break;
-            }
-        }
-        if(flag == false)
-        {   
+        var source = Transition.hotspotAngles[Transition.currentPano][i][0];
+        if(images[source])
+        { 
+            source  = source + 1;
+            source = "panos1/blur_" + source + "/mobile_";  
             var temp = [];
             for(var j = 0; j < 6; j++)
             {
-                var temp1 = [];
-                temp1[0] = hotspots_angle[current_pano][i][0];
-                temp1[1] = new Image();
-                temp.push(temp1);
+                var image = new Image();
+                image.src = source + img_name[j] + ".jpg";
+                temp.push(image);
             }
 
-            var source = hotspots_angle[current_pano][i][0] + 1;
-            source = "panos/blur_" + source + "/blur_";
-            for(var j = 0; j < 6; j++)
-            {
-                temp[j][1].src = source + img_name[j] + ".jpg";
-            }
-
-            images.push(temp);
+            images[Transition.currentPano] = temp;
         }
     }
-    console.log("IMAGES: " + images.length);
 }
 
 
-function gettexture( path, dfrd, is_blur, image_index )
+pano.prototype.getTexture = function( path, dfrd, is_blur, image_index )
 {
-
     var flag = false;
     var texture = new THREE.Texture( texture_placeholder );
     if(is_blur == true)
     {
-
-        for(var i = 0; i < images.length; i++)
+        if(images[Transition.currentPano])
         {
-            if(current_pano == images[i][image_index][0])
-            {
                 flag = true;
-                image = images[i][image_index][1];
-                console.log(images[i]);
+                var image = images[Transition.currentPano][image_index];
                 texture.image = image;
                 texture.needsUpdate = true;
                 dfrd.resolve();
-                break;
-            }
         }
     }
     if(flag == false || is_blur == false)
@@ -157,4 +121,4 @@ function gettexture( path, dfrd, is_blur, image_index )
     }
 
     return texture;
-}
+};
