@@ -1,5 +1,6 @@
-function remove_hotspots()
+Transition.removeHotspots = function ()
 {
+
     var len = scene.children.length;
     var p = 0;
     for (var i = 0; i < len; i ++ )
@@ -16,12 +17,35 @@ function remove_hotspots()
         {
             p = p + 1;
         }
-    }   
+    }
 };
+
+
+Transition.preloadImages = function()
+{
+    for(var i = 0; i < Transition.hotspotAngles[Transition.currentPano].length; i++)
+    {
+        var source = Transition.hotspotAngles[Transition.currentPano][i][0];
+        if(images[source])
+        { 
+            source = Transition.path + "blur_" + (source + 1) + "/mobile_";  
+            var temp = [];
+            for(var j = 0; j < 6; j++)
+            {
+                var image = new Image();
+                image.src = source + img_name[j] + ".jpg";
+                temp.push(image);
+            }
+
+            images[Transition.currentPano] = temp;
+        }
+    }
+}
+
 
 Transition.loadBlurPano = function(pano_id, hotspot_angle ,dist)
 {
-    var path = Transition.path+"/blur_" + (pano_id + 1) + "/mobile_";
+    var path = Transition.path+"blur_" + (pano_id + 1) + "/blur_";
 
     var dfrd = [];
     for(var i = 0; i < 6 ; i++)
@@ -45,7 +69,7 @@ Transition.loadBlurPano = function(pano_id, hotspot_angle ,dist)
 Transition.loadClearPano = function( pano_id )
 {
 
-    var path = "panos1/" + (pano_id + 1) + "/mobile_";
+    var path = Transition.path + (pano_id + 1) + "/mobile_";
 
     var dfrd = [];
     for(var i = 0; i < 6; i++)
@@ -110,7 +134,7 @@ Transition.checkNewPanoLoad = function( pano_id )
     Transition.loadClearPano(pano_id).done(function(){
 
         Transition.blurpanoToNewpano(pano_id);
-        preload_images();
+        Transition.preloadImages();
 
     });
 };
@@ -126,7 +150,8 @@ Transition.blurpanoToNewpano = function( pano_id )
     {
         if(i == 5)
         {
-            TweenLite.to(Transition.clearPano[Transition.panoNum].mesh.material.materials[i], time, {opacity: 1, ease: Power0.easeOut, onComplete: Hotspots, onCompleteParams:[ pano_id ]});
+            hotspot = new Hotspot(pano_id);
+            TweenLite.to(Transition.clearPano[Transition.panoNum].mesh.material.materials[i], time, {opacity: 1, ease: Power0.easeOut, onComplete: hotspot.addHotspots.bind(hotspot), onCompleteParams:[ pano_id ]});
         }
         else
         {
@@ -137,7 +162,7 @@ Transition.blurpanoToNewpano = function( pano_id )
 
 Transition.start = function(pano_id,hotspot_angle,dist,rotate_angle)
 {
-    remove_hotspots();
+    Transition.removeHotspots();
     Transition.currentPano = pano_id;
     Transition.loadBlurPano(pano_id,hotspot_angle,dist).done(function(){
         Transition.oldpanoToBlurpano(pano_id, hotspot_angle,dist,rotate_angle);

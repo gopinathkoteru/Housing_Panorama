@@ -67,7 +67,7 @@ function onDocumentMouseDown( event )
             rotate_angle = rotate_angle + 360;
         }
         Transition.moving = true;
-        Transition.start(intersects[0].object.pano_id,intersects[0].object.angle,intersects[0].object.dist,rotate_angle);
+        Transition.start(intersects[0].object.panoid,intersects[0].object.angle,intersects[0].object.dist,rotate_angle);
     }
 
 }

@@ -14,7 +14,7 @@ var mouse_speed = 0.3;
 
 
 
-var pano = function(panoid,is_blur){
+var pano = function( panoid, is_blur ){
     this.panoid = panoid;
     this.name = "panorama";
     this.isBlur = is_blur;
@@ -29,7 +29,7 @@ var Transition =
     moving : false
 };
 
-Transition.init = function(path,hotspots_angle)
+Transition.init = function( path, hotspots_angle )
 {
     Transition.path = path;
     Transition.hotspotAngles = hotspots_angle;
@@ -44,6 +44,7 @@ Transition.init = function(path,hotspots_angle)
     clearPano2.createPano(path,0.0);
 
     Transition.clearPano = [clearPano1,clearPano2];
+    Transition.preloadImages();  
 };
 
 init();

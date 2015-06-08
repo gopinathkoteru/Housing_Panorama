@@ -1,18 +1,14 @@
-function Hotspots( pano_id )
+function Hotspot(panoid)
 {
-    var num_hotspots = Transition.hotspotAngles[pano_id].length;
-    for(var i = 0; i < num_hotspots; i++)
-    {
-        add_Hotspot(Transition.hotspotAngles[pano_id][i][0], Transition.hotspotAngles[pano_id][i][1], Transition.hotspotAngles[pano_id][i][2]);
-    }
-    Transition.moving = false;
+    this.panoid = panoid;
 }
 
 
-function add_Hotspot( pano_id, angle, dist )
+Hotspot.prototype.addHotspot =  function ( panoid, angle, dist )
 {
-    var geometry = new THREE.BoxGeometry( 2,2,2,1,1,1);
-    var material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
+
+    var geometry = new THREE.BoxGeometry( 2, 2, 2, 1, 1, 1);
+    var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
     var hotspot = new THREE.Mesh( geometry, material );
 
     angle = angle - 90;
@@ -21,13 +17,26 @@ function add_Hotspot( pano_id, angle, dist )
     hotspot.position.x = dist*Math.cos(rad_angle);
     hotspot.position.y = -10;
     hotspot.position.z = dist*Math.sin(rad_angle);
-    hotspot.pano_id = pano_id;
+    hotspot.panoid = panoid;
     hotspot.dist = dist;
     hotspot.angle = angle;
     hotspot.name = "hotspot";
     scene.add( hotspot );
 
-}
+};
+
+
+Hotspot.prototype.addHotspots = function ()
+{
+
+    var num_hotspots = Transition.hotspotAngles[this.panoid].length;
+    for(var i = 0; i < num_hotspots; i++)
+    {
+        this.addHotspot(Transition.hotspotAngles[this.panoid][i][0], Transition.hotspotAngles[this.panoid][i][1], Transition.hotspotAngles[this.panoid][i][2]);
+    }
+    Transition.moving = false;
+
+};
 
 
 pano.prototype.createPano = function( path, opacity )
@@ -67,29 +76,6 @@ pano.prototype.loadTexture = function( path ) {
     return material;
 
 };
-
-
-function preload_images()
-{
-    for(var i = 0; i < Transition.hotspotAngles[Transition.currentPano].length; i++)
-    {
-        var source = Transition.hotspotAngles[Transition.currentPano][i][0];
-        if(images[source])
-        { 
-            source  = source + 1;
-            source = "panos1/blur_" + source + "/mobile_";  
-            var temp = [];
-            for(var j = 0; j < 6; j++)
-            {
-                var image = new Image();
-                image.src = source + img_name[j] + ".jpg";
-                temp.push(image);
-            }
-
-            images[Transition.currentPano] = temp;
-        }
-    }
-}
 
 
 pano.prototype.getTexture = function( path, dfrd, is_blur, image_index )
