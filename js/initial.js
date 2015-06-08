@@ -1,20 +1,50 @@
 var camera, scene, renderer;
 var raycaster = new THREE.Raycaster();;
-var clear_pano = [], blur_pano;
-var current_pano;
-var pano_num;
+
 var isUserInteracting = false;
 var onMouseDownMouseX = 0, onMouseDownMouseY = 0;
 var onMouseDownLon = 0;
 var onMouseDownLat = 0;
 var phi = 0, theta = 0;
-var transition = false;
-var images = [];
 
-var hotspots_angle = [[[1,109,47]], [[2,52,48], [4,111,98], [0,303,43]], [[3,107,58], [1,230,48]], [[2,293,58], [4,185,45]], [[3,5,41], [1,288,93]]]; 
+var images = {};
 
 var img_name = ['r','l','u','d','f','b'];
 var mouse_speed = 0.3;
+
+
+
+var pano = function(panoid,is_blur){
+    this.panoid = panoid;
+    this.name = "panorama";
+    this.isBlur = is_blur;
+};
+
+var Transition = 
+{
+    path : "",
+    hotspotAngles : [],
+    currentPano : 0,
+    panoNum : 0,
+    moving : false
+};
+
+Transition.init = function(path,hotspots_angle)
+{
+    Transition.path = path;
+    Transition.hotspotAngles = hotspots_angle;
+    
+    var path = path + "1/" + "mobile_";
+    Transition.blurPano = new pano(1,true);
+    var clearPano1 = new pano(1,false);
+    var clearPano2 = new pano(1,false);
+    
+    Transition.blurPano.createPano(path,0.0);
+    clearPano1.createPano(path,1.0);
+    clearPano2.createPano(path,0.0);
+
+    Transition.clearPano = [clearPano1,clearPano2];
+};
 
 init();
 animate();
@@ -31,24 +61,13 @@ function init()
     camera.lon = 0;
     camera.lat = 0;
 
+
     scene = new THREE.Scene();
 
     texture_placeholder = document.createElement( 'canvas' );
     texture_placeholder.width = 128;
     texture_placeholder.height = 128;
-
-
-    var path = "panos/1/mobile_";
-    var clear_pano1 = create_pano(path,1.0);
-    var clear_pano2 = create_pano(path,0.0);
-    clear_pano = [clear_pano1,clear_pano2];
-    blur_pano = create_pano(path,0.0);
-    pano_num = 0;
-
-    current_pano = 0;
-    preload_images();
-    Hotspots(0);
-
+    
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -83,6 +102,7 @@ function animate()
 
 function update()
 {
+    camera.lon = (camera.lon + 360)%360;
     camera.lat = Math.max( - 35, Math.min( 35,camera.lat ) );
     phi = THREE.Math.degToRad( 90 - camera.lat );
     theta = THREE.Math.degToRad( camera.lon );

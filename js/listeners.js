@@ -66,7 +66,8 @@ function onDocumentMouseDown( event )
         {
             rotate_angle = rotate_angle + 360;
         }
-        rotate_camera(rotate_angle,intersects[0].object.pano_id,intersects[0].object.angle);
+        Transition.moving = true;
+        Transition.start(intersects[0].object.pano_id,intersects[0].object.angle,intersects[0].object.dist,rotate_angle);
     }
 
 }
@@ -93,8 +94,8 @@ function onDocumentMouseUp( event )
 
 }
 
-var maxspeed = 7;
-var current_speed = 2;
+var maxSpeed = 7;
+var currentSpeed = 2;
 
 
 function onDocumentKeyDown( event )
@@ -106,24 +107,24 @@ function onDocumentKeyDown( event )
 
     if (keyPressed == 37) //left arrow
     {
-        camera.lon -= current_speed;
+        camera.lon -= currentSpeed;
     }
     else if (keyPressed == 39 ) //right arrow
     {
-        camera.lon += current_speed;
+        camera.lon += currentSpeed;
     }
     else if (keyPressed == 38) //up arrow
     {
-        if(transition==false)
+        if(Transition.moving==false)
         {
-            var num_hotspots = hotspots_angle[current_pano].length;
+            var num_hotspots = Transition.hotspotAngles[Transition.currentPano].length;
             var near_angle,near_id;
             var flag = false;
             var temp;
 
             for(var i = 0; i < num_hotspots; i++)
             {
-                temp = hotspots_angle[current_pano][i][1] - 90;
+                temp = Transition.hotspotAngles[Transition.currentPano][i][1] - 90;
                 var lon = (camera.lon+360) % 360;;
                 if(temp < 0 )
                 {
@@ -162,16 +163,16 @@ function onDocumentKeyDown( event )
                     rotate_angle = rotate_angle + 360;
                 }
 
-                transition = true;
+                Transition.moving = true;
 
-                rotate_camera(rotate_angle,hotspots_angle[current_pano][near_id][0],near_angle);
+                Transition.start(Transition.hotspotAngles[Transition.currentPano][near_id][0],near_angle,Transition.hotspotAngles[Transition.currentPano][near_id][2],rotate_angle);
             }
         }
     }
     if (isUserInteracting == true)
     {
-        if(current_speed < maxspeed)
-            current_speed += 1;
+        if(currentSpeed < maxSpeed)
+            currentSpeed += 1;
     }
     isUserInteracting = true;
 }
@@ -181,7 +182,7 @@ function onDocumentKeyUp ( event )
 {
 
     isUserInteracting = false;
-    current_speed = 2;
+    currentSpeed = 2;
 }
 
 
