@@ -1,10 +1,4 @@
-function Hotspot(panoid)
-{
-    this.panoid = panoid;
-}
-
-
-Hotspot.prototype.addHotspot =  function ( panoid, angle, dist )
+Hotspot.addHotspot =  function ( panoid, angle, dist )
 {
 
     var geometry = new THREE.BoxGeometry( 2, 2, 2, 1, 1, 1);
@@ -26,25 +20,25 @@ Hotspot.prototype.addHotspot =  function ( panoid, angle, dist )
 };
 
 
-Hotspot.prototype.addHotspots = function ()
+Hotspot.addHotspots = function (panoid)
 {
-
-    var num_hotspots = Transition.hotspotAngles[this.panoid].length;
+    Hotspot.panoid = panoid;
+    var num_hotspots = Hotspot.hotspotAngles[panoid].length;
     for(var i = 0; i < num_hotspots; i++)
     {
-        this.addHotspot(Transition.hotspotAngles[this.panoid][i][0], Transition.hotspotAngles[this.panoid][i][1], Transition.hotspotAngles[this.panoid][i][2]);
+        Hotspot.addHotspot(Hotspot.hotspotAngles[panoid][i][0], Hotspot.hotspotAngles[panoid][i][1], Hotspot.hotspotAngles[panoid][i][2]);
     }
     Transition.moving = false;
 
 };
 
 
-pano.prototype.createPano = function( path, opacity )
+Pano.prototype.createPano = function( path, opacity )
 {
     var materials = [];
     for(i=0;i<6;i++)
     {
-        materials.push(this.loadTexture(path+img_name[i]+".jpg"));
+        materials.push(this.loadTexture(path+Config.imgName[i]+".jpg"));
     }
     this.mesh = new THREE.Mesh( new THREE.BoxGeometry( 300, 300, 300, 7, 7, 7 ), new THREE.MeshFaceMaterial( materials ) );
     this.mesh.scale.x = -1;
@@ -59,7 +53,7 @@ pano.prototype.createPano = function( path, opacity )
 };
 
 
-pano.prototype.loadTexture = function( path ) {
+Pano.prototype.loadTexture = function( path ) {
 
     var texture = new THREE.Texture( texture_placeholder );
     var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0.5 ,side:THREE.DoubleSide,blending: THREE.AdditiveBlending ,depthTest: false } );
@@ -78,7 +72,7 @@ pano.prototype.loadTexture = function( path ) {
 };
 
 
-pano.prototype.getTexture = function( path, dfrd, is_blur, image_index )
+Pano.prototype.getTexture = function( path, dfrd, is_blur, image_index )
 {
     var flag = false;
     var texture = new THREE.Texture( texture_placeholder );

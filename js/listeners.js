@@ -36,13 +36,15 @@ function onDocumentMouseDown( event )
 
     event.preventDefault();
 
-    isUserInteracting = true;
+    Config.isUserInteracting = true;
 
     onPointerDownPointerX = event.clientX;
     onPointerDownPointerY = event.clientY;
 
-    onPointerDownLon = camera.lon;
-    onPointerDownLat = camera.lat;
+    console.log(onPointerDownPointerX +" " + onPointerDownPointerY);
+
+    onPointerDownLon = Config.lon;
+    onPointerDownLat = Config.lat;
 
 
     var vector = new THREE.Vector3();
@@ -50,13 +52,21 @@ function onDocumentMouseDown( event )
     vector.unproject( camera );
     raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
 
+    var dir = vector.sub( camera.position ).normalize();
+
+    var distance = - camera.position.z / dir.z;
+
+    var pos = camera.position.clone().add( dir.multiplyScalar( distance ) );
+    
+    console.log(pos);
+
 
     var intersects = raycaster.intersectObjects( scene.children, true );
 
     if ( intersects.length > 0  && intersects[0].object.name == "hotspot")
     {
 
-        var rotate_angle = intersects[0].object.angle - camera.lon;
+        var rotate_angle = intersects[0].object.angle - Config.lon;
 
         while(rotate_angle > 180)
         {
@@ -76,11 +86,11 @@ function onDocumentMouseDown( event )
 function onDocumentMouseMove( event )
 {
 
-    if ( isUserInteracting === true )
+    if ( Config.isUserInteracting === true )
     {
 
-        camera.lon = ( onPointerDownPointerX - event.clientX ) * mouse_speed + onPointerDownLon;
-        camera.lat = ( event.clientY - onPointerDownPointerY ) * mouse_speed + onPointerDownLat;
+        Config.lon = ( onPointerDownPointerX - event.clientX ) * Config.mouseSpeed + onPointerDownLon;
+        Config.lat = ( event.clientY - onPointerDownPointerY ) * Config.mouseSpeed + onPointerDownLat;
 
     }
 
@@ -90,13 +100,9 @@ function onDocumentMouseMove( event )
 function onDocumentMouseUp( event )
 {
 
-    isUserInteracting = false;
+    Config.isUserInteracting = false;
 
 }
-
-var maxSpeed = 7;
-var currentSpeed = 2;
-
 
 function onDocumentKeyDown( event )
 {
@@ -107,25 +113,25 @@ function onDocumentKeyDown( event )
 
     if (keyPressed == 37) //left arrow
     {
-        camera.lon -= currentSpeed;
+        Config.lon -= Config.keySpeed;
     }
     else if (keyPressed == 39 ) //right arrow
     {
-        camera.lon += currentSpeed;
+        Config.lon += Config.keySpeed;
     }
     else if (keyPressed == 38) //up arrow
     {
         if(Transition.moving==false)
         {
-            var num_hotspots = Transition.hotspotAngles[Transition.currentPano].length;
+            var num_hotspots = Hotspot.hotspotAngles[Transition.currentPano].length;
             var near_angle,near_id;
             var flag = false;
             var temp;
 
             for(var i = 0; i < num_hotspots; i++)
             {
-                temp = Transition.hotspotAngles[Transition.currentPano][i][1] - 90;
-                var lon = (camera.lon+360) % 360;;
+                temp = Hotspot.hotspotAngles[Transition.currentPano][i][1] - 90;
+                var lon = (Config.lon+360) % 360;;
                 if(temp < 0 )
                 {
                     temp = temp + 360;
@@ -152,7 +158,7 @@ function onDocumentKeyDown( event )
             }
             if(flag == true)
             {
-                var rotate_angle = near_angle - camera.lon;
+                var rotate_angle = near_angle - Config.lon;
 
                 while(rotate_angle > 180)
                 {
@@ -164,25 +170,25 @@ function onDocumentKeyDown( event )
                 }
 
                 Transition.moving = true;
-
-                Transition.start(Transition.hotspotAngles[Transition.currentPano][near_id][0],near_angle,Transition.hotspotAngles[Transition.currentPano][near_id][2],rotate_angle);
+                console.log(Hotspot.hotspotAngles[Transition.currentPano][near_id][0]);
+                Transition.start(Hotspot.hotspotAngles[Transition.currentPano][near_id][0],near_angle,Hotspot.hotspotAngles[Transition.currentPano][near_id][2],rotate_angle);
             }
         }
     }
-    if (isUserInteracting == true)
+    if (Config.isUserInteracting == true)
     {
-        if(currentSpeed < maxSpeed)
-            currentSpeed += 1;
+        if(Config.keySpeed < Config.keyMax)
+            Config.keySpeed += 1;
     }
-    isUserInteracting = true;
+    Config.isUserInteracting = true;
 }
 
 
 function onDocumentKeyUp ( event ) 
 {
 
-    isUserInteracting = false;
-    currentSpeed = 2;
+    Config.isUserInteracting = false;
+    Config.keySpeed = 2;
 }
 
 
@@ -202,6 +208,7 @@ function onDocumentMouseWheel( event )
         camera.fov += event.detail * 1.0;
     }
 
+    camera.fov = Math.max(60,Math.min(90,camera.fov));
     camera.updateProjectionMatrix();
 
 }
