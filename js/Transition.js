@@ -9,20 +9,48 @@ var Transition =
 Transition.init = function( path)
 {
     Transition.path = path;
+    //Transition.saveClearImages(Transition.currentPano);
 
-    var path = path + "1/" + "mobile_";
-    Transition.blurPano = new Pano(1,true);
-    var clearPano1 = new Pano(1,false);
-    var clearPano2 = new Pano(1,false);
+    var path = path + (Transition.currentPano + 1) + "/mobile_";
+    Transition.blurPano = new Pano(1, true);
+    var clearPano1 = new Pano(1, false);
+    var clearPano2 = new Pano(1, false);
 
-    Transition.blurPano.createPano(path,0.0);
-    clearPano1.createPano(path,1.0);
-    clearPano2.createPano(path,0.0);
+    Transition.blurPano.createPano( path, 0.0, true);
+    clearPano1.createPano(path, 1.0, false);
+    clearPano2.createPano(path,0.0, true);
 
     Transition.clearPano = [clearPano1,clearPano2];
 
     Transition.preloadImages();  
 };
+
+
+Transition.saveClearImages = function( pano_id )
+{
+	if(!(pano_id in  clearImages))
+    {
+        var startPath = Transition.path + (pano_id + 1) + "/mobile_";  
+        clearImages[pano_id] = [];
+        for(var j = 0; j < 6; j++)
+        {
+            (function(){
+                var image = new Image();
+                image.src = startPath + Config.imgName[j] + ".jpg";
+                image.onload = function () {
+                    var len = clearImages[pano_id].length;
+                    if( len < 6 )
+                    {
+                        clearImages[pano_id].push(image);
+                        console.log(clearImages);
+                    }
+                };
+            })();
+
+        }
+    }
+}
+
 
 Transition.preloadImages = function()
 {
@@ -46,11 +74,15 @@ Transition.preloadImages = function()
 
 Transition.start = function(hotspot_id)
 {
+
+
     var pano_id = Hotspot.hotspotAngles[Transition.currentPano][hotspot_id][0];
+    Transition.moving = true;
+    Transition.saveClearImages( pano_id );
+
     var hotspot_angle = Hotspot.hotspotAngles[Transition.currentPano][hotspot_id][1] - 90;
     var dist = Hotspot.hotspotAngles[Transition.currentPano][hotspot_id][2];
 
-    Transition.moving = true;
     var rotate_angle = hotspot_angle - Config.lon;
 
     while(rotate_angle > 180)
@@ -71,7 +103,6 @@ Transition.start = function(hotspot_id)
         rotate_angle = (rotate_angle + 180) % 360;
     }
 
-    console.log(rotate_angle + " " + Config.lon);
     var rotate_angle = rotate_angle + Config.lon;
 
     function loadBlurPano ()

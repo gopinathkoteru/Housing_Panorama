@@ -4,12 +4,12 @@ var Pano = function( panoid, is_blur ){
     this.isBlur = is_blur;
 };
 
-Pano.prototype.createPano = function( path, opacity )
+Pano.prototype.createPano = function( path, opacity, is_blur )
 {
     var materials = [];
     for(i=0;i<6;i++)
     {
-        materials.push(this.loadTexture(path+Config.imgName[i]+".jpg"));
+        materials.push(this.loadTexture(path + Config.imgName[i] + ".jpg", is_blur, i));
     }
     this.mesh = new THREE.Mesh( new THREE.BoxGeometry( 300, 300, 300, 7, 7, 7 ), new THREE.MeshFaceMaterial( materials ) );
     this.mesh.scale.x = -1;
@@ -24,10 +24,21 @@ Pano.prototype.createPano = function( path, opacity )
 };
 
 
-Pano.prototype.loadTexture = function( path ) {
+Pano.prototype.loadTexture = function( path, is_blur, image_index ) {
 
     var texture = new THREE.Texture( texture_placeholder );
     var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0.5 ,side:THREE.DoubleSide,blending: THREE.AdditiveBlending ,depthTest: false } );
+
+   /* if(is_blur == false)
+    {
+        if(clearImages[Transition.currentPano][image_index])
+        {
+            var image = clearImages[Transition.currentPano][image_index];
+            texture.image = image;
+            texture.needsUpdate = true;
+            return material;
+        }
+    }*/
 
     var image = new Image();
     image.onload = function () {
@@ -49,7 +60,17 @@ Pano.prototype.getTexture = function( path, dfrd, is_blur, image_index )
     var texture = new THREE.Texture( texture_placeholder );
     if(is_blur == true)
     {
-        if(images[Transition.currentPano])
+    	console.log("THIS");
+    	console.log(clearImages);
+        if(clearImages[Transition.currentPano][image_index])
+        {
+            flag = true;
+            var image = clearImages[Transition.currentPano][image_index];
+            texture.image = image;
+            texture.needsUpdate = true;
+            dfrd.resolve();
+        }
+        else if(images[Transition.currentPano])
         {
             flag = true;
             var image = images[Transition.currentPano][image_index];
@@ -58,17 +79,32 @@ Pano.prototype.getTexture = function( path, dfrd, is_blur, image_index )
             dfrd.resolve();
         }
     }
-    if(flag == false || is_blur == false)
+    if(flag == false)
     {
-        var image = new Image();
-        image.onload = function () {
+        if(clearImages[Transition.currentPano][image_index])
+        {
+            console.log(clearImages);
+            //alert("Gone not in blur");
+            var image = clearImages[Transition.currentPano][image_index];
+            texture.image = image;
+             texture.needsUpdate = true;
 
-            texture.image = this;
-            texture.needsUpdate = true;
-            dfrd.resolve();
-
-        };
-        image.src = path;
+            image.src = path;
+             dfrd.resolve();
+        }
+        else
+        {
+            console.log("Gone");
+            var image = new Image();
+            image.onload = function () {
+ 
+                texture.image = this;
+                texture.needsUpdate = true;
+                dfrd.resolve();
+ 
+            };
+            image.src = path;
+        }
     }
 
     return texture;

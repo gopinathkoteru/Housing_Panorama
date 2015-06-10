@@ -2,6 +2,7 @@ var camera, scene, renderer;
 var raycaster = new THREE.Raycaster();
 
 var images = {};
+var clearImages = {};
 var clear  = {};
 
 var Config = 
