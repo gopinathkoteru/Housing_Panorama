@@ -72,8 +72,10 @@ Hotspot.findNearestHotspot = function ()
 
     for(var i = 0; i < num_hotspots; i++)
     {
+        console.log(Hotspot.hotspotAngles[Transition.currentPano][i][1]);
         temp = Hotspot.hotspotAngles[Transition.currentPano][i][1] - 90;
-        var lon = (Config.lon+360) % 360;;
+
+        var lon = (Config.lon+360) % 360;
         if(temp < 0 )
         {
             temp = temp + 360;
@@ -96,6 +98,7 @@ Hotspot.findNearestHotspot = function ()
 
             }
         }
-        return near_id;
     }
+    return near_id;
+    
 };

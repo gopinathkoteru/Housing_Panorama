@@ -101,7 +101,7 @@ function onDocumentKeyDown( event )
     {
         if(Transition.moving==false)
         {
-            var near_id = Hotspot.findNearestHotspot();
+           var near_id = Hotspot.findNearestHotspot();
             if(near_id != -1)
             {
                 Transition.start(near_id);
