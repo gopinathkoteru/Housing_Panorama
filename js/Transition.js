@@ -62,8 +62,19 @@ Transition.start = function(hotspot_id)
         rotate_angle = rotate_angle + 360;
     }
 
+    if(rotate_angle > 50 )
+    {
+        rotate_angle = (rotate_angle - 180) % 360;
+    }
+    else if(rotate_angle < -50)
+    {
+        rotate_angle = (rotate_angle + 180) % 360;
+    }
 
-    function loadBlurPano (pano_id, hotspot_angle ,dist)
+    console.log(rotate_angle + " " + Config.lon);
+    var rotate_angle = rotate_angle + Config.lon;
+
+    function loadBlurPano ()
     {
         var path = Transition.path+"blur_" + (pano_id + 1) + "/mobile_";
 
@@ -86,7 +97,7 @@ Transition.start = function(hotspot_id)
     }
 
 
-    function loadClearPano( pano_id )
+    function loadClearPano()
     {
 
         var path = Transition.path + (pano_id + 1) + "/mobile_";
@@ -108,10 +119,9 @@ Transition.start = function(hotspot_id)
     }
 
 
-    function oldpanoToBlurpano ( pano_id, hotspot_angle,dist,rotate_angle)
+    function oldpanoToBlurpano ()
     {
         var time1 = 0.4;
-        var rotate_angle = Config.lon + rotate_angle;
 
         TweenLite.to(Config, time1, {lon: rotate_angle, lat: 0, ease: Power0.easeOut});
 
@@ -131,12 +141,12 @@ Transition.start = function(hotspot_id)
             TweenLite.to(Transition.blurPano.mesh.material.materials[i], time, {opacity: 1, delay:del,ease: Expo.easeOut});
         }
 
-        TweenLite.to(Transition.clearPano[Transition.panoNum].mesh.position, time, {x:dist*Math.cos(THREE.Math.degToRad(hotspot_angle )),z:dist*Math.sin(THREE.Math.degToRad(hotspot_angle )),delay:del,ease: Expo.easeOut,onComplete: checkNewPanoLoad, onCompleteParams: [ pano_id ]});
+        TweenLite.to(Transition.clearPano[Transition.panoNum].mesh.position, time, {x:dist*Math.cos(THREE.Math.degToRad(hotspot_angle )),z:dist*Math.sin(THREE.Math.degToRad(hotspot_angle )),delay:del,ease: Expo.easeOut,onComplete: checkNewPanoLoad});
 
     }
 
 
-    function checkNewPanoLoad ( pano_id )
+    function checkNewPanoLoad ()
     {
         Transition.clearPano[Transition.panoNum].mesh.position.x = 0;
         Transition.clearPano[Transition.panoNum].mesh.position.z = 0;
@@ -151,15 +161,15 @@ Transition.start = function(hotspot_id)
 
         Transition.panoNum = (Transition.panoNum + 1)%2;
 
-        loadClearPano(pano_id).done(function(){
+        loadClearPano().done(function(){
 
-            blurpanoToNewpano(pano_id);
+            blurpanoToNewpano();
             Transition.preloadImages();
 
         });
     }
 
-    function blurpanoToNewpano ( pano_id )
+    function blurpanoToNewpano ()
     {
         var time = 0.5;
         for(var i = 0; i < 6; i++)
@@ -181,8 +191,8 @@ Transition.start = function(hotspot_id)
 
     Hotspot.removeHotspots();
     Transition.currentPano = pano_id;
-    loadBlurPano(pano_id,hotspot_angle,dist).done(function(){
-        oldpanoToBlurpano(pano_id, hotspot_angle,dist,rotate_angle);
+    loadBlurPano().done(function(){
+        oldpanoToBlurpano();
 
     });
 
