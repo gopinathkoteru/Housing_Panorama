@@ -2,6 +2,7 @@ var camera, scene, renderer;
 var raycaster = new THREE.Raycaster();
 
 var images = {};
+var clear  = {};
 
 var Config = 
 {
@@ -15,48 +16,6 @@ var Config =
     keyMax : 7,
     keySpeed:2
 };
-
-var Pano = function( panoid, is_blur ){
-    this.panoid = panoid;
-    this.name = "panorama";
-    this.isBlur = is_blur;
-};
-
-var Hotspot = {
-    panoid : 0,
-    hotspotAngles : []
-};
-
-var Transition = 
-{
-    path : "",
-    currentPano : 0,
-    panoNum : 0,
-    moving : false
-};
-
-Transition.init = function( path)
-{
-    Transition.path = path;
-    
-    var path = path + "1/" + "mobile_";
-    Transition.blurPano = new Pano(1,true);
-    var clearPano1 = new Pano(1,false);
-    var clearPano2 = new Pano(1,false);
-    
-    Transition.blurPano.createPano(path,0.0);
-    clearPano1.createPano(path,1.0);
-    clearPano2.createPano(path,0.0);
-
-    Transition.clearPano = [clearPano1,clearPano2];
-
-    Transition.preloadImages();  
-};
-
-Hotspot.init = function(hotspots_angle)
-{
-    Hotspot.hotspotAngles = hotspots_angle;
-}
 
 init();
 animate();
@@ -75,7 +34,7 @@ function init()
     texture_placeholder = document.createElement( 'canvas' );
     texture_placeholder.width = 128;
     texture_placeholder.height = 128;
-    
+
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );

@@ -1,37 +1,8 @@
-Hotspot.addHotspot =  function ( panoid, angle, dist )
-{
-
-    var geometry = new THREE.BoxGeometry( 2, 2, 2, 1, 1, 1);
-    var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-    var hotspot = new THREE.Mesh( geometry, material );
-
-    angle = angle - 90;
-    rad_angle = THREE.Math.degToRad( angle );
-
-    hotspot.position.x = dist*Math.cos(rad_angle);
-    hotspot.position.y = -10;
-    hotspot.position.z = dist*Math.sin(rad_angle);
-    hotspot.panoid = panoid;
-    hotspot.dist = dist;
-    hotspot.angle = angle;
-    hotspot.name = "hotspot";
-    scene.add( hotspot );
-
+var Pano = function( panoid, is_blur ){
+    this.panoid = panoid;
+    this.name = "panorama";
+    this.isBlur = is_blur;
 };
-
-
-Hotspot.addHotspots = function (panoid)
-{
-    Hotspot.panoid = panoid;
-    var num_hotspots = Hotspot.hotspotAngles[panoid].length;
-    for(var i = 0; i < num_hotspots; i++)
-    {
-        Hotspot.addHotspot(Hotspot.hotspotAngles[panoid][i][0], Hotspot.hotspotAngles[panoid][i][1], Hotspot.hotspotAngles[panoid][i][2]);
-    }
-    Transition.moving = false;
-
-};
-
 
 Pano.prototype.createPano = function( path, opacity )
 {
@@ -80,11 +51,11 @@ Pano.prototype.getTexture = function( path, dfrd, is_blur, image_index )
     {
         if(images[Transition.currentPano])
         {
-                flag = true;
-                var image = images[Transition.currentPano][image_index];
-                texture.image = image;
-                texture.needsUpdate = true;
-                dfrd.resolve();
+            flag = true;
+            var image = images[Transition.currentPano][image_index];
+            texture.image = image;
+            texture.needsUpdate = true;
+            dfrd.resolve();
         }
     }
     if(flag == false || is_blur == false)

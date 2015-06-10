@@ -41,8 +41,6 @@ function onDocumentMouseDown( event )
     onPointerDownPointerX = event.clientX;
     onPointerDownPointerY = event.clientY;
 
-    console.log(onPointerDownPointerX +" " + onPointerDownPointerY);
-
     onPointerDownLon = Config.lon;
     onPointerDownLat = Config.lat;
 
@@ -52,32 +50,12 @@ function onDocumentMouseDown( event )
     vector.unproject( camera );
     raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
 
-    var dir = vector.sub( camera.position ).normalize();
-
-    var distance = - camera.position.z / dir.z;
-
-    var pos = camera.position.clone().add( dir.multiplyScalar( distance ) );
-    
-    console.log(pos);
-
 
     var intersects = raycaster.intersectObjects( scene.children, true );
 
     if ( intersects.length > 0  && intersects[0].object.name == "hotspot")
     {
-
-        var rotate_angle = intersects[0].object.angle - Config.lon;
-
-        while(rotate_angle > 180)
-        {
-            rotate_angle = rotate_angle - 360;
-        }
-        while(rotate_angle < -180)
-        {
-            rotate_angle = rotate_angle + 360;
-        }
-        Transition.moving = true;
-        Transition.start(intersects[0].object.panoid,intersects[0].object.angle,intersects[0].object.dist,rotate_angle);
+        Transition.start(intersects[0].object.hotspotId);
     }
 
 }
@@ -123,55 +101,10 @@ function onDocumentKeyDown( event )
     {
         if(Transition.moving==false)
         {
-            var num_hotspots = Hotspot.hotspotAngles[Transition.currentPano].length;
-            var near_angle,near_id;
-            var flag = false;
-            var temp;
-
-            for(var i = 0; i < num_hotspots; i++)
+            var near_id = Hotspot.findNearestHotspot();
+            if(near_id != -1)
             {
-                temp = Hotspot.hotspotAngles[Transition.currentPano][i][1] - 90;
-                var lon = (Config.lon+360) % 360;;
-                if(temp < 0 )
-                {
-                    temp = temp + 360;
-                }
-                if( ((lon>=45) &&(lon<=315) && (temp<=(lon+45)%360) &&(temp>=(lon-45)%360)) || ((lon<=45) && (temp>=0) && (temp<=lon+45)) || ((lon<=45)&&(temp>=(lon-45)%360) && (temp<=360)) ||  ((lon>=315) && (temp>=(lon-45)) && (temp<=360)) || ((lon>=315)&&(temp>=0) &&(temp<= (lon+45)%360)) )
-                {
-
-                    if(flag == false)
-                    {
-                        near_angle = temp;
-                        near_id = i;
-
-                        flag = true;
-                    }
-                    if(Math.abs( temp-lon) < Math.abs(near_angle-lon))
-                    {
-                        near_angle = temp;
-                        near_id = i;
-
-                        flag = true;
-
-                    }
-                }
-            }
-            if(flag == true)
-            {
-                var rotate_angle = near_angle - Config.lon;
-
-                while(rotate_angle > 180)
-                {
-                    rotate_angle = rotate_angle - 360;
-                }
-                while(rotate_angle < -180)
-                {
-                    rotate_angle = rotate_angle + 360;
-                }
-
-                Transition.moving = true;
-                console.log(Hotspot.hotspotAngles[Transition.currentPano][near_id][0]);
-                Transition.start(Hotspot.hotspotAngles[Transition.currentPano][near_id][0],near_angle,Hotspot.hotspotAngles[Transition.currentPano][near_id][2],rotate_angle);
+                Transition.start(near_id);
             }
         }
     }

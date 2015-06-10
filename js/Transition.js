@@ -1,25 +1,28 @@
-Hotspot.removeHotspots = function ()
+var Transition = 
 {
-
-    var len = scene.children.length;
-    var p = 0;
-    for (var i = 0; i < len; i ++ )
-    {
-        var object = scene.children[ p ];
-
-        if(object.name=="hotspot")
-        {
-            object.geometry.dispose();
-            object.material.dispose();
-            scene.remove(object);
-        }
-        else
-        {
-            p = p + 1;
-        }
-    }
+    path : "",
+    currentPano : 0,
+    panoNum : 0,
+    moving : false
 };
 
+Transition.init = function( path)
+{
+    Transition.path = path;
+
+    var path = path + "1/" + "mobile_";
+    Transition.blurPano = new Pano(1,true);
+    var clearPano1 = new Pano(1,false);
+    var clearPano2 = new Pano(1,false);
+
+    Transition.blurPano.createPano(path,0.0);
+    clearPano1.createPano(path,1.0);
+    clearPano2.createPano(path,0.0);
+
+    Transition.clearPano = [clearPano1,clearPano2];
+
+    Transition.preloadImages();  
+};
 
 Transition.preloadImages = function()
 {
@@ -41,8 +44,24 @@ Transition.preloadImages = function()
     }
 };
 
-Transition.start = function(pano_id,hotspot_angle,dist,rotate_angle)
+Transition.start = function(hotspot_id)
 {
+    var pano_id = Hotspot.hotspotAngles[Transition.currentPano][hotspot_id][0];
+    var hotspot_angle = Hotspot.hotspotAngles[Transition.currentPano][hotspot_id][1] - 90;
+    var dist = Hotspot.hotspotAngles[Transition.currentPano][hotspot_id][2];
+
+    Transition.moving = true;
+    var rotate_angle = hotspot_angle - Config.lon;
+
+    while(rotate_angle > 180)
+    {
+        rotate_angle = rotate_angle - 360;
+    }
+    while(rotate_angle < -180)
+    {
+        rotate_angle = rotate_angle + 360;
+    }
+
 
     function loadBlurPano (pano_id, hotspot_angle ,dist)
     {
@@ -96,9 +115,9 @@ Transition.start = function(pano_id,hotspot_angle,dist,rotate_angle)
 
         TweenLite.to(Config, time1, {lon: rotate_angle, lat: 0, ease: Power0.easeOut});
 
-        var time = 3;
+        var time = 2;
         var del = 0.3;
-        TweenLite.to(Transition.blurPano.mesh.position, time, {x: 0, z: 0, delay:del,ease: Expo.easeOut,onComplete: checkNewPanoLoad, onCompleteParams: [ pano_id ]});
+        TweenLite.to(Transition.blurPano.mesh.position, time, {x: 0, z: 0, delay:del,ease: Expo.easeOut});
 
         dist *= -1; 
 
@@ -112,7 +131,7 @@ Transition.start = function(pano_id,hotspot_angle,dist,rotate_angle)
             TweenLite.to(Transition.blurPano.mesh.material.materials[i], time, {opacity: 1, delay:del,ease: Expo.easeOut});
         }
 
-        TweenLite.to(Transition.clearPano[Transition.panoNum].mesh.position, time/2, {x:dist*Math.cos(THREE.Math.degToRad(hotspot_angle )),z:dist*Math.sin(THREE.Math.degToRad(hotspot_angle )),delay:del,ease: Power0.easeOut});
+        TweenLite.to(Transition.clearPano[Transition.panoNum].mesh.position, time, {x:dist*Math.cos(THREE.Math.degToRad(hotspot_angle )),z:dist*Math.sin(THREE.Math.degToRad(hotspot_angle )),delay:del,ease: Expo.easeOut,onComplete: checkNewPanoLoad, onCompleteParams: [ pano_id ]});
 
     }
 
@@ -142,7 +161,7 @@ Transition.start = function(pano_id,hotspot_angle,dist,rotate_angle)
 
     function blurpanoToNewpano ( pano_id )
     {
-        var time = 1;
+        var time = 0.5;
         for(var i = 0; i < 6; i++)
         {
             TweenLite.to(Transition.blurPano.mesh.material.materials[i], time, {opacity: 0, ease: Power0.easeOut});
