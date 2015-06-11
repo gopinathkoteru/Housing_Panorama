@@ -37,6 +37,7 @@ function onDocumentMouseDown( event )
     event.preventDefault();
 
     Config.isUserInteracting = true;
+    Config.count = 0;
 
     onPointerDownPointerX = event.clientX;
     onPointerDownPointerY = event.clientY;
@@ -89,6 +90,10 @@ function onDocumentKeyDown( event )
 
     if (!event)
         event = window.event;
+
+    Config.isUserInteracting = true;
+    Config.count = 0;
+
     var keyPressed = event.keyCode;
 
     if (keyPressed == 37) //left arrow
@@ -110,7 +115,7 @@ function onDocumentKeyDown( event )
             }
         }
     }
-    else if(keyPressed == 40)
+    else if(keyPressed == 40) //down arrow
     {
         if(Transition.moving == false)
         {
@@ -126,7 +131,6 @@ function onDocumentKeyDown( event )
         if(Config.keySpeed < Config.keyMax)
             Config.keySpeed += 1;
     }
-    Config.isUserInteracting = true;
 }
 
 

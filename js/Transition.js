@@ -9,7 +9,8 @@ var Transition =
 Transition.init = function( path)
 {
     Transition.path = path;
-    //Transition.saveClearImages(Transition.currentPano);
+    
+    clearImages[Transition.currentPano] = [];
 
     var path = path + (Transition.currentPano + 1) + "/mobile_";
     Transition.blurPano = new Pano(1, true);
@@ -26,25 +27,29 @@ Transition.init = function( path)
 };
 
 
-Transition.saveClearImages = function( pano_id )
+Transition.saveClearImages = function()
 {
-	if(!(pano_id in  clearImages))
+	if(!clearImages[Transition.currentPano])
     {
-        var startPath = Transition.path + (pano_id + 1) + "/mobile_";  
-        clearImages[pano_id] = [];
+        var startPath = Transition.path + (Transition.currentPano + 1) + "/mobile_";  
+        clearImages[Transition.currentPano] = [];
         for(var j = 0; j < 6; j++)
         {
             (function(){
+                var texture = new THREE.Texture( texture_placeholder );
                 var image = new Image();
-                image.src = startPath + Config.imgName[j] + ".jpg";
+                var p = j;
+                
                 image.onload = function () {
-                    var len = clearImages[pano_id].length;
-                    if( len < 6 )
+                    texture.image = this;
+                    texture.needsUpdate = true;
+                    if(!clearImages[Transition.currentPano][p])
                     {
-                        clearImages[pano_id].push(image);
-                        console.log(clearImages);
+                        clearImages[Transition.currentPano][p] = image;
                     }
                 };
+                
+                image.src = startPath + Config.imgName[j] + ".jpg";
             })();
 
         }
@@ -77,33 +82,47 @@ Transition.start = function(hotspot_id)
 
 
     var pano_id = Hotspot.hotspotAngles[Transition.currentPano][hotspot_id][0];
-    Transition.moving = true;
-    Transition.saveClearImages( pano_id );
-
     var hotspot_angle = Hotspot.hotspotAngles[Transition.currentPano][hotspot_id][1] - 90;
     var dist = Hotspot.hotspotAngles[Transition.currentPano][hotspot_id][2];
 
-    var rotate_angle = hotspot_angle - Config.lon;
+    Transition.moving = true;
+    Transition.currentPano = pano_id;
+    Transition.saveClearImages();
 
-    while(rotate_angle > 180)
-    {
-        rotate_angle = rotate_angle - 360;
-    }
-    while(rotate_angle < -180)
-    {
-        rotate_angle = rotate_angle + 360;
-    }
+    var rotate_angle = findRotateAngle ();
 
-    if(rotate_angle > 50 )
-    {
-        rotate_angle = (rotate_angle - 180) % 360;
-    }
-    else if(rotate_angle < -50)
-    {
-        rotate_angle = (rotate_angle + 180) % 360;
-    }
+    Hotspot.removeHotspots();
+    loadBlurPano().done(function(){
+        oldpanoToBlurpano();
 
-    var rotate_angle = rotate_angle + Config.lon;
+    });
+    
+    function findRotateAngle ()
+    {
+        var rotate_angle = hotspot_angle - Config.lon;
+
+        while(rotate_angle > 180)
+        {
+            rotate_angle = rotate_angle - 360;
+        }
+        while(rotate_angle < -180)
+        {
+            rotate_angle = rotate_angle + 360;
+        }
+
+        if(rotate_angle > 50 )
+        {
+            rotate_angle = (rotate_angle - 180) % 360;
+        }
+        else if(rotate_angle < -50)
+        {
+            rotate_angle = (rotate_angle + 180) % 360;
+        }
+
+        rotate_angle = rotate_angle + Config.lon;
+
+        return rotate_angle;
+    }
 
     function loadBlurPano ()
     {
@@ -219,12 +238,4 @@ Transition.start = function(hotspot_id)
             }
         }
     }
-
-    Hotspot.removeHotspots();
-    Transition.currentPano = pano_id;
-    loadBlurPano().done(function(){
-        oldpanoToBlurpano();
-
-    });
-
 };
