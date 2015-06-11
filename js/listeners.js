@@ -46,7 +46,9 @@ function onDocumentMouseDown( event )
 
 
     var vector = new THREE.Vector3();
-    vector.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
+    var container = document.getElementById( 'container' );
+
+    vector.set( ( event.clientX / container.offsetWidth ) * 2 - 1, - ( event.clientY / (container.offsetHeight))  * 2 + 1, 0.5 );
     vector.unproject( camera );
     raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
 

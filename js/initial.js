@@ -21,14 +21,27 @@ var Config =
 init();
 animate();
 
-function init() 
+function go_fullscreen()
+{
+	var container = document.getElementById( 'container' );
+	container.style.width = window.innerWidth + 'px';
+	container.style.height = window.innerHeight + 'px';
+
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	var image = document.getElementById("fullscreen-image");
+	image.style.visibility = "hidden";
+
+	camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1100 );
+    camera.target = new THREE.Vector3( 0, 0, 0 );
+}
+
+
+function init()
 {
     var container, mesh;
 
     container = document.getElementById( 'container' );
 
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1100 );
-    camera.target = new THREE.Vector3( 0, 0, 0 );
 
     scene = new THREE.Scene();
 
@@ -38,8 +51,12 @@ function init()
 
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( window.innerWidth, window.innerHeight );
+
     container.appendChild( renderer.domElement );
+    renderer.setSize( container.offsetWidth, container.offsetHeight );
+
+    camera = new THREE.PerspectiveCamera( 60, container.offsetWidth / container.offsetHeight, 1, 1100 );
+    camera.target = new THREE.Vector3( 0, 0, 0 );
 
     document.addEventListener( 'mousedown', onDocumentMouseDown, false );
     document.addEventListener( 'mousemove', onDocumentMouseMove, false );

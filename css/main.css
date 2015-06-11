@@ -1,6 +1,21 @@
 body {
-    background-color: #000000;
+    background-color: #ffffff;
     margin: 0px;
     overflow: hidden;
     opacity: : 0;
+    height: 100%;
+    width: 100%;
+}
+ #container {
+    width: 490px;
+    height: 336px;
+    position: relative;
+}
+#fullscreen-image {
+    height: 100px;
+    width: 80px;
+    z-index: 20px;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
 }
