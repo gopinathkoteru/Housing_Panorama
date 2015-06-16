@@ -2,12 +2,13 @@ root = exports ? this
 camera = undefined
 scene = undefined
 renderer = undefined
+texture_placeholder = undefined
 raycaster = new (THREE.Raycaster)
 images = {}
-clearImages = {}
+clear_images = {}
 clear = {}
 Config = 
-	imgName: ['r'
+	img_name: ['r'
 		'l' 
 		'u' 
 		'd' 
@@ -22,11 +23,9 @@ Config =
 	lat: 0
 	keyMax: 7
 	keySpeed: 2
-	count: 100
+	stop_time:undefined
+	autoplay : true
 	webgl: true
-
-init()
-animate()
 
 root.go_fullscreen = ->
 	container = document.getElementById('container')
@@ -47,7 +46,7 @@ detect_webgl = ->
 		Config.webgl = false
 		return false
 
-root.init = ->
+init = ->
 	container = document.getElementById('container')
 	scene = new (THREE.Scene)
 	texture_placeholder = document.createElement('canvas')
@@ -60,17 +59,17 @@ root.init = ->
 	renderer.setSize container.offsetWidth, container.offsetHeight
 	camera = new (THREE.PerspectiveCamera)(60, container.offsetWidth / container.offsetHeight, 1, 1100)
 	camera.target = new (THREE.Vector3)(0, 0, 0)
-	document.addEventListener 'mousedown', on_document_mouse_down, false
-	document.addEventListener 'mousemove', on_document_mouse_move, false
-	document.addEventListener 'mouseup', on_document_mouse_up, false
-	document.addEventListener 'mousewheel', on_document_mouse_wheel, false
-	document.addEventListener 'DOMMouseScroll', on_document_mouse_wheel, false
-	document.addEventListener 'touchstart', touch_handler, false
-	document.addEventListener 'touchmove', touch_handler, false
-	document.addEventListener 'touchend', touch_handler, false
-	document.addEventListener 'keydown', on_document_key_down, false
-	document.addEventListener 'keyup', on_document_key_up, false
-	window.addEventListener 'resize', on_window_resize, false
+	document.addEventListener 'mousedown', root.on_document_mouse_down, false
+	document.addEventListener 'mousemove', root.on_document_mouse_move, false
+	document.addEventListener 'mouseup', root.on_document_mouse_up, false
+	document.addEventListener 'mousewheel', root.on_document_mouse_wheel, false
+	document.addEventListener 'DOMMouseScroll', root.on_document_mouse_wheel, false
+	document.addEventListener 'touchstart', root.touch_handler, false
+	document.addEventListener 'touchmove', root.touch_handler, false
+	document.addEventListener 'touchend', root.touch_handler, false
+	document.addEventListener 'keydown', root.on_document_key_down, false
+	document.addEventListener 'keyup', root.on_document_key_up, false
+	window.addEventListener 'resize', root.on_window_resize, false
 	return
 
 animate = ->
@@ -79,28 +78,27 @@ animate = ->
 	return
 
 Config.rotate_camera = (time, lat) ->
+	if Config.isUserInteracting == true
+		return
 	duration = Date.now() - time
 	if duration < 1000
-		if Config.isUserInteracting == true
-			return
-		Config.lon += 0.2
 		Config.lat = lat - (lat * duration / 1000)
 		requestAnimationFrame ->
 			Config.rotate_camera time, lat
 		return
 	else
-		Config.lon += 0.2
 		Config.lat = 0
 		return
 
 
 update = ->
-	if Config.isUserInteracting == false and Config.count == 100
+	if Config.isUserInteracting == false and Config.autoplay == true
 		Config.lon += 0.2
 	else if Config.isUserInteracting == false
-		Config.count += 1
-	if Config.count == 100
-		Config.rotate_camera Date.now(), Config.lat
+		duration = Date.now() - Config.stop_time
+		if duration > 2000
+			Config.autoplay = true
+			Config.rotate_camera Date.now(), Config.lat
 	Config.lon = (Config.lon + 360) % 360
 	Config.lat = Math.max(-35, Math.min(35, Config.lat))
 	Config.phi = THREE.Math.degToRad(90 - (Config.lat))
@@ -112,11 +110,15 @@ update = ->
 	renderer.render scene, camera
 	return
 
+init()
+animate()
+
 root.Config = Config
 root.camera = camera
 root.scene = scene
 root.renderer = renderer
-root.raycaster = raycaster
 root.images = images
-root.clearImages = clearImages
+root.clear_images = clear_images
 root.clear = clear
+root.texture_placeholder = texture_placeholder
+root.raycaster = raycaster
