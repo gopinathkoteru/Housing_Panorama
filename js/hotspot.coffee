@@ -4,16 +4,28 @@ Hotspot =
 	hotspot_angles: undefined
 
 Hotspot.init = (hotspot_angles) ->
-	Hotspot.hotspot_angles = hotspot_angles 
+	Hotspot.hotspot_angles = hotspot_angles
+
+Hotspot.load_texture = () ->
+	texture = new THREE.Texture window.texture_placeholder
+	material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0 ,side:THREE.DoubleSide,blending: THREE.AdditiveBlending ,depthTest: false } )
+	image = new Image();
+	image.onload = ->
+		texture.image = this
+		texture.needsUpdate = true
+	image.src = 'images/logo.png' 
+	return material
 
 Hotspot.add_hotspot = (angle, dist, hotspotId) ->
-	geometry = new THREE.BoxGeometry( 2, 2, 2, 1, 1, 1)
-	material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+	geometry = new THREE.PlaneBufferGeometry( 10, 10, 10 )
+	material = material ?  Hotspot.load_texture()
 	hotspot = new THREE.Mesh( geometry, material );
 	rad_angle = THREE.Math.degToRad( angle );
-	hotspot.position.x = dist*Math.cos(rad_angle);
+	hotspot.position.x = 60*Math.cos(rad_angle);
 	hotspot.position.y = -10;
-	hotspot.position.z = dist*Math.sin(rad_angle);
+	hotspot.position.z = 60*Math.sin(rad_angle);
+	v = new (THREE.Vector3)(0, 0, 0)
+	hotspot.lookAt(v)
 	hotspot.hotspot_id = hotspotId
 	hotspot.name = "hotspot";
 	root.scene.add( hotspot );
