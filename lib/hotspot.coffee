@@ -19,16 +19,16 @@ Hotspot.load_texture = () ->
 Hotspot.add_hotspot = (angle, dist, hotspotId) ->
 	geometry = new THREE.PlaneBufferGeometry( 10, 10, 10 )
 	material = Hotspot.load_texture()
-	hotspot = new THREE.Mesh( geometry, material );
-	rad_angle = THREE.Math.degToRad( angle );
-	hotspot.position.x = 60*Math.cos(rad_angle);
-	hotspot.position.y = -10;
-	hotspot.position.z = 60*Math.sin(rad_angle);
-	v = new (THREE.Vector3)(0, 0, 0)
+	hotspot = new THREE.Mesh( geometry, material )
+	rad_angle = THREE.Math.degToRad( angle )
+	hotspot.position.x = 60*Math.cos(rad_angle)
+	hotspot.position.y = -10
+	hotspot.position.z = 60*Math.sin(rad_angle)
+	v = new (THREE.Vector3)(-hotspot.position.x, 400, -hotspot.position.z)
 	hotspot.lookAt(v)
 	hotspot.hotspot_id = hotspotId
-	hotspot.name = "hotspot";
-	root.scene.add( hotspot );
+	hotspot.name = "hotspot"
+	root.scene.add( hotspot )
 	return
 
 Hotspot.add_hotspots = (panoid) ->
