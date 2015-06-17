@@ -10,7 +10,7 @@ class root.Pano
 			materials.push @load_texture path + root.Config.img_name[i] + ".jpg" , i
 			i++ 
 
-		geometry = if Config.webgl then new THREE.BoxGeometry( 300, 300, 300, 7, 7, 7 ) else  new THREE.BoxGeometry( 300, 300, 300, 20, 20, 20 )
+		geometry = if root.Config.webgl then new THREE.BoxGeometry( 300, 300, 300, 7, 7, 7 ) else  new THREE.BoxGeometry( 300, 300, 300, 20, 20, 20 )
 
 		@mesh = new THREE.Mesh geometry, new THREE.MeshFaceMaterial materials
 
@@ -56,9 +56,9 @@ class root.Pano
 			dfrd.resolve()
 			return texture
 
-		if @is_blur is true and root.images[root.Transition.current_pano][image_index]
+		if @is_blur is true and root.blur_images[root.Transition.current_pano][image_index]
 			flag = true
-			texture.image = root.images[root.Transition.current_pano][image_index]
+			texture.image = root.blur_images[root.Transition.current_pano][image_index]
 			texture.needsUpdate = true
 			dfrd.resolve()
 			return texture

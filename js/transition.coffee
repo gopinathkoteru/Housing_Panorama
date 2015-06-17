@@ -56,8 +56,8 @@ Transition.preload_images = ->
 		do ->
 			pano_id = root.Hotspot.hotspot_angles[Transition.current_pano][i][0]
 
-			if not root.images[pano_id]
-				root.images[pano_id] = []
+			if not root.blur_images[pano_id]
+				root.blur_images[pano_id] = []
 				path = Transition.path + "blur_" + (pano_id + 1) + "/mobile_"
 				j = 0
 				while j < 6
@@ -69,8 +69,8 @@ Transition.preload_images = ->
 						image.onload = ->
 							texture.image = this
 							texture.needsUpdate = true
-							if not root.images[pano_id][image_index]
-								root.images[pano_id][image_index] = image
+							if not root.blur_images[pano_id][image_index]
+								root.blur_images[pano_id][image_index] = image
 							return
 						image.src = path + root.Config.img_name[j] + ".jpg"
 						return
@@ -101,7 +101,6 @@ Transition.start = (hotspot_id) ->
 			rotate_angle = (rotate_angle + 180) % 360
 
 		rotate_angle = rotate_angle + root.Config.lon
-		console.log rotate_angle , hotspot_angle
 		return rotate_angle
 
 	load_blur_pano = ->
@@ -162,7 +161,6 @@ Transition.start = (hotspot_id) ->
 	check_new_pano_load = ->
 		Transition.clear_pano[Transition.pano_num].mesh.position.x = 0
 		Transition.clear_pano[Transition.pano_num].mesh.position.z = 0
-		#Transition.clear_pano[Transition.pano_num].mesh.visible = false
 
 		i = 0
 		while i < 6
