@@ -1,16 +1,10 @@
-root = exports ? this
+root = require("./transition.js")
 onPointerDownPointerX = undefined
 onPointerDownPointerY = undefined
 onPointerDownLon = undefined
 onPointerDownLat =undefined
 keyMax = 7
 keySpeed = 2
-
-on_window_resize = ->
-	camera.aspect = window.innerWidth / window.innerHeight
-	camera.updateProjectionMatrix()
-	root.renderer.setSize window.innerWidth, window.innerHeight
-	return
 
 touch_handler = (event) ->
 	touches = event.changedTouches
@@ -84,12 +78,12 @@ on_key_down = (event) ->
 		root.Config.lon += keySpeed
 	else if keyPressed == 38
 		if root.Transition.moving == false
-			near_id = root.Hotspot.front_nearest_hotspot()
+			near_id = root.Hotspot.front_nearest_hotspot(root.Transition.current_pano)
 			if near_id != -1
 				root.Transition.start near_id
 	else if keyPressed == 40
 		if root.Transition.moving == false
-			near_id = root.Hotspot.back_nearest_hotspot()
+			near_id = root.Hotspot.back_nearest_hotspot(root.Transition.current_pano)
 			if near_id != -1
 				root.Transition.start near_id
 	if root.Config.isUserInteracting == true
@@ -115,6 +109,7 @@ container.addEventListener 'touchmove', touch_handler, false
 container.addEventListener 'touchend', touch_handler, false
 document.addEventListener 'keydown', on_key_down, false
 document.addEventListener 'keyup', on_key_up, false
-window.addEventListener 'resize', on_window_resize, false
+
+module.exports = root
 
 

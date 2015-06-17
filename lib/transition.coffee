@@ -1,4 +1,4 @@
-root = exports ? this 
+root = require("./hotspot.js")
 
 Transition = 
 	pano : ""
@@ -34,7 +34,7 @@ Transition.save_clear_images = ->
 		i = 0
 		while i < 6
 			do ->
-				texture = new THREE.Texture( texture_placeholder )
+				texture = new THREE.Texture( root.texture_placeholder )
 				image_index = i
 				
 				image = new Image()
@@ -115,7 +115,7 @@ Transition.start = (hotspot_id) ->
 		i = 0
 		while i < 6
 			Transition.blur_pano.mesh.material.materials[i].map.dispose()
-			Transition.blur_pano.mesh.material.materials[i].map = Transition.blur_pano.get_texture(path + root.Config.img_name[i] + ".jpg", dfrd[i], i)
+			Transition.blur_pano.mesh.material.materials[i].map = Transition.blur_pano.get_texture(Transition.current_pano,path + root.Config.img_name[i] + ".jpg", dfrd[i], i)
 			Transition.blur_pano.mesh.material.materials[i].opacity = 0
 			i++
 
@@ -135,7 +135,7 @@ Transition.start = (hotspot_id) ->
 		i = 0
 		while i < 6
 			Transition.clear_pano[Transition.pano_num].mesh.material.materials[i].map.dispose()
-			Transition.clear_pano[Transition.pano_num].mesh.material.materials[i].map = Transition.clear_pano[Transition.pano_num].get_texture(path + root.Config.img_name[i] + ".jpg", dfrd[i], i)
+			Transition.clear_pano[Transition.pano_num].mesh.material.materials[i].map = Transition.clear_pano[Transition.pano_num].get_texture(Transition.current_pano,path + root.Config.img_name[i] + ".jpg", dfrd[i], i)
 			Transition.clear_pano[Transition.pano_num].mesh.material.materials[i].opacity = 0
 			i++
 		$.when(dfrd[0], dfrd[1], dfrd[2], dfrd[3], dfrd[4], dfrd[5]).done(->).promise()
@@ -173,6 +173,7 @@ Transition.start = (hotspot_id) ->
 		load_clear_pano().done ->
 			blur_pano_to_new_pano()
 			Transition.preload_images()
+			Transition.moving = false
 			return
 		return
 
@@ -206,6 +207,7 @@ Transition.start = (hotspot_id) ->
 	return
 
 root.Transition = Transition
+module.exports = root
 
 			
 			

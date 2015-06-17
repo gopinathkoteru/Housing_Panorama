@@ -1,4 +1,4 @@
-root = exports ? this
+root = {}
 camera = undefined
 scene = undefined
 renderer = undefined
@@ -21,7 +21,7 @@ Config =
 	autoplay : true
 	webgl: true
 
-root.go_fullscreen = ->
+go_fullscreen = ->
 	container = document.getElementById('container')
 	container.style.width = window.innerWidth + 'px'
 	container.style.height = window.innerHeight + 'px'
@@ -105,3 +105,7 @@ root.blur_images = blur_images
 root.clear_images = clear_images
 root.texture_placeholder = texture_placeholder
 root.raycaster = raycaster
+image_div = document.getElementById("fullscreen-image")
+image_div.onclick = ->
+	go_fullscreen()
+module.exports = root
