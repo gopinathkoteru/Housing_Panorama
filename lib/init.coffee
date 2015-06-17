@@ -22,7 +22,7 @@ Config =
 	webgl: true
 
 go_fullscreen = ->
-	container = document.getElementById('container')
+	container = document.getElementById(DirectPano.pano_div_id)
 	container.style.width = window.innerWidth + 'px'
 	container.style.height = window.innerHeight + 'px'
 	renderer.setSize window.innerWidth, window.innerHeight
@@ -41,7 +41,7 @@ detect_webgl = ->
 		return false
 
 init = ->
-	container = document.getElementById('container')
+	container = document.getElementById(DirectPano.pano_div_id)
 	scene = new (THREE.Scene)
 	texture_placeholder = document.createElement('canvas')
 	texture_placeholder.width = 128
@@ -53,7 +53,6 @@ init = ->
 	renderer.setSize container.offsetWidth, container.offsetHeight
 	camera = new (THREE.PerspectiveCamera)(60, container.offsetWidth / container.offsetHeight, 1, 1100)
 	camera.target = new (THREE.Vector3)(0, 0, 0)
-	
 	return
 
 animate = ->
@@ -105,7 +104,6 @@ root.blur_images = blur_images
 root.clear_images = clear_images
 root.texture_placeholder = texture_placeholder
 root.raycaster = raycaster
-image_div = document.getElementById("fullscreen-image")
-image_div.onclick = ->
+document.getElementById(DirectPano.image_div_id).onclick = ->
 	go_fullscreen()
 module.exports = root

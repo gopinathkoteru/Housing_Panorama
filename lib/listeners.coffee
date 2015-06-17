@@ -62,7 +62,7 @@ on_mouse_wheel = (event) ->
 		root.camera.fov -= event.wheelDelta * 0.05
 	else if event.detail
 		root.camera.fov += event.detail * 1.0
-	root.camera.fov = Math.max(60, Math.min(90, camera.fov))
+	root.camera.fov = Math.max(60, Math.min(90, root.camera.fov))
 	root.camera.updateProjectionMatrix()
 	return
 
@@ -98,18 +98,40 @@ on_key_up = (event) ->
 	root.Config.autoplay = false
 	return
 
-container = document.getElementById('container')
-container.addEventListener 'mousedown', on_mouse_down, false
-container.addEventListener 'mousemove', on_mouse_move, false
-container.addEventListener 'mouseup', on_mouse_up, false
-container.addEventListener 'mousewheel', on_mouse_wheel, false
-container.addEventListener 'DOMMouseScroll', on_mouse_wheel, false
-container.addEventListener 'touchstart', touch_handler, false
-container.addEventListener 'touchmove', touch_handler, false
-container.addEventListener 'touchend', touch_handler, false
-document.addEventListener 'keydown', on_key_down, false
-document.addEventListener 'keyup', on_key_up, false
-
+$("#" + DirectPano.pano_div_id).on
+	click: (event) ->
+		document.getElementById(DirectPano.pano_div_id).focus();
+		return
+	mousedown: (event) -> 
+		on_mouse_down(event) 
+		return
+	mousemove: (event) ->
+		on_mouse_move(event)
+		return
+	mouseup: (event) ->
+		on_mouse_up(event)
+		return
+	mousewheel: (event) ->
+		on_mouse_wheel(event.originalEvent)	
+		return
+	DOMMouseScroll: (event) ->
+		on_mouse_wheel(event.originalEvent)
+		return
+	touchstart: (event) ->
+		touch_handler(event)
+		return
+	touchmove: (event) ->
+		touch_handler(event)
+		return
+	touchend: (event) ->
+		touch_handler(event)
+		return
+	keydown: (event) ->
+		on_key_down(event)
+		return
+	keyup: (event) ->
+		on_key_up(event)
+		return
 module.exports = root
 
 
