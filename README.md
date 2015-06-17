@@ -14,3 +14,5 @@ Now you need to edit `test/config.js` as per your Dataset
 - `pano_path` is the path of the directory which is having pano images(which are made by running `make_input.sh`)
 - `pano_div_id` is the name of the div element in which pano should be loaded
 - `image_div_id` is the name of the div element in which the full screen image will be loaded(such that on clicking this image the pano becomes full screen)
+
+To run this, do `./run.sh` (currently works only for OSX), this will make a `SimpleHTTPServer` at port 8000 and open a tab in the default browser
