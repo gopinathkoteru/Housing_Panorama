@@ -524,7 +524,7 @@
 	    hotspot.position.x = 60 * Math.cos(rad_angle);
 	    hotspot.position.y = -10;
 	    hotspot.position.z = 60 * Math.sin(rad_angle);
-	    v = new THREE.Vector3(0, 0, 0);
+	    v = new THREE.Vector3(-hotspot.position.x, 400, -hotspot.position.z);
 	    hotspot.lookAt(v);
 	    hotspot.hotspot_id = hotspotId;
 	    hotspot.name = "hotspot";

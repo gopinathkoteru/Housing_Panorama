@@ -1,0 +1,7 @@
+test/bower_components/*
+lib/init.js
+lib/transition.js
+lib/hotspot.js
+lib/pano.js
+lib/listeners.js
+lib/calling.js
