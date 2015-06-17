@@ -1,4 +1,4 @@
-root = exports ? this
+root = require("./init.js")
 class root.Pano
 	constructor: (@pano_id,@is_blur) ->
 		@name = "panorama"
@@ -45,20 +45,20 @@ class root.Pano
 
 		return material
 
-	get_texture: (path, dfrd, image_index) ->
+	get_texture: (panoid,path, dfrd, image_index) ->
 		flag = false
 		texture = new THREE.Texture( root.texture_placeholder )
 		pano_id = @pano_id
-		if root.clear_images[root.Transition.current_pano][image_index]
+		if root.clear_images[panoid][image_index]
 			flag = true
-			texture.image = root.clear_images[root.Transition.current_pano][image_index]
+			texture.image = root.clear_images[panoid][image_index]
 			texture.needsUpdate = true
 			dfrd.resolve()
 			return texture
 
-		if @is_blur is true and root.blur_images[root.Transition.current_pano][image_index]
+		if @is_blur is true and root.blur_images[panoid][image_index]
 			flag = true
-			texture.image = root.blur_images[root.Transition.current_pano][image_index]
+			texture.image = root.blur_images[panoid][image_index]
 			texture.needsUpdate = true
 			dfrd.resolve()
 			return texture
@@ -74,6 +74,7 @@ class root.Pano
 		image.src = path
 
 		return texture
+module.exports = root
 
 
 
