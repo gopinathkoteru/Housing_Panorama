@@ -79,6 +79,12 @@ Transition.preload_images = ->
 		i++
 	return
 
+Transition.complete = (pano_id) ->
+	Transition.moving = false
+	root.Hotspot.add_hotspots(pano_id)
+	return
+
+
 Transition.start = (hotspot_id) ->
 
 	pano_id = root.Hotspot.hotspot_angles[Transition.current_pano][hotspot_id][0]
@@ -173,7 +179,6 @@ Transition.start = (hotspot_id) ->
 		load_clear_pano().done ->
 			blur_pano_to_new_pano()
 			Transition.preload_images()
-			Transition.moving = false
 			return
 		return
 
@@ -187,7 +192,7 @@ Transition.start = (hotspot_id) ->
 		i = 0
 		while i < 6
 			if i is 5
-				TweenLite.to(Transition.clear_pano[Transition.pano_num].mesh.material.materials[i], time, {opacity: 1, ease: Power0.easeOut, onComplete: root.Hotspot.add_hotspots, onCompleteParams:[ pano_id ]})
+				TweenLite.to(Transition.clear_pano[Transition.pano_num].mesh.material.materials[i], time, {opacity: 1, ease: Power0.easeOut, onComplete: Transition.complete, onCompleteParams:[ pano_id ]})
 			else
 				TweenLite.to(Transition.clear_pano[Transition.pano_num].mesh.material.materials[i], time, {opacity: 1, ease: Power0.easeOut})
 			i++
