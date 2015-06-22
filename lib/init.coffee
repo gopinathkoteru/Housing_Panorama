@@ -63,7 +63,7 @@ init = ->
 
 	container.appendChild renderer.domElement
 	renderer.setSize container.offsetWidth, container.offsetHeight
-	camera = new (THREE.PerspectiveCamera)(60, container.offsetWidth / container.offsetHeight, 1, 1100)
+	camera = new (THREE.PerspectiveCamera)(65, container.offsetWidth / container.offsetHeight, 1, 1100)
 	camera.target = new (THREE.Vector3)(0, 0, 0)
 	return
 

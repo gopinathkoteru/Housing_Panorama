@@ -554,12 +554,13 @@
 
 	    transition.prototype.complete = function() {
 	      var pano_id;
-	      this.moving = false;
 	      if (this.destroy) {
 	        return;
 	      }
 	      pano_id = this.current_pano;
-	      root.Hotspot.add_hotspots(pano_id);
+	      root.Hotspot.add_hotspots(pano_id).done(function() {
+	        this.moving = false;
+	      });
 	    };
 
 	    transition.prototype.destroy_transition = function() {
@@ -625,35 +626,69 @@
 	      return material;
 	    };
 
-	    hotspot.prototype.add_hotspot = function(angle, dist, hotspotId) {
-	      var geometry, material, rad_angle, v;
+	    hotspot.prototype.add_hotspot = function(angle, dist, hotspotId, dfrd) {
+	      var geometry, material, rad_angle, text, text_to_show, v, v1;
 	      geometry = new THREE.PlaneBufferGeometry(10, 10, 10);
 	      material = this.load_texture();
 	      hotspot = new THREE.Mesh(geometry, material);
 	      rad_angle = THREE.Math.degToRad(angle);
-	      hotspot.position.x = 60 * Math.cos(rad_angle);
-	      hotspot.position.y = -10;
-	      hotspot.position.z = 60 * Math.sin(rad_angle);
+	      hotspot.position.x = dist * Math.cos(rad_angle);
+	      hotspot.position.y = -50;
+	      hotspot.position.z = dist * Math.sin(rad_angle);
 	      v = new THREE.Vector3(-hotspot.position.x, 400, -hotspot.position.z);
 	      hotspot.lookAt(v);
+	      geometry = new THREE.PlaneBufferGeometry(1, 1, 1);
+	      text_to_show = DirectPano.hotspot_text[this.hotspot_angles[root.Transition.current_pano][hotspotId][0]];
+	      geometry = new THREE.TextGeometry(text_to_show, {
+	        size: 10,
+	        height: 1,
+	        curveSegments: 10,
+	        weight: "normal",
+	        style: "normal",
+	        material: 0,
+	        extrudeMaterial: 1
+	      });
+	      material = new THREE.MeshBasicMaterial({
+	        color: 0xffff00
+	      });
+	      text = new THREE.Mesh(geometry, material);
+	      text.scale.x = 0.2;
+	      text.scale.y = 0.2;
+	      text.scale.z = 0.2;
+	      rad_angle = THREE.Math.degToRad(angle - 30);
+	      text.position.x = hotspot.position.x + 7 * Math.cos(rad_angle);
+	      text.position.y = hotspot.position.y;
+	      text.position.z = hotspot.position.z + 7 * Math.sin(rad_angle);
+	      text.name = "hotspot";
+	      v1 = new THREE.Vector3(-hotspot.position.x, 400, -hotspot.position.z);
+	      text.lookAt(v1);
+	      root.scene.add(text);
 	      hotspot.hotspot_id = hotspotId;
 	      hotspot.name = "hotspot";
 	      root.scene.add(hotspot);
+	      dfrd.resolve();
 	    };
 
 	    hotspot.prototype.add_hotspots = function(panoid) {
-	      var i, num_hotspots;
+	      var dfrd, i, num_hotspots;
 	      this.panoid = panoid;
 	      num_hotspots = this.hotspot_angles[panoid].length;
+	      dfrd = [];
+	      i = 0;
+	      while (i < num_hotspots) {
+	        dfrd[i] = $.Deferred();
+	        i++;
+	      }
 	      i = 0;
 	      while (i < num_hotspots) {
 	        if (this.destroy) {
 	          this.remove_hotspots();
 	          return;
 	        }
-	        this.add_hotspot(this.hotspot_angles[panoid][i][1], this.hotspot_angles[panoid][i][2], i);
+	        this.add_hotspot(this.hotspot_angles[panoid][i][1], this.hotspot_angles[panoid][i][2], i, dfrd[i]);
 	        i++;
 	      }
+	      return $.when.apply($, dfrd).done(function() {}).promise();
 	    };
 
 	    hotspot.prototype.remove_hotspots = function() {
@@ -1006,7 +1041,7 @@
 	    renderer.setPixelRatio(window.devicePixelRatio);
 	    container.appendChild(renderer.domElement);
 	    renderer.setSize(container.offsetWidth, container.offsetHeight);
-	    camera = new THREE.PerspectiveCamera(60, container.offsetWidth / container.offsetHeight, 1, 1100);
+	    camera = new THREE.PerspectiveCamera(65, container.offsetWidth / container.offsetHeight, 1, 1100);
 	    camera.target = new THREE.Vector3(0, 0, 0);
 	  };
 

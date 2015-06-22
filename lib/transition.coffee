@@ -150,7 +150,7 @@ class transition
 		@blur_pano.mesh.position.x = dist*Math.cos(THREE.Math.degToRad(hotspot_angle ))
 		@blur_pano.mesh.position.z = dist*Math.sin(THREE.Math.degToRad(hotspot_angle ))
 
-		$.when(dfrd[0], dfrd[1], dfrd[2], dfrd[3], dfrd[4], dfrd[5]).done(->).promise()
+		$.when.apply($, dfrd).done(->).promise()
 
 	load_clear_pano : ->
 		if @destroy
@@ -170,7 +170,7 @@ class transition
 			@clear_pano[pano_num].mesh.material.materials[i].opacity = 0
 			i++
 
-		$.when(dfrd[0], dfrd[1], dfrd[2], dfrd[3], dfrd[4], dfrd[5]).done(->).promise()
+		$.when.apply($, dfrd).done(->).promise()
 
 	old_pano_to_blur_pano :(dist,hotspot_angle,rotate_angle) ->
 		if @destroy
@@ -238,11 +238,12 @@ class transition
 		return
 		
 	complete :  ->
-		@moving = false
 		if @destroy
 			return
 		pano_id = @current_pano
-		root.Hotspot.add_hotspots(pano_id)
+		root.Hotspot.add_hotspots(pano_id).done ->
+			@moving = false
+			return
 		return
 
 	destroy_transition : ()->
