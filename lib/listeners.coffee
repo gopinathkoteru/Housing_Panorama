@@ -86,6 +86,10 @@ on_key_down = (event) ->
 			near_id = root.Hotspot.back_nearest_hotspot(root.Transition.current_pano)
 			if near_id != -1
 				root.Transition.start near_id
+	else if keyPressed == 27
+		container = document.getElementById(DirectPano.pano_div_id)
+		if container.style.width == window.innerWidth + 'px' and container.style.height = window.innerHeight + 'px'
+			root.escape_fullscreen()
 	if root.Config.isUserInteracting == true
 		if keySpeed < keyMax
 			keySpeed += 1
@@ -97,41 +101,47 @@ on_key_up = (event) ->
 	root.Config.stop_time = Date.now()
 	root.Config.autoplay = false
 	return
+add_listeners = ->
+	$("#" + DirectPano.pano_div_id).on
+		click: (event) ->
+			document.getElementById(DirectPano.pano_div_id).focus();
+			return
+		mousedown: (event) -> 
+			on_mouse_down(event) 
+			return
+		mousemove: (event) ->
+			on_mouse_move(event)
+			return
+		mouseup: (event) ->
+			on_mouse_up(event)
+			return
+		mousewheel: (event) ->
+			on_mouse_wheel(event.originalEvent)	
+			return
+		DOMMouseScroll: (event) ->
+			on_mouse_wheel(event.originalEvent)
+			return
+		touchstart: (event) ->
+			touch_handler(event.originalEvent)
+			return
+		touchmove: (event) ->
+			touch_handler(event.originalEvent)
+			return
+		touchend: (event) ->
+			touch_handler(event.originalEvent)
+			return
+		keydown: (event) ->
+			on_key_down(event)
+			return
+		keyup: (event) ->
+			on_key_up(event)
+			return
+remove_listeners = ()->
+	$("#" + DirectPano.pano_div_id).off()
+	return
 
-$("#" + DirectPano.pano_div_id).on
-	click: (event) ->
-		document.getElementById(DirectPano.pano_div_id).focus();
-		return
-	mousedown: (event) -> 
-		on_mouse_down(event) 
-		return
-	mousemove: (event) ->
-		on_mouse_move(event)
-		return
-	mouseup: (event) ->
-		on_mouse_up(event)
-		return
-	mousewheel: (event) ->
-		on_mouse_wheel(event.originalEvent)	
-		return
-	DOMMouseScroll: (event) ->
-		on_mouse_wheel(event.originalEvent)
-		return
-	touchstart: (event) ->
-		touch_handler(event)
-		return
-	touchmove: (event) ->
-		touch_handler(event)
-		return
-	touchend: (event) ->
-		touch_handler(event)
-		return
-	keydown: (event) ->
-		on_key_down(event)
-		return
-	keyup: (event) ->
-		on_key_up(event)
-		return
+root.add_listeners = add_listeners
+root.remove_listeners = remove_listeners
 module.exports = root
 
 

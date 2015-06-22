@@ -6,6 +6,7 @@ texture_placeholder = undefined
 raycaster = new (THREE.Raycaster)
 blur_images = {}
 clear_images = {}
+active = undefined
 Config = 
 	img_name: ['r'
 		'l' 
@@ -26,9 +27,20 @@ go_fullscreen = ->
 	container.style.width = window.innerWidth + 'px'
 	container.style.height = window.innerHeight + 'px'
 	renderer.setSize window.innerWidth, window.innerHeight
-	image = document.getElementById('fullscreen-image')
+	image = document.getElementById(DirectPano.image_div_id)
 	image.style.visibility = 'hidden'
 	camera.aspect = window.innerWidth / window.innerHeight
+	camera.updateProjectionMatrix()
+	return
+
+escape_fullscreen = ->
+	container = document.getElementById(DirectPano.pano_div_id)
+	container.style.width = DirectPano.initial_width + 'px'
+	container.style.height = DirectPano.initial_height + 'px'
+	renderer.setSize container.offsetWidth, container.offsetHeight
+	image = document.getElementById(DirectPano.image_div_id)
+	image.style.visibility = 'visible'
+	camera.aspect = container.offsetWidth / container.offsetHeight
 	camera.updateProjectionMatrix()
 	return
 
@@ -48,54 +60,32 @@ init = ->
 	texture_placeholder.height = 128
 	renderer = if detect_webgl() then new (THREE.WebGLRenderer) else new (THREE.CanvasRenderer)
 	renderer.setPixelRatio window.devicePixelRatio
-	console.log Config.webgl
+
 	container.appendChild renderer.domElement
 	renderer.setSize container.offsetWidth, container.offsetHeight
 	camera = new (THREE.PerspectiveCamera)(60, container.offsetWidth / container.offsetHeight, 1, 1100)
 	camera.target = new (THREE.Vector3)(0, 0, 0)
 	return
 
-animate = ->
-	requestAnimationFrame animate
-	update()
-	return
-
-rotate_camera = (time, lat) ->
-	if Config.isUserInteracting == true
-		return
-	duration = Date.now() - time
-	if duration < 1000
-		Config.lat = lat - (lat * duration / 1000)
-		requestAnimationFrame ->
-			rotate_camera time, lat
-		return
-	else
-		Config.lat = 0
-		return
-
-
-update = ->
-	if Config.isUserInteracting == false and Config.autoplay == true
-		Config.lon += 0.2
-	else if Config.isUserInteracting == false
-		duration = Date.now() - Config.stop_time
-		if duration > 2000
-			Config.autoplay = true
-			rotate_camera Date.now(), Config.lat
-	Config.lon = (Config.lon + 360) % 360
-	Config.lat = Math.max(-35, Math.min(35, Config.lat))
-	phi = THREE.Math.degToRad(90 - (Config.lat))
-	theta = THREE.Math.degToRad(Config.lon)
-	camera.target.x = 500 * Math.sin(phi) * Math.cos(theta)
-	camera.target.y = 500 * Math.cos(phi)
-	camera.target.z = 500 * Math.sin(phi) * Math.sin(theta)
-	camera.lookAt camera.target
-	renderer.render scene, camera
+destroy = (dfrd)->
+	root.Hotspot = undefined
+	for prop in clear_images
+		for i in [0..6]
+			delete clear_images[prop][i]
+		delete clear_images[prop]
+	for prop in blur_images
+		for i in [0..6]
+			delete blur_images[prop][i]
+		delete blur_images[prop]
+	Config.lon = 0
+	Config.lat = 0
+	Config.stop_time = undefined
+	Config.autoplay  = true
 	return
 
 init()
-animate()
 
+root.destroy = destroy
 root.Config = Config
 root.camera = camera
 root.scene = scene
@@ -104,6 +94,7 @@ root.blur_images = blur_images
 root.clear_images = clear_images
 root.texture_placeholder = texture_placeholder
 root.raycaster = raycaster
+root.escape_fullscreen = escape_fullscreen
 document.getElementById(DirectPano.image_div_id).onclick = ->
 	go_fullscreen()
 module.exports = root

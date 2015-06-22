@@ -1,7 +1,8 @@
-root = require("./init.js")
-class root.Pano
+root = require("./animation.js")
+class Pano
 	constructor: (@pano_id,@is_blur) ->
 		@name = "panorama"
+		@destroy = false
 
 	create_pano: (path,opacity) ->
 		materials = []
@@ -25,7 +26,16 @@ class root.Pano
 		root.scene.add @mesh
 
 		return
-
+	destroy_pano: () ->
+		@destroy = true
+		root.scene.remove(@mesh)
+		i = 0
+		while i < 6
+			@mesh.material.materials[i].map.dispose()
+			@mesh.material.materials[i].dispose()
+			i++
+		@mesh.geometry.dispose()
+		
 	load_texture: (path,image_index) ->
 		texture = new THREE.Texture root.texture_placeholder
 		material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0 ,side:THREE.DoubleSide,blending: THREE.AdditiveBlending ,depthTest: false } )
@@ -48,7 +58,7 @@ class root.Pano
 	get_texture: (panoid,path, dfrd, image_index) ->
 		flag = false
 		texture = new THREE.Texture( root.texture_placeholder )
-		pano_id = @pano_id
+		panoid = @pano_id
 		if root.clear_images[panoid][image_index]
 			flag = true
 			texture.image = root.clear_images[panoid][image_index]
@@ -74,6 +84,8 @@ class root.Pano
 		image.src = path
 
 		return texture
+
+root.Pano = Pano
 module.exports = root
 
 
