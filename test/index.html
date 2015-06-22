@@ -8,7 +8,7 @@
     </head>
     <body>
 
-        <div id="container" tabindex="0">
+        <div id="container" tabindex="0" style = "display:none">
             <img id="fullscreen-image" src="images/tour.png">
         </div>
 
@@ -26,7 +26,51 @@
 
         <script type="text/javascript" src="./config.js"></script>
 
-        <script  src="../dist/housing-pano.min.js"></script>
+        <script  src="../dist/housing-pano.js"></script>
+
+        <script>
+            function change_pano()
+            {
+                var sel = document.getElementById("pano-list");
+                var value = sel.options[sel.selectedIndex].value;
+                if(value=="pano1")
+                {
+                    DirectPano.hotspots_angle = [[[1, 70, 110], [2, 340, 90]], [[0, 225, 110]], [[0, 140, 90], [3, 0, 90]], [[2, 190, 90], [4, 330, 90], [5, 53, 140]], [[3, 135, 90], [9, 332, 90]], [[3, 222, 140], [6, 315, 55], [11, 47, 50]], [[5, 120, 55], [7, 210, 50], [8, 295, 130]], [[6, 25, 50]], [[6, 123, 130], [9, 220, 90]], [[8, 70, 50], [4, 177, 100]], [[11, 340, 45]], [[12, 320, 60], [5, 230, 45], [10, 170, 45]], [[11, 135, 60], [13, 45, 50], [18, 313, 53]], [[12, 245, 50], [14, 130, 75], [16, 63, 100]], [[13, 305, 75], [15, 145, 50]], [[14, 305, 50]], [[13, 220, 100], [17, 75, 50]], [[16, 255, 55]], [[12, 130, 53], [19, 328, 130], [20, 10, 110]], [[18, 135, 130]], [[18, 182, 90], [21, 40, 80]], [[20, 215, 85]]];
+                    DirectPano.pano_path = "./Dataset/panos-house/";
+                }
+                else if(value=="pano2")
+                {
+                    DirectPano.hotspots_angle = [[[1, 19, 47]], [[2, 322, 48], [4, 21, 98], [0, 213, 43]], [[3, 17, 58], [1, 140, 48]], [[2, 203, 58], [4, 95, 45]], [[3, 275, 41], [1, 198, 93]]];
+                    DirectPano.pano_path = "./Dataset/panos/";
+                }
+                else if(value=="pano3")
+                {
+                    DirectPano.hotspots_angle = [[[1, 7, 110], [3, 270, 80]], [[0, 185, 110], [2, 275, 80]], [[1, 100, 80], [3, 190, 110]], [[2, 3, 110], [0, 95, 85]]];
+                    DirectPano.pano_path = "./Dataset/panos4/";
+                }
+                remove_pano()
+                show_pano();
+            }
+            function show_pano()
+            {
+                $("#" + "container").show();
+                DirectPano.show_pano();
+            }
+            function remove_pano()
+            {
+                $("#" + "container").hide();
+                DirectPano.remove_pano();
+            }   
+        </script>
+
+        <select id = "pano-list" onchange="change_pano()">
+            <option value="pano1">Pano1 </option>
+            <option value="pano2">Pano2 </option>
+            <option value="pano3">Pano3 </option>
+        </select>
+        <button type="button" onclick = "show_pano()">Show Pano</button>
+        <button type="button" onclick = "remove_pano()">Remove Pano</button>
+
 
     </body>
 </html>
