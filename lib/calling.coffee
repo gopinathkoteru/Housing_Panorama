@@ -6,8 +6,7 @@ DirectPano.show_pano = ()->
 	root.scene.children.length = 0
 	
 	anim = new root.animation()
-	anim.animate()
-	
+
 	root.add_listeners()
 
 	root.Hotspot = new root.hotspot(DirectPano.hotspots_angle)
@@ -18,10 +17,10 @@ DirectPano.show_pano = ()->
 DirectPano.remove_pano = ->
 	anim.destroy = true
 	anim = null
+	root.remove_listeners()
 	root.Hotspot.destroy_hotspot()
 	root.Hotspot = null
 	root.Transition.destroy_transition()
 	root.Transition = null
-	root.remove_listeners()
 	root.destroy()
 	return

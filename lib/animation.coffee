@@ -3,6 +3,7 @@ class animation
 	
 	constructor: ->
 		@destroy = false
+		@animate()
 	
 	animate : ->
 		if not @destroy
