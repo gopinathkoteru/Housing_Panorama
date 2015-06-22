@@ -56,7 +56,6 @@
 	    root = __webpack_require__(1);
 	    root.scene.children.length = 0;
 	    anim = new root.animation();
-	    anim.animate();
 	    root.add_listeners();
 	    root.Hotspot = new root.hotspot(DirectPano.hotspots_angle);
 	    root.Transition = new root.transition(DirectPano.pano_path, DirectPano.hotspots_angle);
@@ -66,11 +65,11 @@
 	  DirectPano.remove_pano = function() {
 	    anim.destroy = true;
 	    anim = null;
+	    root.remove_listeners();
 	    root.Hotspot.destroy_hotspot();
 	    root.Hotspot = null;
 	    root.Transition.destroy_transition();
 	    root.Transition = null;
-	    root.remove_listeners();
 	    root.destroy();
 	  };
 
@@ -278,10 +277,8 @@
 
 	  transition = (function() {
 	    function transition(path, hotspot_angles) {
-	      var clear_pano1, clear_pano2;
 	      this.path = path;
 	      this.current_pano = 0;
-	      this.pano_num = 0;
 	      this.moving = false;
 	      this.hotspot_angles = hotspot_angles;
 	      this.destroy = false;
@@ -290,12 +287,9 @@
 	      root.clear_images[this.current_pano] = [];
 	      path = path + (this.current_pano + 1) + "/mobile_";
 	      this.blur_pano = new root.Pano(0, true);
-	      clear_pano1 = new root.Pano(0, false);
-	      clear_pano2 = new root.Pano(0, false);
+	      this.clear_pano = new root.Pano(0, false);
 	      this.blur_pano.create_pano(path, 0.0);
-	      clear_pano1.create_pano(path, 1.0);
-	      clear_pano2.create_pano(path, 0.0);
-	      this.clear_pano = [clear_pano1, clear_pano2];
+	      this.clear_pano.create_pano(path, 1.0);
 	      this.preload_images();
 	      return;
 	    }
@@ -427,7 +421,7 @@
 	    };
 
 	    transition.prototype.load_clear_pano = function() {
-	      var dfrd, i, pano_num, path;
+	      var dfrd, i, path;
 	      if (this.destroy) {
 	        return $.when().done(function() {}).promise();
 	      }
@@ -438,20 +432,19 @@
 	        dfrd[i] = $.Deferred();
 	        i++;
 	      }
-	      pano_num = this.pano_num;
-	      this.clear_pano[pano_num].pano_id = this.current_pano;
+	      this.clear_pano.pano_id = this.current_pano;
 	      i = 0;
 	      while (i < 6) {
-	        this.clear_pano[pano_num].mesh.material.materials[i].map.dispose();
-	        this.clear_pano[pano_num].mesh.material.materials[i].map = this.clear_pano[pano_num].get_texture(this.pano_id, path + root.Config.img_name[i] + ".jpg", dfrd[i], i);
-	        this.clear_pano[pano_num].mesh.material.materials[i].opacity = 0;
+	        this.clear_pano.mesh.material.materials[i].map.dispose();
+	        this.clear_pano.mesh.material.materials[i].map = this.clear_pano.get_texture(this.pano_id, path + root.Config.img_name[i] + ".jpg", dfrd[i], i);
+	        this.clear_pano.mesh.material.materials[i].opacity = 0;
 	        i++;
 	      }
 	      return $.when.apply($, dfrd).done(function() {}).promise();
 	    };
 
 	    transition.prototype.old_pano_to_blur_pano = function(dist, hotspot_angle, rotate_angle) {
-	      var blur_pano, clear_pano, del, i, pano_num, time, time1;
+	      var blur_pano, clear_pano, del, i, time, time1;
 	      if (this.destroy) {
 	        return;
 	      }
@@ -465,7 +458,6 @@
 	      del = 0.3;
 	      blur_pano = this.blur_pano;
 	      clear_pano = this.clear_pano;
-	      pano_num = this.pano_num;
 	      TweenLite.to(blur_pano.mesh.position, time, {
 	        x: 0,
 	        z: 0,
@@ -474,7 +466,7 @@
 	      });
 	      i = 0;
 	      while (i < 6) {
-	        TweenLite.to(clear_pano[pano_num].mesh.material.materials[i], time, {
+	        TweenLite.to(clear_pano.mesh.material.materials[i], time, {
 	          opacity: 0,
 	          delay: del,
 	          ease: Expo.easeOut
@@ -486,7 +478,7 @@
 	        });
 	        i++;
 	      }
-	      TweenLite.to(clear_pano[pano_num].mesh.position, time, {
+	      TweenLite.to(clear_pano.mesh.position, time, {
 	        x: -1 * dist * Math.cos(THREE.Math.degToRad(hotspot_angle)),
 	        z: -1 * dist * Math.sin(THREE.Math.degToRad(hotspot_angle)),
 	        delay: del,
@@ -496,21 +488,19 @@
 	    };
 
 	    transition.prototype.check_new_pano_load = function() {
-	      var blur_pano_to_new_pano, i, pano_num;
+	      var blur_pano_to_new_pano, i;
 	      if (this.destroy) {
 	        return;
 	      }
-	      pano_num = this.pano_num;
-	      this.clear_pano[pano_num].mesh.position.x = 0;
-	      this.clear_pano[pano_num].mesh.position.z = 0;
+	      this.clear_pano.mesh.position.x = 0;
+	      this.clear_pano.mesh.position.z = 0;
 	      i = 0;
 	      while (i < 6) {
-	        this.clear_pano[pano_num].mesh.material.materials[i].opacity = 0;
-	        this.clear_pano[pano_num].mesh.material.materials[i].map.dispose();
+	        this.clear_pano.mesh.material.materials[i].opacity = 0;
+	        this.clear_pano.mesh.material.materials[i].map.dispose();
 	        this.blur_pano.mesh.material.materials[i].opacity = 1;
 	        i++;
 	      }
-	      this.pano_num = (this.pano_num + 1) % 2;
 	      blur_pano_to_new_pano = this.blur_pano_to_new_pano.bind(this);
 	      this.load_clear_pano().done(function() {
 	        blur_pano_to_new_pano();
@@ -518,13 +508,12 @@
 	    };
 
 	    transition.prototype.blur_pano_to_new_pano = function() {
-	      var blur_pano, clear_pano, i, pano_num, time;
+	      var blur_pano, clear_pano, i, time;
 	      if (this.destroy) {
 	        return;
 	      }
 	      blur_pano = this.blur_pano;
 	      clear_pano = this.clear_pano;
-	      pano_num = this.pano_num;
 	      time = 0.5;
 	      i = 0;
 	      while (i < 6) {
@@ -537,13 +526,13 @@
 	      i = 0;
 	      while (i < 6) {
 	        if (i === 5) {
-	          TweenLite.to(clear_pano[pano_num].mesh.material.materials[i], time, {
+	          TweenLite.to(clear_pano.mesh.material.materials[i], time, {
 	            opacity: 1,
 	            ease: Power0.easeOut,
 	            onComplete: this.complete.bind(this)
 	          });
 	        } else {
-	          TweenLite.to(clear_pano[pano_num].mesh.material.materials[i], time, {
+	          TweenLite.to(clear_pano.mesh.material.materials[i], time, {
 	            opacity: 1,
 	            ease: Power0.easeOut
 	          });
@@ -552,14 +541,19 @@
 	      }
 	    };
 
+	    transition.prototype.alter_moving = function() {
+	      return this.moving = false;
+	    };
+
 	    transition.prototype.complete = function() {
-	      var pano_id;
+	      var alter_moving, pano_id;
 	      if (this.destroy) {
 	        return;
 	      }
 	      pano_id = this.current_pano;
+	      alter_moving = this.alter_moving.bind(this);
 	      root.Hotspot.add_hotspots(pano_id).done(function() {
-	        this.moving = false;
+	        alter_moving();
 	      });
 	    };
 
@@ -571,11 +565,8 @@
 	      TweenLite.killTweensOf(blur_pano);
 	      TweenLite.killTweensOf(clear_pano);
 	      this.blur_pano.destroy_pano();
-	      this.clear_pano[0].destroy_pano();
-	      this.clear_pano[1].destroy_pano();
+	      this.clear_pano.destroy_pano();
 	      this.blur_pano = null;
-	      this.clear_pano[0] = null;
-	      this.clear_pano[1] = null;
 	      this.clear_pano = null;
 	    };
 
@@ -902,6 +893,7 @@
 	  animation = (function() {
 	    function animation() {
 	      this.destroy = false;
+	      this.animate();
 	    }
 
 	    animation.prototype.animate = function() {

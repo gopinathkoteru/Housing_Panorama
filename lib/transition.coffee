@@ -4,7 +4,6 @@ class transition
 	constructor:(path,hotspot_angles) ->
 		@path =  path
 		@current_pano = 0
-		@pano_num = 0
 		@moving = false
 		@hotspot_angles = hotspot_angles
 		@destroy = false 
@@ -17,14 +16,10 @@ class transition
 		path = path + (@current_pano + 1) + "/mobile_"
 
 		@blur_pano = new root.Pano(0,true)
-		clear_pano1 = new root.Pano(0, false)
-		clear_pano2 = new root.Pano(0, false)
+		@clear_pano = new root.Pano(0, false)
 
 		@blur_pano.create_pano( path, 0.0)
-		clear_pano1.create_pano(path, 1.0)
-		clear_pano2.create_pano(path,0.0)
-
-		@clear_pano = [clear_pano1,clear_pano2]
+		@clear_pano.create_pano(path, 1.0)
 
 		@preload_images()
 
@@ -161,13 +156,12 @@ class transition
 		while i < 6
 			dfrd[i] = $.Deferred()
 			i++
-		pano_num = @pano_num	
-		@clear_pano[pano_num].pano_id = @current_pano
+		@clear_pano.pano_id = @current_pano
 		i = 0
 		while i < 6
-			@clear_pano[pano_num].mesh.material.materials[i].map.dispose()
-			@clear_pano[pano_num].mesh.material.materials[i].map = @clear_pano[pano_num].get_texture(@pano_id,path + root.Config.img_name[i] + ".jpg", dfrd[i], i)
-			@clear_pano[pano_num].mesh.material.materials[i].opacity = 0
+			@clear_pano.mesh.material.materials[i].map.dispose()
+			@clear_pano.mesh.material.materials[i].map = @clear_pano.get_texture(@pano_id,path + root.Config.img_name[i] + ".jpg", dfrd[i], i)
+			@clear_pano.mesh.material.materials[i].opacity = 0
 			i++
 
 		$.when.apply($, dfrd).done(->).promise()
@@ -182,34 +176,33 @@ class transition
 		del = 0.3
 		blur_pano = @blur_pano
 		clear_pano = @clear_pano
-		pano_num = @pano_num
+
 		TweenLite.to(blur_pano.mesh.position, time, {x: 0, z: 0, delay:del,ease: Expo.easeOut})
 
 		i = 0
 		while i < 6
-			TweenLite.to(clear_pano[pano_num].mesh.material.materials[i], time, {opacity: 0,delay:del, ease: Expo.easeOut})
+			TweenLite.to(clear_pano.mesh.material.materials[i], time, {opacity: 0,delay:del, ease: Expo.easeOut})
 			TweenLite.to(blur_pano.mesh.material.materials[i], time, {opacity: 1, delay:del,ease: Expo.easeOut})
 			i++
 
-		TweenLite.to(clear_pano[pano_num].mesh.position, time, {x:-1*dist*Math.cos(THREE.Math.degToRad(hotspot_angle )),z:-1*dist*Math.sin(THREE.Math.degToRad(hotspot_angle )),delay:del,ease: Expo.easeOut,onComplete: @check_new_pano_load.bind(this)})
+		TweenLite.to(clear_pano.mesh.position, time, {x:-1*dist*Math.cos(THREE.Math.degToRad(hotspot_angle )),z:-1*dist*Math.sin(THREE.Math.degToRad(hotspot_angle )),delay:del,ease: Expo.easeOut,onComplete: @check_new_pano_load.bind(this)})
 		
 		return
 
 	check_new_pano_load : ->
 		if @destroy
 			return
-		pano_num = @pano_num
-		@clear_pano[pano_num].mesh.position.x = 0
-		@clear_pano[pano_num].mesh.position.z = 0
+
+		@clear_pano.mesh.position.x = 0
+		@clear_pano.mesh.position.z = 0
 
 		i = 0
 		while i < 6
-			@clear_pano[pano_num].mesh.material.materials[i].opacity = 0
-			@clear_pano[pano_num].mesh.material.materials[i].map.dispose()
+			@clear_pano.mesh.material.materials[i].opacity = 0
+			@clear_pano.mesh.material.materials[i].map.dispose()
 			@blur_pano.mesh.material.materials[i].opacity = 1
 			i++
 
-		@pano_num = (@pano_num + 1)%2
 		blur_pano_to_new_pano = @blur_pano_to_new_pano.bind(this)
 		@load_clear_pano().done ->
 			blur_pano_to_new_pano()
@@ -221,7 +214,6 @@ class transition
 			return
 		blur_pano = @blur_pano
 		clear_pano = @clear_pano
-		pano_num = @pano_num
 		time = 0.5
 		i = 0
 		while i < 6
@@ -231,18 +223,22 @@ class transition
 
 		while i < 6
 			if i is 5
-				TweenLite.to(clear_pano[pano_num].mesh.material.materials[i], time, {opacity: 1, ease: Power0.easeOut, onComplete: @complete.bind(this)})
+				TweenLite.to(clear_pano.mesh.material.materials[i], time, {opacity: 1, ease: Power0.easeOut, onComplete: @complete.bind(this)})
 			else
-				TweenLite.to(clear_pano[pano_num].mesh.material.materials[i], time, {opacity: 1, ease: Power0.easeOut})
+				TweenLite.to(clear_pano.mesh.material.materials[i], time, {opacity: 1, ease: Power0.easeOut})
 			i++
 		return
-		
+	
+	alter_moving : ->
+		@moving = false
+	
 	complete :  ->
 		if @destroy
 			return
 		pano_id = @current_pano
+		alter_moving = @alter_moving.bind(this)
 		root.Hotspot.add_hotspots(pano_id).done ->
-			@moving = false
+			alter_moving()
 			return
 		return
 
@@ -250,14 +246,14 @@ class transition
 		@destroy = true
 		blur_pano = @blur_pano
 		clear_pano = @clear_pano
+		
 		TweenLite.killTweensOf(blur_pano);
 		TweenLite.killTweensOf(clear_pano);
+		
 		@blur_pano.destroy_pano()
-		@clear_pano[0].destroy_pano()
-		@clear_pano[1].destroy_pano()
+		@clear_pano.destroy_pano()
+
 		@blur_pano = null
-		@clear_pano[0] = null
-		@clear_pano[1] = null
 		@clear_pano = null
 		return
 
