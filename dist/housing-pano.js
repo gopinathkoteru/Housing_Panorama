@@ -423,7 +423,7 @@
 	      }
 	      this.blur_pano.mesh.position.x = dist * Math.cos(THREE.Math.degToRad(hotspot_angle));
 	      this.blur_pano.mesh.position.z = dist * Math.sin(THREE.Math.degToRad(hotspot_angle));
-	      return $.when(dfrd[0], dfrd[1], dfrd[2], dfrd[3], dfrd[4], dfrd[5]).done(function() {}).promise();
+	      return $.when.apply($, dfrd).done(function() {}).promise();
 	    };
 
 	    transition.prototype.load_clear_pano = function() {
@@ -447,7 +447,7 @@
 	        this.clear_pano[pano_num].mesh.material.materials[i].opacity = 0;
 	        i++;
 	      }
-	      return $.when(dfrd[0], dfrd[1], dfrd[2], dfrd[3], dfrd[4], dfrd[5]).done(function() {}).promise();
+	      return $.when.apply($, dfrd).done(function() {}).promise();
 	    };
 
 	    transition.prototype.old_pano_to_blur_pano = function(dist, hotspot_angle, rotate_angle) {
