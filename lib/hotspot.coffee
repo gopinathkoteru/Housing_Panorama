@@ -10,6 +10,7 @@ class hotspot
 		material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0 ,side:THREE.DoubleSide,blending: THREE.AdditiveBlending ,depthTest: false } )
 		image = new Image();
 		image.onload = ->
+			image.onload = null
 			texture.image = this
 			texture.needsUpdate = true
 		image.src = '../test/images/logo.png' 
@@ -26,8 +27,8 @@ class hotspot
 		v = new (THREE.Vector3)(-hotspot.position.x, 400, -hotspot.position.z)
 		hotspot.lookAt(v)
 		geometry = new THREE.PlaneBufferGeometry( 1, 1, 1 )
-
-		text_to_show = DirectPano.hotspot_text[@hotspot_angles[root.Transition.current_pano][hotspotId][0]]
+		panoid = @panoid
+		text_to_show = DirectPano.hotspot_text[@hotspot_angles[panoid][hotspotId][0]]
 
 		geometry = new THREE.TextGeometry(text_to_show,  {
 										size: 10,

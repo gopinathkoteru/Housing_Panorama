@@ -1,5 +1,4 @@
 root = require("./hotspot.js")
-
 class transition
 	constructor:(path,hotspot_angles) ->
 		@path =  path
@@ -39,10 +38,10 @@ class transition
 				
 					image = new Image()
 					image.onload = ->
+						image.onload = null
 						texture.image = this
 						texture.needsUpdate = true
-						if not root.clear_images[current_pano][image_index]
-							root.clear_images[current_pano][image_index] = image
+						root.clear_images[current_pano][image_index] = image
 						return
 
 					image.src = path + root.Config.img_name[i] + ".jpg"
@@ -70,10 +69,10 @@ class transition
 
 							image = new Image()
 							image.onload = ->
+								image.onload = null
 								texture.image = this
 								texture.needsUpdate = true
-								if not root.blur_images[pano_id][image_index]
-									root.blur_images[pano_id][image_index] = image
+								root.blur_images[pano_id][image_index] = image
 								return
 							image.src = fpath + root.Config.img_name[j] + ".jpg"
 							return
@@ -232,9 +231,10 @@ class transition
 	alter_moving : ->
 		@moving = false
 	
-	complete :  ->
+	complete : ->
 		if @destroy
 			return
+		
 		pano_id = @current_pano
 		alter_moving = @alter_moving.bind(this)
 		root.Hotspot.add_hotspots(pano_id).done ->
@@ -246,7 +246,6 @@ class transition
 		@destroy = true
 		blur_pano = @blur_pano
 		clear_pano = @clear_pano
-		
 		TweenLite.killTweensOf(blur_pano);
 		TweenLite.killTweensOf(clear_pano);
 		
