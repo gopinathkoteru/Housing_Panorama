@@ -21,7 +21,6 @@ Config =
 	stop_time:undefined
 	autoplay : true
 	webgl: true
-
 go_fullscreen = ->
 	container = document.getElementById(DirectPano.pano_div_id)
 	container.style.width = window.innerWidth + 'px'
@@ -65,18 +64,23 @@ init = ->
 	renderer.setSize container.offsetWidth, container.offsetHeight
 	camera = new (THREE.PerspectiveCamera)(65, container.offsetWidth / container.offsetHeight, 1, 1100)
 	camera.target = new (THREE.Vector3)(0, 0, 0)
+	$('#'+ DirectPano.image_div_id).click(->
+		go_fullscreen()
+		return)
 	return
 
 destroy = (dfrd)->
 	root.Hotspot = undefined
+	
 	for prop in clear_images
-		for i in [0..6]
-			delete clear_images[prop][i]
-		delete clear_images[prop]
+		clear_images[prop] = null
+	
 	for prop in blur_images
-		for i in [0..6]
-			delete blur_images[prop][i]
-		delete blur_images[prop]
+		blur_images[prop] = null
+	
+	clear_images= {}
+	blur_images = {}
+	
 	Config.lon = 0
 	Config.lat = 0
 	Config.stop_time = undefined
@@ -95,6 +99,4 @@ root.clear_images = clear_images
 root.texture_placeholder = texture_placeholder
 root.raycaster = raycaster
 root.escape_fullscreen = escape_fullscreen
-document.getElementById(DirectPano.image_div_id).onclick = ->
-	go_fullscreen()
 module.exports = root

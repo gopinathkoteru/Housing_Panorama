@@ -101,10 +101,11 @@ on_key_up = (event) ->
 	root.Config.stop_time = Date.now()
 	root.Config.autoplay = false
 	return
+
 add_listeners = ->
 	$("#" + DirectPano.pano_div_id).on
 		click: (event) ->
-			document.getElementById(DirectPano.pano_div_id).focus();
+			$("#" + DirectPano.pano_div_id).focus();
 			return
 		mousedown: (event) -> 
 			on_mouse_down(event) 
@@ -136,10 +137,10 @@ add_listeners = ->
 		keyup: (event) ->
 			on_key_up(event)
 			return
+
 remove_listeners = ()->
 	$("#" + DirectPano.pano_div_id).off()
 	return
-
 root.add_listeners = add_listeners
 root.remove_listeners = remove_listeners
 module.exports = root

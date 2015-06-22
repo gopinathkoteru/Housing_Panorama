@@ -217,7 +217,7 @@
 	  add_listeners = function() {
 	    return $("#" + DirectPano.pano_div_id).on({
 	      click: function(event) {
-	        document.getElementById(DirectPano.pano_div_id).focus();
+	        $("#" + DirectPano.pano_div_id).focus();
 	      },
 	      mousedown: function(event) {
 	        on_mouse_down(event);
@@ -309,11 +309,10 @@
 	            image_index = i;
 	            image = new Image();
 	            image.onload = function() {
+	              image.onload = null;
 	              texture.image = this;
 	              texture.needsUpdate = true;
-	              if (!root.clear_images[current_pano][image_index]) {
-	                root.clear_images[current_pano][image_index] = image;
-	              }
+	              root.clear_images[current_pano][image_index] = image;
 	            };
 	            image.src = path + root.Config.img_name[i] + ".jpg";
 	          })();
@@ -343,11 +342,10 @@
 	                image_index = j;
 	                image = new Image();
 	                image.onload = function() {
+	                  image.onload = null;
 	                  texture.image = this;
 	                  texture.needsUpdate = true;
-	                  if (!root.blur_images[pano_id][image_index]) {
-	                    root.blur_images[pano_id][image_index] = image;
-	                  }
+	                  root.blur_images[pano_id][image_index] = image;
 	                };
 	                image.src = fpath + root.Config.img_name[j] + ".jpg";
 	              })();
@@ -610,6 +608,7 @@
 	      });
 	      image = new Image();
 	      image.onload = function() {
+	        image.onload = null;
 	        texture.image = this;
 	        return texture.needsUpdate = true;
 	      };
@@ -618,7 +617,7 @@
 	    };
 
 	    hotspot.prototype.add_hotspot = function(angle, dist, hotspotId, dfrd) {
-	      var geometry, material, rad_angle, text, text_to_show, v, v1;
+	      var geometry, material, panoid, rad_angle, text, text_to_show, v, v1;
 	      geometry = new THREE.PlaneBufferGeometry(10, 10, 10);
 	      material = this.load_texture();
 	      hotspot = new THREE.Mesh(geometry, material);
@@ -629,7 +628,8 @@
 	      v = new THREE.Vector3(-hotspot.position.x, 400, -hotspot.position.z);
 	      hotspot.lookAt(v);
 	      geometry = new THREE.PlaneBufferGeometry(1, 1, 1);
-	      text_to_show = DirectPano.hotspot_text[this.hotspot_angles[root.Transition.current_pano][hotspotId][0]];
+	      panoid = this.panoid;
+	      text_to_show = DirectPano.hotspot_text[this.hotspot_angles[panoid][hotspotId][0]];
 	      geometry = new THREE.TextGeometry(text_to_show, {
 	        size: 10,
 	        height: 1,
@@ -830,11 +830,10 @@
 	      pano_id = this.pano_id;
 	      image = new Image();
 	      image.onload = function() {
+	        image.onload = null;
 	        texture.image = this;
 	        texture.needsUpdate = true;
-	        if (!root.clear_images[pano_id][image_index]) {
-	          root.clear_images[pano_id][image_index] = image;
-	        }
+	        root.clear_images[pano_id][image_index] = image;
 	      };
 	      image.src = path;
 	      return material;
@@ -1035,25 +1034,24 @@
 	    renderer.setSize(container.offsetWidth, container.offsetHeight);
 	    camera = new THREE.PerspectiveCamera(65, container.offsetWidth / container.offsetHeight, 1, 1100);
 	    camera.target = new THREE.Vector3(0, 0, 0);
+	    $('#' + DirectPano.image_div_id).click(function() {
+	      go_fullscreen();
+	    });
 	  };
 
 	  destroy = function(dfrd) {
-	    var i, j, k, l, len, len1, m, prop;
+	    var i, j, len, len1, prop;
 	    root.Hotspot = void 0;
-	    for (j = 0, len = clear_images.length; j < len; j++) {
-	      prop = clear_images[j];
-	      for (i = k = 0; k <= 6; i = ++k) {
-	        delete clear_images[prop][i];
-	      }
-	      delete clear_images[prop];
+	    for (i = 0, len = clear_images.length; i < len; i++) {
+	      prop = clear_images[i];
+	      clear_images[prop] = null;
 	    }
-	    for (l = 0, len1 = blur_images.length; l < len1; l++) {
-	      prop = blur_images[l];
-	      for (i = m = 0; m <= 6; i = ++m) {
-	        delete blur_images[prop][i];
-	      }
-	      delete blur_images[prop];
+	    for (j = 0, len1 = blur_images.length; j < len1; j++) {
+	      prop = blur_images[j];
+	      blur_images[prop] = null;
 	    }
+	    clear_images = {};
+	    blur_images = {};
 	    Config.lon = 0;
 	    Config.lat = 0;
 	    Config.stop_time = void 0;
@@ -1081,10 +1079,6 @@
 	  root.raycaster = raycaster;
 
 	  root.escape_fullscreen = escape_fullscreen;
-
-	  document.getElementById(DirectPano.image_div_id).onclick = function() {
-	    return go_fullscreen();
-	  };
 
 	  module.exports = root;
 

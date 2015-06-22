@@ -44,10 +44,10 @@ class Pano
 		image = new Image();
 		
 		image.onload = ->
+			image.onload = null
 			texture.image = this
 			texture.needsUpdate = true
-			if not root.clear_images[pano_id][image_index]
-				   root.clear_images[pano_id][image_index] = image;
+			root.clear_images[pano_id][image_index] = image;
 			
 			return
 
