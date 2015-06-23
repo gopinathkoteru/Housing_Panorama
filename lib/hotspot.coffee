@@ -32,11 +32,11 @@ class hotspot
 		text_to_show = DirectPano.hotspot_text[@hotspot_angles[panoid][hotspotId][0]]
 		hotspot.panoid = @hotspot_angles[panoid][hotspotId][0]
 		hotspot.deg_angle = angle
-		container = document.getElementById(DirectPano.pano_div_id)
-		text = document.createElement('div')
-		text.setAttribute("id", ("hotspot_" + @hotspot_angles[panoid][hotspotId][0]))
-		text.innerHTML = text_to_show
-		container.appendChild(text)
+		
+		container = $("#"+DirectPano.pano_div_id)
+		text = $("<div></div>",{id : "hotspot_" + @hotspot_angles[panoid][hotspotId][0]})
+		text.html(text_to_show)
+		$("#" + DirectPano.pano_div_id).append(text)
 
 		hotspot.hotspot_id = hotspotId
 		hotspot.name = "hotspot"
@@ -124,16 +124,16 @@ class hotspot
 		while i < len
 			object = root.scene.children[ i ]
 			if object.name == "hotspot"
-				text = document.getElementById("hotspot_" + object.panoid)
+				text = $("#hotspot_" + object.panoid)
 				vector = object.position.clone()
 				rad_angle =THREE.Math.degToRad((object.deg_angle+5))
 				vector.x += 13*Math.cos(rad_angle)
 				vector.z += 13*Math.sin(rad_angle)
 				vector = vector.project(root.camera)
-				container = document.getElementById('container')
+				container = $("#" + DirectPano.pano_div_id)
 				pos =
-					x: (vector.x + 1)/2 * container.offsetWidth
-					y: -(vector.y - 1)/2 * container.offsetHeight
+					x: (vector.x + 1)/2 * container.outerWidth()
+					y: -(vector.y - 1)/2 * container.outerHeight()
 				if text
 					if(vector.x > 1 or vector.x < -1 or vector.y > 1 or vector.y < -1 or vector.z > 1 or vector.z < -1)
 						if( $("#hotspot_" + object.panoid).css('display') != 'none')

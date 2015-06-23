@@ -21,48 +21,58 @@ Config =
 	stop_time:undefined
 	autoplay : true
 	webgl: true
+
 go_fullscreen = ->
-	container = document.getElementById(DirectPano.pano_div_id)
-	container.style.width = window.innerWidth + 'px'
-	container.style.height = window.innerHeight + 'px'
-	renderer.setSize window.innerWidth, window.innerHeight
-	image = document.getElementById(DirectPano.image_div_id)
-	image.style.visibility = 'hidden'
-	camera.aspect = window.innerWidth / window.innerHeight
+	container = $("#" + DirectPano.pano_div_id)
+	container.width(window.innerWidth + 'px').height(window.innerHeight + 'px')
+	
+	renderer.setSize container.outerWidth(), container.outerHeight()
+	
+	image = $("#"+DirectPano.image_div_id)
+	image.css({
+		'visibility': 'hidden'
+		})
+	camera.aspect = container.outerWidth() / container.outerHeight()
 	camera.updateProjectionMatrix()
 	return
 
 escape_fullscreen = ->
-	container = document.getElementById(DirectPano.pano_div_id)
-	container.style.width = DirectPano.initial_width + 'px'
-	container.style.height = DirectPano.initial_height + 'px'
-	renderer.setSize container.offsetWidth, container.offsetHeight
-	image = document.getElementById(DirectPano.image_div_id)
-	image.style.visibility = 'visible'
-	camera.aspect = container.offsetWidth / container.offsetHeight
+	container = $("#"+DirectPano.pano_div_id)
+	
+	container.width(DirectPano.initial_width + 'px').height(DirectPano.initial_height + 'px')
+	
+	renderer.setSize container.outerWidth(), container.outerHeight()
+	
+	image = $("#"+DirectPano.image_div_id)
+	image.css({
+		'visibility': 'visible'
+		})
+	camera.aspect = container.outerWidth() / container.outerHeight()
 	camera.updateProjectionMatrix()
 	return
 
+
 detect_webgl = ->
 	try
-		canvas = document.createElement('canvas')
-		return ! !(window.WebGLRenderingContext and (canvas.getContext('webgl') or canvas.getContext('experimental-webgl')))
+		canvas = $('<canvas/>')
+		return ! !(window.WebGLRenderingContext and (canvas[0].getContext('webgl') or canvas[0].getContext('experimental-webgl')))
 	catch e
 		Config.webgl = false
 		return false
 
 init = ->
-	container = document.getElementById(DirectPano.pano_div_id)
+	container = $("#"+DirectPano.pano_div_id)
 	scene = new (THREE.Scene)
-	texture_placeholder = document.createElement('canvas')
-	texture_placeholder.width = 128
-	texture_placeholder.height = 128
+	
+	texture_placeholder = $('<canvas/>').width(128).height(128)
+	
 	renderer = if detect_webgl() then new (THREE.WebGLRenderer) else new (THREE.CanvasRenderer)
+	
 	renderer.setPixelRatio window.devicePixelRatio
 
-	container.appendChild renderer.domElement
-	renderer.setSize container.offsetWidth, container.offsetHeight
-	camera = new (THREE.PerspectiveCamera)(65, container.offsetWidth / container.offsetHeight, 1, 1100)
+	container.append(renderer.domElement)
+	renderer.setSize container.outerWidth(), container.outerHeight()
+	camera = new (THREE.PerspectiveCamera)(65, container.outerWidth() / container.outerHeight(), 1, 1100)
 	camera.target = new (THREE.Vector3)(0, 0, 0)
 	$('#'+ DirectPano.image_div_id).click(->
 		go_fullscreen()
