@@ -137,8 +137,8 @@
 	    onPointerDownLon = root.Config.lon;
 	    onPointerDownLat = root.Config.lat;
 	    vector = new THREE.Vector3;
-	    container = document.getElementById('container');
-	    vector.set(event.clientX / container.offsetWidth * 2 - 1, -(event.clientY / container.offsetHeight) * 2 + 1, 0.5);
+	    container = $("#" + DirectPano.pano_div_id);
+	    vector.set(event.clientX / container.outerWidth() * 2 - 1, -(event.clientY / container.outerHeight()) * 2 + 1, 0.5);
 	    vector.unproject(root.camera);
 	    root.raycaster.set(root.camera.position, vector.sub(root.camera.position).normalize());
 	    intersects = root.raycaster.intersectObjects(root.scene.children, true);
@@ -201,8 +201,8 @@
 	        }
 	      }
 	    } else if (keyPressed === 27) {
-	      container = document.getElementById(DirectPano.pano_div_id);
-	      if (container.style.width === window.innerWidth + 'px' && (container.style.height = window.innerHeight + 'px')) {
+	      container = $("#" + DirectPano.pano_div_id);
+	      if (container.width() === window.innerWidth && container.height() === window.innerHeight) {
 	        root.escape_fullscreen();
 	      }
 	    }
@@ -634,6 +634,7 @@
 	          i++;
 	        }
 	      } catch (_error) {
+	        this.length = 0;
 	        return;
 	      }
 	    };
@@ -653,12 +654,12 @@
 	    };
 
 	    annotation.prototype.update = function() {
-	      var angle, annotation_id, container, i, panoid, pos, rad_angle, text, vector;
+	      var angle, annotation_id, container, i, panoid, pos, rad_angle, vector;
 	      i = 0;
 	      panoid = this.panoid;
 	      while (i < this.length) {
 	        annotation_id = "#annotation_" + i;
-	        text = $(annotation_id);
+	        annotation = $(annotation_id);
 	        angle = this.annotation_angles[panoid][i][0];
 	        rad_angle = THREE.Math.degToRad(angle);
 	        vector = new THREE.Vector3(30 * Math.cos(rad_angle), -10, 30 * Math.sin(rad_angle));
@@ -667,10 +668,10 @@
 	        vector = vector.project(root.camera);
 	        container = $("#" + DirectPano.pano_div_id);
 	        pos = {
-	          x: (vector.x + 1) / 2 * container.width(),
-	          y: -(vector.y - 1) / 2 * container.height()
+	          x: (vector.x + 1) / 2 * container.outerWidth(),
+	          y: -(vector.y - 1) / 2 * container.outerHeight()
 	        };
-	        if (text) {
+	        if (annotation) {
 	          if (vector.x > 1 || vector.x < -1 || vector.y > 1 || vector.y < -1 || vector.z > 1 || vector.z < -1) {
 	            if ($(annotation_id).css('display') !== 'none') {
 	              $(annotation_id).removeAttr('style');
@@ -759,11 +760,12 @@
 	      text_to_show = DirectPano.hotspot_text[this.hotspot_angles[panoid][hotspotId][0]];
 	      hotspot.panoid = this.hotspot_angles[panoid][hotspotId][0];
 	      hotspot.deg_angle = angle;
-	      container = document.getElementById(DirectPano.pano_div_id);
-	      text = document.createElement('div');
-	      text.setAttribute("id", "hotspot_" + this.hotspot_angles[panoid][hotspotId][0]);
-	      text.innerHTML = text_to_show;
-	      container.appendChild(text);
+	      container = $("#" + DirectPano.pano_div_id);
+	      text = $("<div></div>", {
+	        id: "hotspot_" + this.hotspot_angles[panoid][hotspotId][0]
+	      });
+	      text.html(text_to_show);
+	      $("#" + DirectPano.pano_div_id).append(text);
 	      hotspot.hotspot_id = hotspotId;
 	      hotspot.name = "hotspot";
 	      root.scene.add(hotspot);
@@ -873,16 +875,16 @@
 	      while (i < len) {
 	        object = root.scene.children[i];
 	        if (object.name === "hotspot") {
-	          text = document.getElementById("hotspot_" + object.panoid);
+	          text = $("#hotspot_" + object.panoid);
 	          vector = object.position.clone();
 	          rad_angle = THREE.Math.degToRad(object.deg_angle + 5);
 	          vector.x += 13 * Math.cos(rad_angle);
 	          vector.z += 13 * Math.sin(rad_angle);
 	          vector = vector.project(root.camera);
-	          container = document.getElementById('container');
+	          container = $("#" + DirectPano.pano_div_id);
 	          pos = {
-	            x: (vector.x + 1) / 2 * container.offsetWidth,
-	            y: -(vector.y - 1) / 2 * container.offsetHeight
+	            x: (vector.x + 1) / 2 * container.outerWidth(),
+	            y: -(vector.y - 1) / 2 * container.outerHeight()
 	          };
 	          if (text) {
 	            if (vector.x > 1 || vector.x < -1 || vector.y > 1 || vector.y < -1 || vector.z > 1 || vector.z < -1) {
@@ -1145,33 +1147,35 @@
 
 	  go_fullscreen = function() {
 	    var container, image;
-	    container = document.getElementById(DirectPano.pano_div_id);
-	    container.style.width = window.innerWidth + 'px';
-	    container.style.height = window.innerHeight + 'px';
-	    renderer.setSize(window.innerWidth, window.innerHeight);
-	    image = document.getElementById(DirectPano.image_div_id);
-	    image.style.visibility = 'hidden';
-	    camera.aspect = window.innerWidth / window.innerHeight;
+	    container = $("#" + DirectPano.pano_div_id);
+	    container.width(window.innerWidth + 'px').height(window.innerHeight + 'px');
+	    renderer.setSize(container.outerWidth(), container.outerHeight());
+	    image = $("#" + DirectPano.image_div_id);
+	    image.css({
+	      'visibility': 'hidden'
+	    });
+	    camera.aspect = container.outerWidth() / container.outerHeight();
 	    camera.updateProjectionMatrix();
 	  };
 
 	  escape_fullscreen = function() {
 	    var container, image;
-	    container = document.getElementById(DirectPano.pano_div_id);
-	    container.style.width = DirectPano.initial_width + 'px';
-	    container.style.height = DirectPano.initial_height + 'px';
-	    renderer.setSize(container.offsetWidth, container.offsetHeight);
-	    image = document.getElementById(DirectPano.image_div_id);
-	    image.style.visibility = 'visible';
-	    camera.aspect = container.offsetWidth / container.offsetHeight;
+	    container = $("#" + DirectPano.pano_div_id);
+	    container.width(DirectPano.initial_width + 'px').height(DirectPano.initial_height + 'px');
+	    renderer.setSize(container.outerWidth(), container.outerHeight());
+	    image = $("#" + DirectPano.image_div_id);
+	    image.css({
+	      'visibility': 'visible'
+	    });
+	    camera.aspect = container.outerWidth() / container.outerHeight();
 	    camera.updateProjectionMatrix();
 	  };
 
 	  detect_webgl = function() {
 	    var canvas, e;
 	    try {
-	      canvas = document.createElement('canvas');
-	      return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+	      canvas = $('<canvas/>');
+	      return !!(window.WebGLRenderingContext && (canvas[0].getContext('webgl') || canvas[0].getContext('experimental-webgl')));
 	    } catch (_error) {
 	      e = _error;
 	      Config.webgl = false;
@@ -1181,16 +1185,14 @@
 
 	  init = function() {
 	    var container;
-	    container = document.getElementById(DirectPano.pano_div_id);
+	    container = $("#" + DirectPano.pano_div_id);
 	    scene = new THREE.Scene;
-	    texture_placeholder = document.createElement('canvas');
-	    texture_placeholder.width = 128;
-	    texture_placeholder.height = 128;
+	    texture_placeholder = $('<canvas/>').width(128).height(128);
 	    renderer = detect_webgl() ? new THREE.WebGLRenderer : new THREE.CanvasRenderer;
 	    renderer.setPixelRatio(window.devicePixelRatio);
-	    container.appendChild(renderer.domElement);
-	    renderer.setSize(container.offsetWidth, container.offsetHeight);
-	    camera = new THREE.PerspectiveCamera(65, container.offsetWidth / container.offsetHeight, 1, 1100);
+	    container.append(renderer.domElement);
+	    renderer.setSize(container.outerWidth(), container.outerHeight());
+	    camera = new THREE.PerspectiveCamera(65, container.outerWidth() / container.outerHeight(), 1, 1100);
 	    camera.target = new THREE.Vector3(0, 0, 0);
 	    $('#' + DirectPano.image_div_id).click(function() {
 	      go_fullscreen();

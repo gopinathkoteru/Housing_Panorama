@@ -33,8 +33,8 @@ on_mouse_down = (event) ->
 	onPointerDownLon = root.Config.lon
 	onPointerDownLat = root.Config.lat
 	vector = new (THREE.Vector3)
-	container = document.getElementById('container')
-	vector.set event.clientX / container.offsetWidth * 2 - 1, -(event.clientY / container.offsetHeight) * 2 + 1, 0.5
+	container = $("#" + DirectPano.pano_div_id)
+	vector.set event.clientX / container.outerWidth() * 2 - 1, -(event.clientY / container.outerHeight()) * 2 + 1, 0.5
 	vector.unproject root.camera
 	root.raycaster.set root.camera.position, vector.sub(root.camera.position).normalize()
 	intersects = root.raycaster.intersectObjects(root.scene.children, true)
@@ -87,8 +87,8 @@ on_key_down = (event) ->
 			if near_id != -1
 				root.Transition.start near_id
 	else if keyPressed == 27
-		container = document.getElementById(DirectPano.pano_div_id)
-		if container.style.width == window.innerWidth + 'px' and container.style.height = window.innerHeight + 'px'
+		container = $("#"+DirectPano.pano_div_id)
+		if container.width() == window.innerWidth  and container.height() == window.innerHeight 
 			root.escape_fullscreen()
 	if root.Config.isUserInteracting == true
 		if keySpeed < keyMax

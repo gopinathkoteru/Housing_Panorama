@@ -26,6 +26,7 @@ class annotation
 				@add_annotation(i)
 				i++
 		catch
+			@length = 0
 			return
 		return
 
@@ -45,7 +46,7 @@ class annotation
 		panoid = @panoid
 		while i < @length
 			annotation_id = "#annotation_" + i
-			text = $(annotation_id)
+			annotation = $(annotation_id)
 			angle = @annotation_angles[panoid][i][0]
 			rad_angle =THREE.Math.degToRad(angle)
 			vector = new (THREE.Vector3)(30*Math.cos(rad_angle), -10, 30*Math.sin(rad_angle))
@@ -54,9 +55,9 @@ class annotation
 			vector = vector.project(root.camera)
 			container = $("#" + DirectPano.pano_div_id)
 			pos =
-				x: (vector.x + 1)/2 * container.width()
-				y: -(vector.y - 1)/2 * container.height()
-			if text
+				x: (vector.x + 1)/2 * container.outerWidth()
+				y: -(vector.y - 1)/2 * container.outerHeight()
+			if annotation
 				if(vector.x > 1 or vector.x < -1 or vector.y > 1 or vector.y < -1 or vector.z > 1 or vector.z < -1)
 					if( $(annotation_id).css('display') != 'none')
 						$(annotation_id).removeAttr('style')
