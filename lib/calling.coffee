@@ -16,6 +16,7 @@ DirectPano.show_pano = ()->
 	root.Hotspot = new root.hotspot(DirectPano.hotspots_angle)
 	root.Transition = new root.transition(DirectPano.pano_path,DirectPano.hotspots_angle) 
 	root.Hotspot.add_hotspots(0)
+	root.Hotspot.update()
 	return
 
 DirectPano.remove_pano = ->

@@ -63,6 +63,7 @@
 	    root.Hotspot = new root.hotspot(DirectPano.hotspots_angle);
 	    root.Transition = new root.transition(DirectPano.pano_path, DirectPano.hotspots_angle);
 	    root.Hotspot.add_hotspots(0);
+	    root.Hotspot.update();
 	  };
 
 	  DirectPano.remove_pano = function() {
@@ -865,6 +866,53 @@
 	      return this.remove_hotspots();
 	    };
 
+	    hotspot.prototype.update = function() {
+	      var container, i, len, object, pos, rad_angle, text, vector;
+	      len = root.scene.children.length;
+	      i = 0;
+	      while (i < len) {
+	        object = root.scene.children[i];
+	        if (object.name === "hotspot") {
+	          text = document.getElementById("hotspot_" + object.panoid);
+	          vector = object.position.clone();
+	          rad_angle = THREE.Math.degToRad(object.deg_angle + 5);
+	          vector.x += 13 * Math.cos(rad_angle);
+	          vector.z += 13 * Math.sin(rad_angle);
+	          vector = vector.project(root.camera);
+	          container = document.getElementById('container');
+	          pos = {
+	            x: (vector.x + 1) / 2 * container.offsetWidth,
+	            y: -(vector.y - 1) / 2 * container.offsetHeight
+	          };
+	          if (text) {
+	            if (vector.x > 1 || vector.x < -1 || vector.y > 1 || vector.y < -1 || vector.z > 1 || vector.z < -1) {
+	              if ($("#hotspot_" + object.panoid).css('display') !== 'none') {
+	                $("#hotspot_" + object.panoid).removeAttr('style');
+	                $("#hotspot_" + object.panoid).css({
+	                  'display': 'none'
+	                });
+	              }
+	            } else {
+	              $("#hotspot_" + object.panoid).css({
+	                'display': 'block',
+	                'left': '-10px',
+	                'top': '0px',
+	                'transform': 'translate3d(' + pos.x + 'px,' + pos.y + 'px,0px)',
+	                'text-align': 'left',
+	                'color': 'Yellow',
+	                'position': 'absolute',
+	                'margin-left': '-20px'
+	              });
+	            }
+	          }
+	        }
+	        i++;
+	      }
+	      if (!this.destroy) {
+	        requestAnimationFrame(this.update.bind(this));
+	      }
+	    };
+
 	    return hotspot;
 
 	  })();
@@ -1013,7 +1061,7 @@
 	    };
 
 	    animation.prototype.update = function() {
-	      var container, duration, i, len, object, p, phi, pos, rad_angle, rotate_camera, text, theta, vector;
+	      var duration, phi, rotate_camera, theta;
 	      if (root.Config.isUserInteracting === false && root.Config.autoplay === true) {
 	        root.Config.lon += 0.2;
 	      } else if (root.Config.isUserInteracting === false) {
@@ -1036,47 +1084,6 @@
 	          };
 	          rotate_camera(Date.now(), root.Config.lat);
 	        }
-	      }
-	      len = root.scene.children.length;
-	      p = 0;
-	      i = 0;
-	      while (i < len) {
-	        object = root.scene.children[i];
-	        if (object.name === "hotspot") {
-	          text = document.getElementById("hotspot_" + object.panoid);
-	          vector = object.position.clone();
-	          rad_angle = THREE.Math.degToRad(object.deg_angle + 5);
-	          vector.x += 13 * Math.cos(rad_angle);
-	          vector.z += 13 * Math.sin(rad_angle);
-	          vector = vector.project(root.camera);
-	          container = document.getElementById('container');
-	          pos = {
-	            x: (vector.x + 1) / 2 * container.offsetWidth,
-	            y: -(vector.y - 1) / 2 * container.offsetHeight
-	          };
-	          if (text) {
-	            if (vector.x > 1 || vector.x < -1 || vector.y > 1 || vector.y < -1 || vector.z > 1 || vector.z < -1) {
-	              if ($("#hotspot_" + object.panoid).css('display') !== 'none') {
-	                $("#hotspot_" + object.panoid).removeAttr('style');
-	                $("#hotspot_" + object.panoid).css({
-	                  'display': 'none'
-	                });
-	              }
-	            } else {
-	              $("#hotspot_" + object.panoid).css({
-	                'display': 'block',
-	                'left': '-10px',
-	                'top': '0px',
-	                'transform': 'translate3d(' + pos.x + 'px,' + pos.y + 'px,0px)',
-	                'text-align': 'left',
-	                'color': 'Yellow',
-	                'position': 'absolute',
-	                'margin-left': '-20px'
-	              });
-	            }
-	          }
-	        }
-	        i++;
 	      }
 	      root.Config.lon = (root.Config.lon + 360) % 360;
 	      root.Config.lat = Math.max(-35, Math.min(35, root.Config.lat));
