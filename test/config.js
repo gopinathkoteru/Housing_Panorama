@@ -6,5 +6,6 @@ var DirectPano =
 	pano_div_id : "container",
 	image_div_id : "fullscreen-image",
 	initial_width : 490,
-	initial_height : 336
+	initial_height : 336,
+	annotation_angles : [[[45,30],[70,30]],[[50,30],[100,30]]]
 }
