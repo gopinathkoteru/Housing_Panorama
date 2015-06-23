@@ -6,3 +6,4 @@ lib/pano.js
 lib/listeners.js
 lib/calling.js
 lib/animation.js
+lib/annotation.js

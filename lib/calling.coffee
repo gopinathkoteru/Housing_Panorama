@@ -2,6 +2,10 @@ root = undefined
 anim = undefined
 DirectPano.show_pano = ()->
 	root = require("./listeners.js")
+
+	root.Annotation = new root.annotation(DirectPano.annotation_angles)
+	root.Annotation.add_annotations(0)
+	root.Annotation.update()
 	
 	root.scene.children.length = 0
 	
@@ -22,5 +26,7 @@ DirectPano.remove_pano = ->
 	root.Hotspot = null
 	root.Transition.destroy_transition()
 	root.Transition = null
+	root.Annotation.destroy_annotation()
+	root.Annotation = null
 	root.destroy()
 	return

@@ -1,4 +1,4 @@
-root = require("./hotspot.js")
+root = require("./annotation.js")
 class transition
 	constructor:(path,hotspot_angles) ->
 		@path =  path
@@ -96,6 +96,7 @@ class transition
 		rotate_angle = @find_rotation_angle(hotspot_angle)
 
 		root.Hotspot.remove_hotspots()
+		root.Annotation.remove_annotations()
 		
 		old_pano_to_blur_pano = @old_pano_to_blur_pano.bind(this)
 		@preload_images()
@@ -238,6 +239,7 @@ class transition
 		pano_id = @current_pano
 		alter_moving = @alter_moving.bind(this)
 		root.Hotspot.add_hotspots(pano_id).done ->
+			root.Annotation.add_annotations(pano_id)
 			alter_moving()
 			return
 		return

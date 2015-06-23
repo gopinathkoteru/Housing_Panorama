@@ -30,11 +30,11 @@ class hotspot
 		panoid = @panoid
 
 		text_to_show = DirectPano.hotspot_text[@hotspot_angles[panoid][hotspotId][0]]
-		hotspot.panoid = @hotspot_angles[root.Transition.current_pano][hotspotId][0]
+		hotspot.panoid = @hotspot_angles[panoid][hotspotId][0]
 		hotspot.deg_angle = angle
-		container = document.getElementById('container')
+		container = document.getElementById(DirectPano.pano_div_id)
 		text = document.createElement('div')
-		text.setAttribute("id", ("hotspot_" + @hotspot_angles[root.Transition.current_pano][hotspotId][0]))
+		text.setAttribute("id", ("hotspot_" + @hotspot_angles[panoid][hotspotId][0]))
 		text.innerHTML = text_to_show
 		container.appendChild(text)
 
