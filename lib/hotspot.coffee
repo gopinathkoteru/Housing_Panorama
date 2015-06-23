@@ -28,30 +28,16 @@ class hotspot
 		hotspot.lookAt(v)
 		geometry = new THREE.PlaneBufferGeometry( 1, 1, 1 )
 		panoid = @panoid
-		text_to_show = DirectPano.hotspot_text[@hotspot_angles[panoid][hotspotId][0]]
 
-		geometry = new THREE.TextGeometry(text_to_show,  {
-										size: 10,
-										height: 1,
-										curveSegments: 10,
-										weight: "normal",
-										style: "normal",
-										material: 0,
-										extrudeMaterial: 1
-									})
-		material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-		text = new THREE.Mesh( geometry, material )
-		text.scale.x = 0.2
-		text.scale.y = 0.2
-		text.scale.z = 0.2
-		rad_angle = THREE.Math.degToRad((angle - 30))
-		text.position.x = hotspot.position.x + 7*Math.cos(rad_angle)
-		text.position.y = hotspot.position.y
-		text.position.z = hotspot.position.z + 7*Math.sin(rad_angle)
-		text.name = "hotspot"
-		v1 = new (THREE.Vector3)(-hotspot.position.x, 400, -hotspot.position.z)
-		text.lookAt(v1)
-		root.scene.add(text)
+		text_to_show = DirectPano.hotspot_text[@hotspot_angles[panoid][hotspotId][0]]
+		hotspot.panoid = @hotspot_angles[root.Transition.current_pano][hotspotId][0]
+		hotspot.deg_angle = angle
+		container = document.getElementById('container')
+		text = document.createElement('div')
+		text.setAttribute("id", ("hotspot_" + @hotspot_angles[root.Transition.current_pano][hotspotId][0]))
+		text.innerHTML = text_to_show
+		container.appendChild(text)
+
 		hotspot.hotspot_id = hotspotId
 		hotspot.name = "hotspot"
 		root.scene.add( hotspot )
@@ -85,6 +71,7 @@ class hotspot
 				object.geometry.dispose()
 				object.material.dispose()
 				root.scene.remove(object)
+				$("#hotspot_" + object.panoid).remove()
 			else
 				p += 1
 			i++

@@ -617,7 +617,7 @@
 	    };
 
 	    hotspot.prototype.add_hotspot = function(angle, dist, hotspotId, dfrd) {
-	      var geometry, material, panoid, rad_angle, text, text_to_show, v, v1;
+	      var container, geometry, material, panoid, rad_angle, text, text_to_show, v;
 	      geometry = new THREE.PlaneBufferGeometry(10, 10, 10);
 	      material = this.load_texture();
 	      hotspot = new THREE.Mesh(geometry, material);
@@ -630,30 +630,13 @@
 	      geometry = new THREE.PlaneBufferGeometry(1, 1, 1);
 	      panoid = this.panoid;
 	      text_to_show = DirectPano.hotspot_text[this.hotspot_angles[panoid][hotspotId][0]];
-	      geometry = new THREE.TextGeometry(text_to_show, {
-	        size: 10,
-	        height: 1,
-	        curveSegments: 10,
-	        weight: "normal",
-	        style: "normal",
-	        material: 0,
-	        extrudeMaterial: 1
-	      });
-	      material = new THREE.MeshBasicMaterial({
-	        color: 0xffff00
-	      });
-	      text = new THREE.Mesh(geometry, material);
-	      text.scale.x = 0.2;
-	      text.scale.y = 0.2;
-	      text.scale.z = 0.2;
-	      rad_angle = THREE.Math.degToRad(angle - 30);
-	      text.position.x = hotspot.position.x + 7 * Math.cos(rad_angle);
-	      text.position.y = hotspot.position.y;
-	      text.position.z = hotspot.position.z + 7 * Math.sin(rad_angle);
-	      text.name = "hotspot";
-	      v1 = new THREE.Vector3(-hotspot.position.x, 400, -hotspot.position.z);
-	      text.lookAt(v1);
-	      root.scene.add(text);
+	      hotspot.panoid = this.hotspot_angles[root.Transition.current_pano][hotspotId][0];
+	      hotspot.deg_angle = angle;
+	      container = document.getElementById('container');
+	      text = document.createElement('div');
+	      text.setAttribute("id", "hotspot_" + this.hotspot_angles[root.Transition.current_pano][hotspotId][0]);
+	      text.innerHTML = text_to_show;
+	      container.appendChild(text);
 	      hotspot.hotspot_id = hotspotId;
 	      hotspot.name = "hotspot";
 	      root.scene.add(hotspot);
@@ -693,6 +676,7 @@
 	          object.geometry.dispose();
 	          object.material.dispose();
 	          root.scene.remove(object);
+	          $("#hotspot_" + object.panoid).remove();
 	        } else {
 	          p += 1;
 	        }
@@ -903,7 +887,7 @@
 	    };
 
 	    animation.prototype.update = function() {
-	      var duration, phi, rotate_camera, theta;
+	      var container, duration, i, len, object, p, phi, pos, rad_angle, rotate_camera, text, theta, vector;
 	      if (root.Config.isUserInteracting === false && root.Config.autoplay === true) {
 	        root.Config.lon += 0.2;
 	      } else if (root.Config.isUserInteracting === false) {
@@ -926,6 +910,47 @@
 	          };
 	          rotate_camera(Date.now(), root.Config.lat);
 	        }
+	      }
+	      len = root.scene.children.length;
+	      p = 0;
+	      i = 0;
+	      while (i < len) {
+	        object = root.scene.children[i];
+	        if (object.name === "hotspot") {
+	          text = document.getElementById("hotspot_" + object.panoid);
+	          vector = object.position.clone();
+	          rad_angle = THREE.Math.degToRad(object.deg_angle + 5);
+	          vector.x += 13 * Math.cos(rad_angle);
+	          vector.z += 13 * Math.sin(rad_angle);
+	          vector = vector.project(root.camera);
+	          container = document.getElementById('container');
+	          pos = {
+	            x: (vector.x + 1) / 2 * container.offsetWidth,
+	            y: -(vector.y - 1) / 2 * container.offsetHeight
+	          };
+	          if (text) {
+	            if (vector.x > 1 || vector.x < -1 || vector.y > 1 || vector.y < -1 || vector.z > 1 || vector.z < -1) {
+	              if ($("#hotspot_" + object.panoid).css('display') !== 'none') {
+	                $("#hotspot_" + object.panoid).removeAttr('style');
+	                $("#hotspot_" + object.panoid).css({
+	                  'display': 'none'
+	                });
+	              }
+	            } else {
+	              $("#hotspot_" + object.panoid).css({
+	                'display': 'block',
+	                'left': '-10px',
+	                'top': '0px',
+	                'transform': 'translate3d(' + pos.x + 'px,' + pos.y + 'px,0px)',
+	                'text-align': 'left',
+	                'color': 'Yellow',
+	                'position': 'absolute',
+	                'margin-left': '-20px'
+	              });
+	            }
+	          }
+	        }
+	        i++;
 	      }
 	      root.Config.lon = (root.Config.lon + 360) % 360;
 	      root.Config.lat = Math.max(-35, Math.min(35, root.Config.lat));
