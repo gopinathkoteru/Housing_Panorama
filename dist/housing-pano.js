@@ -609,14 +609,21 @@
 	    }
 
 	    annotation.prototype.add_annotation = function(annotation_id) {
-	      var div;
+	      var anno_id, div;
+	      anno_id = annotation_id;
 	      annotation_id = "annotation_" + annotation_id;
 	      div = $("<div></div>", {
 	        id: annotation_id
 	      });
-	      div.prepend('<img src="../test/images/i-image.png" width=30 height=30/>');
-	      div.width(30).height(30);
+	      div.prepend("<img class='annotation' height='40px' width='40px' src='../test/images/info.png'></img> <div class='hotspot-title'> <div class='hotspot-text'>" + this.annotation_angles[this.panoid][anno_id][2] + "</div> </div> <div class='info-hotspot'>" + this.annotation_angles[this.panoid][anno_id][3] + "</div>");
 	      $("#" + DirectPano.pano_div_id).append(div);
+	      $("#" + annotation_id).click(function() {
+	        if ($("#" + annotation_id).find('.info-hotspot').css('visibility') === 'visible') {
+	          return $("#" + annotation_id).find('.info-hotspot').css('visibility', 'hidden');
+	        } else {
+	          return $("#" + annotation_id).find('.info-hotspot').css('visibility', 'visible');
+	        }
+	      });
 	    };
 
 	    annotation.prototype.add_annotations = function(panoid) {
@@ -662,7 +669,7 @@
 	        annotation = $(annotation_id);
 	        angle = this.annotation_angles[panoid][i][0];
 	        rad_angle = THREE.Math.degToRad(angle);
-	        vector = new THREE.Vector3(30 * Math.cos(rad_angle), -10, 30 * Math.sin(rad_angle));
+	        vector = new THREE.Vector3(30 * Math.cos(rad_angle), this.annotation_angles[this.panoid][i][1], 30 * Math.sin(rad_angle));
 	        vector.x += 13 * Math.cos(rad_angle);
 	        vector.z += 13 * Math.sin(rad_angle);
 	        vector = vector.project(root.camera);
@@ -675,18 +682,18 @@
 	          if (vector.x > 1 || vector.x < -1 || vector.y > 1 || vector.y < -1 || vector.z > 1 || vector.z < -1) {
 	            if ($(annotation_id).css('display') !== 'none') {
 	              $(annotation_id).removeAttr('style');
-	              $(annotation_id).css({
-	                'display': 'none'
-	              });
+	              $(annotation_id).css('display', 'none');
 	            }
 	          } else {
+	            $(annotation_id).css('display', 'inline');
+	            $(annotation_id).css('left', '-10px');
+	            $(annotation_id).css('top', '0px');
+	            $(annotation_id).css('transform', 'translate3d(' + pos.x + 'px,' + pos.y + 'px,0px)');
+	            $(annotation_id).css('position', 'absolute');
 	            $(annotation_id).css({
-	              'display': 'block',
-	              'left': '-10px',
-	              'top': '0px',
-	              'transform': 'translate3d(' + pos.x + 'px,' + pos.y + 'px,0px)',
-	              'position': 'absolute'
+	              'font-family': "'Helvetica Neue', Helvetica, Arial, sans-serif"
 	            });
+	            $(annotation_id).css('font-size', '16px');
 	          }
 	        }
 	        i++;
