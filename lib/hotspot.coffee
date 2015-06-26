@@ -7,7 +7,7 @@ class hotspot
 
 	load_texture : () ->
 		texture = new THREE.Texture window.texture_placeholder
-		material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0 ,side:THREE.DoubleSide,blending: THREE.AdditiveBlending ,depthTest: false } )
+		material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0 ,side: THREE.DoubleSide ,depthTest: false, depthWrite: true, opacity: 1, transparent: true } )
 		image = new Image();
 		image.onload = ->
 			image.onload = null
@@ -24,6 +24,7 @@ class hotspot
 		hotspot.position.x = dist*Math.cos(rad_angle)
 		hotspot.position.y = -50
 		hotspot.position.z = dist*Math.sin(rad_angle)
+		hotspot.renderOrder = 1
 		v = new (THREE.Vector3)(-hotspot.position.x, 400, -hotspot.position.z)
 		hotspot.lookAt(v)
 		geometry = new THREE.PlaneBufferGeometry( 1, 1, 1 )
