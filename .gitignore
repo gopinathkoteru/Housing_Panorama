@@ -7,3 +7,5 @@ lib/listeners.js
 lib/calling.js
 lib/animation.js
 lib/annotation.js
+lib/fallback.js
+lib/fallback-pano.js
