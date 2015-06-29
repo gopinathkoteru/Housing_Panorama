@@ -1,6 +1,7 @@
 root = require("./fallback-pano.js")
 flag = false
 image = 1
+pano = new root.Pano()
 keypress = 1
 (($) ->
 	$.fn.dragabble = (opt) ->
@@ -107,27 +108,29 @@ div = $("<div></div>",{id : "drag",tabindex : 0})
 
 div.width(window.innerWidth).height(window.innerHeight)
 
-img1 = $('<img id="screen1" />')
-img2 = $('<img id="screen2" />')
+div1 = $("<div></div>",{id : "screen1"})
+div2 = $("<div></div>",{id: "screen2"})
 
-img1.css({
+div1.css({
 	"width" : "1500px",
 	"height": "620px"
 	})
-img2.css({
+div2.css({
 	"width" : "1500px",
 	"height": "620px",
 	})
 
-div.append(img1)
-div.append(img2)
+div.append(div1)
+div.append(div2)
+
 
 container.append(div)
-pano = new root.Pano()
+
 pano.load_pano(0)
-img2.offset({
+
+div2.offset({
 	top:0,
 	left:-1500
 })
-console.log($("#screen2"))
-g = div.dragabble()
+
+div.dragabble()
