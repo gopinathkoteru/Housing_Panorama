@@ -1,7 +1,8 @@
-root = require("./fallback-pano.js")
+root = require("./fallback-hotspot.js")
 flag = false
 image = 1
 pano = new root.Pano()
+hotspot = new root.hotspot()
 keypress = 1
 (($) ->
 	$.fn.dragabble = (opt) ->
@@ -128,9 +129,11 @@ container.append(div)
 
 pano.load_pano(0)
 
+
 div2.offset({
 	top:0,
 	left:-1500
 })
 
 div.dragabble()
+hotspot.add_hotspots(0)
