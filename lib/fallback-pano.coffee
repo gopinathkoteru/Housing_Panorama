@@ -18,9 +18,16 @@ class Pano
 			"height": "620px",
 		})
 		
-		img1.css("display","none")
-		img2.css("display","none")
+		img1.css("position","absolute")
+		img1.css("left","0px")
+		img1.css("top","0px")
+		img1.css("opacity", "0")
 		
+		img2.css("position","absolute")
+		img2.css("left","0px")
+		img2.css("top","0px")
+		img2.css("opacity", "0")
+
 		path = "../test/images/" + (pano_id+1) + ".jpg"
 		
 		img1.attr("src",path)
@@ -51,4 +58,4 @@ class Pano
 		$("#image-screen2_" + @pano_id).remove()
 root.Pano = Pano
 
-module.exports = root 
+module.exports = root

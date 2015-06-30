@@ -111,8 +111,8 @@ container.append(div)
 root.pano = new root.Pano(0)
 root.pano.load_pano().done ->
 	$(document).ready(->
-		$("#image-screen1_0").fadeIn(5000)
-		$("#image-screen2_0").fadeIn(5000 , ->
+		$("#image-screen1_0").fadeTo(3000, 1)
+		$("#image-screen2_0").fadeTo(3000 , 1, ->
 			root.hotspot = new root.Hotspot(0)
 			root.hotspot.add_hotspots()
 			return)

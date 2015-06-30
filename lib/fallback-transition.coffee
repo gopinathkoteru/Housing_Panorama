@@ -17,13 +17,13 @@ class Transition
 		return
 
 	change_opacity:() ->
-		time = 5000
+		time = 3000
 		new_id = @new_id
-		$("#image-screen1_" + @old_id).fadeOut(time)
-		$("#image-screen2_" + @old_id).fadeOut(time)
+		$("#image-screen1_" + @old_id).fadeTo(time, 0)
+		$("#image-screen2_" + @old_id).fadeTo(time, 0)
 
-		$("#image-screen1_" + @new_id).fadeIn(time)
-		$("#image-screen2_" + @new_id).fadeIn(time,->
+		$("#image-screen1_" + @new_id).fadeTo(time, 1)
+		$("#image-screen2_" + @new_id).fadeTo(time, 1, ->
 			root.pano.remove_pano()
 			root.pano = null
 			root.pano = pano
