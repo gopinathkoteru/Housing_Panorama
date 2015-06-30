@@ -13,8 +13,8 @@ class Hotspot
 			class: "hotspot"
 		});
 		hotspot =  $("<img  src='../test/images/logo.png' id='hotspot_" + i + "_0'/>")
-		hotspot.css('height', '100')
-		hotspot.css('width', '100')
+		hotspot.css('height', '50')
+		hotspot.css('width', '50')
 		hotspot_annotation1 = $("<p>" + root.hotspot_text[new_id] + "</p>")
 		hotspot_annotation1.css('color', 'Yellow')
 		hotspot_div1.prepend(hotspot)
@@ -29,8 +29,8 @@ class Hotspot
 	        class: "hotspot" 
 	    });
 		hotspot =  $("<img  src='../test/images/logo.png' id='hotspot_" + i + "_1'/>")
-		hotspot.css('height', '100')
-		hotspot.css('width', '100')
+		hotspot.css('height', '50')
+		hotspot.css('width', '50')
 		hotspot_annotation2 = $("<p>" + root.hotspot_text[new_id] + "</p>")
 		hotspot_annotation2.css('color', 'Yellow')
 		hotspot_div2.append(hotspot)
@@ -57,7 +57,7 @@ class Hotspot
 		img2 = $("#screen2")
 		i = 0
 		while i < num_hotspots
-			angle = (root.hotspot_angles[pano_id][i][1] + 45)%360
+			angle = (root.hotspot_angles[pano_id][i][1] + 80)%360
 			left = ((angle/360)*1500) + 'px'
 			top = "400px" 
 			@add_hotspot(left, top, i, img1, img2)
