@@ -9,3 +9,5 @@ lib/animation.js
 lib/annotation.js
 lib/fallback.js
 lib/fallback-pano.js
+lib/fallback-transition.js
+lib/fallback-hotspot.js

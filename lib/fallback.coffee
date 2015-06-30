@@ -1,9 +1,5 @@
-root = require("./fallback-hotspot.js")
+root = require("./fallback-transition.js")
 flag = false
-image = 1
-pano = new root.Pano()
-hotspot = new root.hotspot()
-keypress = 1
 (($) ->
 	$.fn.dragabble = (opt) ->
 		`var $el`
@@ -23,39 +19,34 @@ keypress = 1
 			e.preventDefault()
 			return
 		).on('mousemove', (e) ->
-			###
 			if flag == true
 				g = $(this).offset().left + (e.pageX - set_x) * 0.05
+				keypress = undefined
 				if e.pageX > set_x
-					if keypress == 2
-						image = image % 2 + 1
+					keypress = 1
 				else
-					if keypress == 1
-						image = image % 2 + 1
+					keypress = 2
 				$(this).offset left: g
 				p = Math.floor($('#drag').offset().left)
 				if keypress == 1
-					if Math.abs(p) % 1500 == 0
-						if image == 1
-							image = 2
+					if Math.abs(p) % 1500 <= 100
+						if Math.abs(p) % 3000 <=100
 							q = $('#screen1').offset().left - p
 							$('#screen2').offset left: q - 1500 + p
 						else
-							image = 1
 							q = $('#screen2').offset().left - p
 							$('#screen1').offset left: q - 1500 + p
 				else
 					p = p + 220
-					if Math.abs(p) % 1500 == 0
-						if image == 1
-							image = 2
+					if Math.abs(p) % 1500 <= 100
+						if Math.abs(p) % 3000 <=100
+							p = p - 220
 							q = $('#screen1').offset().left - p
-							$('#screen2').offset left: q - 1500 + p
+							$('#screen2').offset left: q + 1500 + p
 						else
-							image = 1
+							p = p - 220
 							q = $('#screen2').offset().left - p
-							$('#screen1').offset left: q - 1500 + p
-			###
+							$('#screen1').offset left: q + 1500 + p
 			return
 		).on('mouseup', ->
 			flag = false
@@ -64,35 +55,25 @@ keypress = 1
 			keypressed = e.keyCode
 			p = $(this).offset().left
 			if keypressed == 37
-				if keypress == 1
-		  			image = image % 2 + 1
-				keypress = 2
 				$(this).offset left: p - 10
 				p = $(this).offset().left
 				p = p + 220
 				if Math.abs(p) % 1500 == 0
-					if image == 1
-						image = 2
+					if Math.abs(p) % 3000 == 0 
 						p = p - 220
 						q = $('#screen1').offset().left - p
 						$('#screen2').offset left: q + 1500 + p
 					else
-						image = 1
 						p = p - 220
 						q = $('#screen2').offset().left - p
 						$('#screen1').offset left: q + 1500 + p
 			else if keypressed == 39
-				if keypress == 2
-					image = image % 2 + 1
-				keypress = 1
 				$(this).offset left: p + 10
 				if Math.abs(p) % 1500 == 0
-					if image == 1
-						image = 2
+					if Math.abs(p) % 3000 == 0
 						q = $('#screen1').offset().left - p
 						$('#screen2').offset left: q - 1500 + p
 					else
-						image = 1
 						q = $('#screen2').offset().left - p
 						$('#screen1').offset left: q - 1500 + p
 			return
@@ -127,8 +108,16 @@ div.append(div2)
 
 container.append(div)
 
-pano.load_pano(0)
-
+root.pano = new root.Pano(0)
+root.pano.load_pano().done ->
+	$(document).ready(->
+		$("#image-screen1_0").fadeIn(5000)
+		$("#image-screen2_0").fadeIn(5000 , ->
+			root.hotspot = new root.Hotspot(0)
+			root.hotspot.add_hotspots()
+			return)
+		return)
+	return
 
 div2.offset({
 	top:0,
@@ -136,4 +125,3 @@ div2.offset({
 })
 
 div.dragabble()
-hotspot.add_hotspots(0)
