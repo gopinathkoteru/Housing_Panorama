@@ -86,6 +86,10 @@ flag = false
 container = $("#" + DirectPano.pano_div_id)
 container.css("overflow","hidden")
 
+container.css({
+	'width' : '600px',
+	'height' : '550px'
+	})
 div = $("<div></div>",{id : "drag",tabindex : 0})
 
 div.width(window.innerWidth).height(window.innerHeight)
@@ -115,6 +119,8 @@ root.pano.load_pano().done ->
 		$("#image-screen2_0").fadeTo(3000 , 1, ->
 			root.hotspot = new root.Hotspot(0)
 			root.hotspot.add_hotspots()
+			root.annotation = new root.Annotation(0)
+			root.annotation.add_annotations()
 			return)
 		return)
 	return

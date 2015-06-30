@@ -1,4 +1,4 @@
-root = require('./fallback-hotspot.js')
+root = require('./fallback-annotation.js')
 pano = undefined
 class Transition
 	constructor:(old_id , new_id) ->
@@ -7,6 +7,8 @@ class Transition
 		@new_id = new_id
 		root.hotspot.remove_hotspots()
 		root.hotspot = null
+		root.annotation.remove_annotations()
+		root.annotation = null
 		
 		pano = new root.Pano(new_id)
 		
@@ -29,6 +31,8 @@ class Transition
 			root.pano = pano
 			root.hotspot = new root.Hotspot(new_id)
 			root.hotspot.add_hotspots()
+			root.annotation = new root.Annotation(new_id)
+			root.annotation.add_annotations()
 			return)
 		return
 
