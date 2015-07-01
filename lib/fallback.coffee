@@ -13,26 +13,30 @@ offset = 1500 - window.innerWidth
 		else
 			$el = @find(opt.handle)
 		set_x = undefined
+		set_offset = undefined
 		$el.css('cursor', opt.cursor).on('mousedown', (e) ->
 			flag = true
 			$drag = $el
 			set_x = e.pageX
+			set_offset = $(this).offset().left
 			e.preventDefault()
 			return
 		).on('mousemove', (e) ->
 			if flag == true
-				g = $(this).offset().left + (e.pageX - set_x) * 0.05
+				g = set_offset + (e.pageX - set_x)*2
 				g = Math.floor(g)
 				keypress = undefined
 				if e.pageX > set_x
 					keypress = 1
 				else
 					keypress = 2
+				set_offset = g
+				set_x = e.pageX
 				$(this).offset left: g
-				p = Math.floor($('#drag').offset().left)
+				p = Math.floor($(this).offset().left)
 				if keypress == 1
-					if Math.abs(p) % 1500 <= 100
-						if Math.abs(p) % 3000 <=100
+					if Math.abs(p) % 1500 <= 200
+						if Math.abs(p) % 3000 <=200
 							q = $('#screen1').offset().left - p
 							$('#screen2').offset left: q - 1500 + p
 						else
@@ -40,8 +44,8 @@ offset = 1500 - window.innerWidth
 							$('#screen1').offset left: q - 1500 + p
 				else
 					p = p + offset
-					if Math.abs(p) % 1500 <= 100
-						if Math.abs(p) % 3000 <=100
+					if Math.abs(p) % 1500 <= 200
+						if Math.abs(p) % 3000 <=200
 							p = p - offset
 							q = $('#screen1').offset().left - p
 							$('#screen2').offset left: q + 1500 + p
@@ -69,8 +73,8 @@ offset = 1500 - window.innerWidth
 				$(this).offset left: p - 10
 				p = $(this).offset().left
 				p = p + offset
-				if Math.abs(p) % 1500 <= 100
-					if Math.abs(p) % 3000 <= 100 
+				if Math.abs(p) % 1500 <= 200
+					if Math.abs(p) % 3000 <= 200 
 						p = p - offset
 						q = $('#screen1').offset().left - p
 						$('#screen2').offset left: q + 1500 + p
@@ -80,8 +84,8 @@ offset = 1500 - window.innerWidth
 						$('#screen1').offset left: q + 1500 + p
 			else if keypressed == 39
 				$(this).offset left: p + 10
-				if Math.abs(p) % 1500 <= 100
-					if Math.abs(p) % 3000 <= 100
+				if Math.abs(p) % 1500 <= 200
+					if Math.abs(p) % 3000 <= 200
 						q = $('#screen1').offset().left - p
 						$('#screen2').offset left: q - 1500 + p
 					else
