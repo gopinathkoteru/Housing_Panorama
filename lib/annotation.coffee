@@ -84,8 +84,6 @@ class annotation
 					$(annotation_id).css('font-family': "'Helvetica Neue', Helvetica, Arial, sans-serif")
 					$(annotation_id).css('font-size', '16px')
 			i++
-		if not @destroy
-			requestAnimationFrame @update.bind(this)
 		return
 root.annotation = annotation
 module.exports = root

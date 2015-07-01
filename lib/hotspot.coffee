@@ -154,8 +154,6 @@ class hotspot
 							'margin-left': '-20px'
 						})
 			i++
-		if not @destroy
-			requestAnimationFrame @update.bind(this)
 		return
 root.hotspot = hotspot
 module.exports = root

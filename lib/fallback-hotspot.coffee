@@ -50,7 +50,6 @@ class Hotspot
 		return
 
 	add_hotspots: () ->
-		console.log("hjkl")
 		pano_id = @pano_id
 		num_hotspots = root.hotspot_angles[pano_id].length
 		img1 = $("#screen1")

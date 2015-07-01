@@ -5,18 +5,16 @@ DirectPano.show_pano = ()->
 
 	root.Annotation = new root.annotation(DirectPano.annotation_angles)
 	root.Annotation.add_annotations(0)
-	root.Annotation.update()
 	
 	root.scene.children.length = 0
-	
-	anim = new root.animation()
 
 	root.add_listeners()
 
 	root.Hotspot = new root.hotspot(DirectPano.hotspots_angle)
 	root.Transition = new root.transition(DirectPano.pano_path,DirectPano.hotspots_angle) 
 	root.Hotspot.add_hotspots(0)
-	root.Hotspot.update()
+
+	anim = new root.animation()
 	return
 
 DirectPano.remove_pano = ->

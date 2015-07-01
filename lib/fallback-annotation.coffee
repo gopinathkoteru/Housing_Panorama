@@ -86,9 +86,6 @@ class Annotation
 		anno_div2.css('font-size', '16px')
 		
 		div2.append(anno_div2)
-
-		console.log($("#annotation_id_1_" + anno_id))
-		console.log($("#annotation_id_2_" + anno_id))
 		return
 	
 	add_annotations:()->

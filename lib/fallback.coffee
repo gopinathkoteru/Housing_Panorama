@@ -1,5 +1,6 @@
 root = require("./fallback-transition.js")
 flag = false
+offset = 1500 - window.innerWidth
 (($) ->
 	$.fn.dragabble = (opt) ->
 		`var $el`
@@ -21,6 +22,7 @@ flag = false
 		).on('mousemove', (e) ->
 			if flag == true
 				g = $(this).offset().left + (e.pageX - set_x) * 0.05
+				g = Math.floor(g)
 				keypress = undefined
 				if e.pageX > set_x
 					keypress = 1
@@ -37,14 +39,14 @@ flag = false
 							q = $('#screen2').offset().left - p
 							$('#screen1').offset left: q - 1500 + p
 				else
-					p = p + 220
+					p = p + offset
 					if Math.abs(p) % 1500 <= 100
 						if Math.abs(p) % 3000 <=100
-							p = p - 220
+							p = p - offset
 							q = $('#screen1').offset().left - p
 							$('#screen2').offset left: q + 1500 + p
 						else
-							p = p - 220
+							p = p - offset
 							q = $('#screen2').offset().left - p
 							$('#screen1').offset left: q + 1500 + p
 			return
@@ -54,23 +56,32 @@ flag = false
 		).on('keydown', (e) ->
 			keypressed = e.keyCode
 			p = $(this).offset().left
+			if keypressed == 38
+				hotspots = $(this).find(".hotspot")
+				num_hotspots = hotspots.length
+				i = 0
+				while i < num_hotspots
+					if $(hotspots[i]).offset().left > 200 && $(hotspots[i]).offset().left < 300 
+						$(hotspots[i]).trigger('click')
+						return
+					i++
 			if keypressed == 37
 				$(this).offset left: p - 10
 				p = $(this).offset().left
-				p = p + 220
-				if Math.abs(p) % 1500 == 0
-					if Math.abs(p) % 3000 == 0 
-						p = p - 220
+				p = p + offset
+				if Math.abs(p) % 1500 <= 100
+					if Math.abs(p) % 3000 <= 100 
+						p = p - offset
 						q = $('#screen1').offset().left - p
 						$('#screen2').offset left: q + 1500 + p
 					else
-						p = p - 220
+						p = p - offset
 						q = $('#screen2').offset().left - p
 						$('#screen1').offset left: q + 1500 + p
 			else if keypressed == 39
 				$(this).offset left: p + 10
-				if Math.abs(p) % 1500 == 0
-					if Math.abs(p) % 3000 == 0
+				if Math.abs(p) % 1500 <= 100
+					if Math.abs(p) % 3000 <= 100
 						q = $('#screen1').offset().left - p
 						$('#screen2').offset left: q - 1500 + p
 					else
