@@ -3,8 +3,6 @@ onPointerDownPointerX = undefined
 onPointerDownPointerY = undefined
 onPointerDownLon = undefined
 onPointerDownLat =undefined
-keyMax = 7
-keySpeed = 2
 
 touch_handler = (event) ->
 	touches = event.changedTouches
@@ -73,9 +71,11 @@ on_key_down = (event) ->
 	root.Config.isUserInteracting = true
 	keyPressed = event.keyCode
 	if keyPressed == 37
-		root.Config.lon -= keySpeed
+		root.Config.current = root.Config.lon
+		root.Config.target = root.Config.lon - 20
 	else if keyPressed == 39
-		root.Config.lon += keySpeed
+		root.Config.current = root.Config.lon
+		root.Config.target = root.Config.lon + 20
 	else if keyPressed == 38
 		if root.Transition.moving == false
 			near_id = root.Hotspot.front_nearest_hotspot(root.Transition.current_pano)
@@ -90,14 +90,10 @@ on_key_down = (event) ->
 		container = $("#"+DirectPano.pano_div_id)
 		if container.width() == window.innerWidth  and container.height() == window.innerHeight 
 			root.escape_fullscreen()
-	if root.Config.isUserInteracting == true
-		if keySpeed < keyMax
-			keySpeed += 1
 	return
 
 on_key_up = (event) ->
 	root.Config.isUserInteracting = false
-	keySpeed = 2
 	root.Config.stop_time = Date.now()
 	root.Config.autoplay = false
 	return

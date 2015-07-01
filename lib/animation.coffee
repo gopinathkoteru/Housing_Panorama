@@ -14,6 +14,9 @@ class animation
 			@update()
 			root.Hotspot.update()
 			root.Annotation.update()
+			if(root.Config.target != undefined and root.Config.current != undefined && Math.abs(root.Config.target - root.Config.current) > 0.1)
+				root.Config.lon = root.Config.current + (root.Config.target - root.Config.current)*0.15
+				root.Config.current = root.Config.lon
 			if flag==true
 				if root.Config.isUserInteracting == true
 					flag = false
