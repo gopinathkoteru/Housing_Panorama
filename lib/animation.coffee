@@ -1,4 +1,7 @@
 root = require("./init.js")
+time = undefined
+lat = undefined
+flag = false
 class animation
 	
 	constructor: ->
@@ -9,6 +12,18 @@ class animation
 		if not @destroy
 			requestAnimationFrame @animate.bind(this)
 			@update()
+			root.Hotspot.update()
+			root.Annotation.update()
+			if flag==true
+				if root.Config.isUserInteracting == true
+					flag = false
+				else
+					duration = Date.now() - time
+					if duration < 1000
+						root.Config.lat = lat - (lat * duration / 1000)
+					else
+						flag = false
+						root.Config.lat = 0
 		return
 	
 	update : ->
@@ -18,19 +33,9 @@ class animation
 			duration = Date.now() - root.Config.stop_time
 			if duration > 2000
 				root.Config.autoplay = true
-				rotate_camera = (time, lat) ->
-					if root.Config.isUserInteracting == true
-						return
-					duration = Date.now() - time
-					if duration < 1000
-						root.Config.lat = lat - (lat * duration / 1000)
-						requestAnimationFrame ->
-							rotate_camera(time ,lat)
-							return
-					else
-						root.Config.lat = 0
-						return
-				rotate_camera Date.now(), root.Config.lat
+				flag = true
+				time = Date.now()
+				lat = root.Config.lat
 		root.Config.lon = (root.Config.lon + 360) % 360
 		root.Config.lat = Math.max(-35, Math.min(35, root.Config.lat))
 		phi = THREE.Math.degToRad(90 - (root.Config.lat))
