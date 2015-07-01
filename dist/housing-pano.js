@@ -53,7 +53,12 @@
 	  anim = void 0;
 
 	  DirectPano.show_pano = function() {
+	    var image;
 	    root = __webpack_require__(1);
+	    image = $("#" + DirectPano.image_div_id);
+	    image.css({
+	      'visibility': 'visible'
+	    });
 	    root.Annotation = new root.annotation(DirectPano.annotation_angles);
 	    root.Annotation.add_annotations(0);
 	    root.scene.children.length = 0;

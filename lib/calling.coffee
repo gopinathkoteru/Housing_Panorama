@@ -3,6 +3,11 @@ anim = undefined
 DirectPano.show_pano = ()->
 	root = require("./listeners.js")
 
+	image = $("#"+DirectPano.image_div_id)
+	image.css({
+		'visibility': 'visible'
+		})
+
 	root.Annotation = new root.annotation(DirectPano.annotation_angles)
 	root.Annotation.add_annotations(0)
 	

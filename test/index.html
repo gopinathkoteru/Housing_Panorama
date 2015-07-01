@@ -9,7 +9,7 @@
     <body>
 
         <div id="container" tabindex="0" style = "display:none">
-            <img id="fullscreen-image" src="images/tour.png">
+            <img id="fullscreen-image" src="images/tour.png" style = "visibility:hidden" >
         </div>
 
         <script src="bower_components/jquery/jquery.min.js"></script>
@@ -29,6 +29,18 @@
         <script  src="../dist/housing-pano.min.js"></script>
 
         <script>
+            function detect_webgl()
+            {
+                try
+                {
+                    canvas = $('<canvas/>');
+                    return !!(window.WebGLRenderingContext && (canvas[0].getContext('webgl') || canvas[0].getContext('experimental-webgl')));
+                }
+                catch(e)
+                {
+                    return false;
+                }
+            }
             function change_pano()
             {
                 var sel = document.getElementById("pano-list");
@@ -57,14 +69,45 @@
             function show_pano()
             {
                 $("#" + "container").show();
-                DirectPano.show_pano();
+                if(webgl_flag)
+                {
+                    DirectPano.show_pano();
+                }
+                else
+                {
+                    DirectPano.show_fallback_pano();
+                }
             }
             function remove_pano()
             {
                 $("#" + "container").hide();
-                DirectPano.remove_pano();
+                if(webgl_flag)
+                {
+                    DirectPano.remove_pano();
+                }
+                else
+                {
+                    DirectPano.remove_fallback_pano();
+                }
             }
-            show_pano();
+            webgl_flag = detect_webgl();
+            if(webgl_flag==false)
+            {
+                var fileref=document.createElement('script')
+                fileref.setAttribute("type","text/javascript")
+                fileref.setAttribute("src", '../lib/housing-pano-fallback.js')
+
+                $.getScript('../lib/housing-pano-fallback.js', function()
+                {
+                    show_pano();
+                });
+            }
+            else
+            {
+                show_pano();
+            }
+            console.log(webgl_flag);
+            
         </script>
 
         <select id = "pano-list" onchange="change_pano()">

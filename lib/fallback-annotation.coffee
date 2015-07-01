@@ -1,26 +1,4 @@
 root = require('./fallback-hotspot.js')
-root.annotation_angles = [ [],
-						  [[250, 0,"Fridge", "Samsung <br>400 L "], [56, -20,"Washing Machine", "LG <br>5.5 Kg"]],
-						  [],
-						  [ [0, 18, "AC", "Samsung <br>1 Ton"], [75, 14, "AC", "Samsung <br>1 Ton"], [0, 0, "TV", "Phillips (LCD) <br> 32 inch"] ],
-						  [ [82, 0, "TV", "Phillips (LCD) <br> 32 inch"] ],
-						  [],
-						  [ [260, -16, "Bed", "Queen Size <br>6' x 5'"], [278, 14, "AC", "Samsung <br>1 Ton"], [197, 0, "Almirah", "6' x 3' x 1'"] ],
-						  [ [335, 0, "Almirah", "6' x 3' x 1'"] ],
-						  [],
-						  [],
-						  [],
-						  [],
-						  [],
-						  [ [95, -16, "Bed", "Queen Size <br>6' x 5'"], [82, 14, "AC", "Samsung <br>1 Ton"] ],
-						  [],
-						  [],
-						  [ [183, 0, "Almirah", "6' x 3' x 1'"] ],
-						  [],
-						  [ [26, 14 ,  "AC", "Samsung <br>1 Ton"] ],
-						  [],
-						  [ [133, -20, "Bed", "Single <br>6' x 4'"], [200, 0, "Almirah",  "6' x 2' x 1'"] ]
-						]
 class Annotation
 	constructor:(pano_id)->
 		@pano_id = pano_id
