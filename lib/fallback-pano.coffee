@@ -28,8 +28,7 @@ class Pano
 		img2.css("top","0px")
 		img2.css("opacity", "0")
 
-		path = "../test/images/" + (pano_id+1) + ".jpg"
-		
+		path = DirectPano.pano_path + (pano_id+1)+"/"+(pano_id+1) + ".jpg"
 		img1.attr("src",path)
 		img2.attr("src",path)
 

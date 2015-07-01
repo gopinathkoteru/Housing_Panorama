@@ -124,25 +124,58 @@ div2.css({
 div.append(div1)
 div.append(div2)
 
-
 container.append(div)
 
-root.pano = new root.Pano(0)
-root.pano.load_pano().done ->
-	$(document).ready(->
-		$("#image-screen1_0").fadeTo(3000, 1)
-		$("#image-screen2_0").fadeTo(3000 , 1, ->
-			root.hotspot = new root.Hotspot(0)
-			root.hotspot.add_hotspots()
-			root.annotation = new root.Annotation(0)
-			root.annotation.add_annotations()
+DirectPano.show_fallback_pano = ->
+	$("#drag").offset({
+		left : 0
+		})
+	root.hotspot_angles = DirectPano.hotspots_angle
+	root.hotspot_text = DirectPano.hotspot_text
+	root.annotation_angles = DirectPano.annotation_angles
+	root.pano = new root.Pano(0)
+	root.pano.load_pano().done ->
+		$(document).ready(->
+			$("#image-screen1_0").fadeTo(3000, 1)
+			$("#image-screen2_0").fadeTo(3000 , 1, ->
+				root.hotspot = new root.Hotspot(0)
+				root.hotspot.add_hotspots()
+				root.annotation = new root.Annotation(0)
+				root.annotation.add_annotations()
+				return)
 			return)
-		return)
+		return
+
+	div2.offset({
+		top:0,
+		left:-1500
+	})
+
+	div.dragabble()
 	return
 
-div2.offset({
-	top:0,
-	left:-1500
-})
+DirectPano.remove_fallback_pano = ->
+	try
+	  root.transition.destroy_transition()
+	  root.transition = null
+	catch error
+	  root.transition = null
+	
+	try
+		root.hotspot.remove_hotspots()
+		root.hotspot = null
+	catch error
+		root.hotspot = null
+	
+	try
+		root.annotation.remove_annotations()
+		root.annotation = null
+	catch error
+		root.annotation = null
 
-div.dragabble()
+	try	
+		root.pano.remove_pano()
+		root.pano = null
+	catch error
+		root.pano = null
+	return

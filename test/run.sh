@@ -1,6 +1,7 @@
 bower install
 cd ../lib/
 coffee -c *.coffee
+bash run.sh
 cd ..
 webpack lib/calling.js dist/housing-pano.js
 cd dist/
