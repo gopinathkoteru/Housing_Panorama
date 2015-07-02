@@ -25,6 +25,10 @@ touch_handler = (event) ->
 
 on_mouse_down = (event) ->
 	event.preventDefault()
+	root.Config.current_lon = root.Config.lon
+	root.Config.target_lon = root.Config.lon
+	root.Config.current_lat = root.Config.lat
+	root.Config.target_lat = root.Config.lat
 	root.Config.isUserInteracting = true
 	onPointerDownPointerX = event.clientX
 	onPointerDownPointerY = event.clientY
@@ -43,8 +47,8 @@ on_mouse_down = (event) ->
 on_mouse_move = (event) ->
 	if root.Config.isUserInteracting == true
 		mouseSpeed = 0.3
-		root.Config.lon = (onPointerDownPointerX - (event.clientX)) * mouseSpeed + onPointerDownLon
-		root.Config.lat = (event.clientY - onPointerDownPointerY) * mouseSpeed + onPointerDownLat
+		root.Config.target_lon = ((onPointerDownPointerX - (event.clientX)) * mouseSpeed + onPointerDownLon)
+		root.Config.target_lat = (event.clientY - onPointerDownPointerY) * mouseSpeed + onPointerDownLat
 	return
 
 on_mouse_up = (event) ->
@@ -71,11 +75,11 @@ on_key_down = (event) ->
 	root.Config.isUserInteracting = true
 	keyPressed = event.keyCode
 	if keyPressed == 37
-		root.Config.current = root.Config.lon
-		root.Config.target = root.Config.lon - 20
+		root.Config.current_lon = root.Config.lon
+		root.Config.target_lon = root.Config.lon - 20
 	else if keyPressed == 39
-		root.Config.current = root.Config.lon
-		root.Config.target = root.Config.lon + 20
+		root.Config.current_lon = root.Config.lon
+		root.Config.target_lon = root.Config.lon + 20
 	else if keyPressed == 38
 		if root.Transition.moving == false
 			near_id = root.Hotspot.front_nearest_hotspot(root.Transition.current_pano)

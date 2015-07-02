@@ -21,8 +21,10 @@ Config =
 	stop_time:undefined
 	autoplay : true
 	webgl: true
-	current: undefined
-	target: undefined
+	current_lon: undefined
+	target_lon: undefined
+	current_lat: undefined
+	target_lat: undefined
 
 go_fullscreen = ->
 	container = $("#" + DirectPano.pano_div_id)

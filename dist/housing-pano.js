@@ -130,6 +130,10 @@
 	  on_mouse_down = function(event) {
 	    var container, intersects, vector;
 	    event.preventDefault();
+	    root.Config.current_lon = root.Config.lon;
+	    root.Config.target_lon = root.Config.lon;
+	    root.Config.current_lat = root.Config.lat;
+	    root.Config.target_lat = root.Config.lat;
 	    root.Config.isUserInteracting = true;
 	    onPointerDownPointerX = event.clientX;
 	    onPointerDownPointerY = event.clientY;
@@ -150,8 +154,8 @@
 	    var mouseSpeed;
 	    if (root.Config.isUserInteracting === true) {
 	      mouseSpeed = 0.3;
-	      root.Config.lon = (onPointerDownPointerX - event.clientX) * mouseSpeed + onPointerDownLon;
-	      root.Config.lat = (event.clientY - onPointerDownPointerY) * mouseSpeed + onPointerDownLat;
+	      root.Config.target_lon = (onPointerDownPointerX - event.clientX) * mouseSpeed + onPointerDownLon;
+	      root.Config.target_lat = (event.clientY - onPointerDownPointerY) * mouseSpeed + onPointerDownLat;
 	    }
 	  };
 
@@ -182,11 +186,11 @@
 	    root.Config.isUserInteracting = true;
 	    keyPressed = event.keyCode;
 	    if (keyPressed === 37) {
-	      root.Config.current = root.Config.lon;
-	      root.Config.target = root.Config.lon - 20;
+	      root.Config.current_lon = root.Config.lon;
+	      root.Config.target_lon = root.Config.lon - 20;
 	    } else if (keyPressed === 39) {
-	      root.Config.current = root.Config.lon;
-	      root.Config.target = root.Config.lon + 20;
+	      root.Config.current_lon = root.Config.lon;
+	      root.Config.target_lon = root.Config.lon + 20;
 	    } else if (keyPressed === 38) {
 	      if (root.Transition.moving === false) {
 	        near_id = root.Hotspot.front_nearest_hotspot(root.Transition.current_pano);
@@ -1067,9 +1071,13 @@
 	        this.update();
 	        root.Hotspot.update();
 	        root.Annotation.update();
-	        if (root.Config.target !== void 0 && root.Config.current !== void 0 && Math.abs(root.Config.target - root.Config.current) > 0.1) {
-	          root.Config.lon = root.Config.current + (root.Config.target - root.Config.current) * 0.15;
-	          root.Config.current = root.Config.lon;
+	        if (root.Config.target_lon !== void 0 && root.Config.current_lon !== void 0 && Math.abs(root.Config.target_lon - root.Config.current_lon) > 0.1) {
+	          root.Config.current_lon = root.Config.current_lon + (root.Config.target_lon - root.Config.current_lon) * 0.15;
+	          root.Config.lon = (root.Config.current_lon + 360) % 360;
+	        }
+	        if (root.Config.target_lat !== void 0 && root.Config.current_lat !== void 0 && Math.abs(root.Config.target_lat - root.Config.current_lat) > 0.1) {
+	          root.Config.current_lat = root.Config.current_lat + (root.Config.target_lat - root.Config.current_lat) * 0.15;
+	          root.Config.lat = root.Config.current_lat;
 	        }
 	        if (flag === true) {
 	          if (root.Config.isUserInteracting === true) {
@@ -1156,8 +1164,10 @@
 	    stop_time: void 0,
 	    autoplay: true,
 	    webgl: true,
-	    current: void 0,
-	    target: void 0
+	    current_lon: void 0,
+	    target_lon: void 0,
+	    current_lat: void 0,
+	    target_lat: void 0
 	  };
 
 	  go_fullscreen = function() {
