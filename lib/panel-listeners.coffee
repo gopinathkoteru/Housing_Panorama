@@ -11,6 +11,22 @@ on_mouse_down = (event) ->
 	onPointerDownPointerY = event.clientY
 	onPointerDownLon = root.Config.lon
 	onPointerDownLat = root.Config.lat
+	vector = new (THREE.Vector3)
+	container = $("#container")
+	vector.set event.clientX / container.outerWidth() * 2 - 1, -(event.clientY / container.outerHeight()) * 2 + 1, 0.5
+	vector.unproject root.camera
+	tantheta = (vector.z / vector.x)
+	theta = Math.atan(tantheta)
+	theta = theta*180/Math.PI
+	if theta < 0
+		if(vector.x < 0)
+			theta += 180
+		else
+			theta += 360
+	else if vector.z <0 and vector.x < 0
+		theta += 180
+	root.theta = parseInt(theta)
+	#console.log "Theta: ", root.theta
 	return
 
 on_mouse_move = (event) ->

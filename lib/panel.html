@@ -14,11 +14,15 @@
         {
             width: 400px;
         }
+        #hotspot-panel {
+            position: absolute;
+            right: 0px;
+            top: 510px;
+        }
         </style>
     </head>
     <body>
-    	<div id = "container" tabindex = "0">
-    	</div> 
+        <div id = "container" tabindex = "0"></div>
         <div>
             <select id ="house-list" >
                 <option value ="panos-house">house1</option>
@@ -34,6 +38,14 @@
             </div>
             <input type="range" min="-50" max = "50" value = "0" step ="1" id = "adjust"/>
             <div id ="error"></div>
+        </div>
+        <img id="add-hotspot-image" style="display:none;width:50px;height:50px;" src="../test/images/logo.png">
+        <div id="hotspot-panel">
+                <input id="add-hotspot-button" type="button" value="Add Hotspot">
+                <input id="save-hotspot-button" type="button" value="Save Hotspot">
+                <input id="save-all-hotspots-button" type="button" value="Save All Hotspots"><br>
+                <input id="hotspot-title" placeholder="Hotspot Title">
+                <input id="pano-path" placeholder="Enter path of panos folder">
         </div>
     	<script src="../test/bower_components/jquery/jquery.min.js"></script>
     	<script src="./three.min.js"></script>  

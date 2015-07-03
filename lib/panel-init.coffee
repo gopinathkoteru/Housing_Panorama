@@ -2,6 +2,13 @@ root = require('./panel-listeners.js')
 front_pano = undefined
 back_pano = undefined
 path = "../test/Dataset/panos-house/"
+full_dataset = {}
+localStorage.setItem('full_dataset', JSON.stringify(full_dataset))
+one_dataset = {
+	"pano_path": undefined,
+	"hotspot": {}
+}
+hotspot = {}
 
 root.Config = 
 	img_name: ['r'
@@ -73,6 +80,11 @@ init("list1",22)
 init("list2",22)
 
 $("#house-list").on('change',->
+	one_dataset = {
+		"pano_path": undefined,
+		"hotspot": {}
+	}
+	hotspot = {}
 	house = $("#house-list")[0]
 	house_path = house.options[house.selectedIndex].value
 	path = '../test/Dataset/' + house_path + '/'
@@ -101,6 +113,69 @@ $("#list2").on('change',->
 	value = list[0].options[list[0].selectedIndex].value
 	change_pano(2,value)
 	return)
+
+$('#add-hotspot-button').click ->
+	$('#add-hotspot-image').css 'display', 'block'
+	return
+
+$('#save-hotspot-button').click ->
+	full_dataset = localStorage.getItem('full_dataset')
+	full_dataset = JSON.parse(full_dataset)
+	if full_dataset[$("#house-list").val()] == undefined
+		one_dataset = {
+			"pano_path": undefined,
+			"hotspot": {}
+		}
+		full_dataset[$("#house-list").val()] = one_dataset
+	else
+		one_dataset = full_dataset[$("#house-list").val()]
+	from_id = $("#list1").val() - 1
+	to_id = $("#list2").val() - 1
+	if from_id == to_id
+		alert "Cannot add hotspot to same pano"
+		return
+	angle = root.theta
+	text = $("#hotspot-title").val()
+	error = $("#adjust").val()
+	error = parseInt(error)
+	pano_path = $("#pano-path").val()
+	one_dataset["pano_path"] = pano_path
+	dict = {
+		"to_id": to_id,
+		"angle": angle,
+		"text": text,
+		"error": error
+	}
+	hotspot = one_dataset["hotspot"]
+	if hotspot[from_id] == undefined
+		hotspot[from_id] = []
+	i = 0
+	# Check if the hotspot already exist then replace the old one
+	while i < hotspot[from_id].length
+		if hotspot[from_id][i]["to_id"] == to_id
+			break
+		i++
+	if i != hotspot[from_id].length
+		hotspot[from_id][i] = dict
+	else
+		hotspot[from_id].push(dict)
+	one_dataset["hotspot"] = hotspot
+	console.log full_dataset
+	localStorage.setItem('full_dataset', JSON.stringify(full_dataset));
+	$('#add-hotspot-image').css 'display', 'none'
+	return
+
+$('#container').click (e) ->
+	if $('#add-hotspot-image').css('display') == 'block'
+		l = e.pageX - 25
+		t = e.pageY - 15
+		$('#add-hotspot-image').css
+			width: '50px'
+			height: '50px'
+			left: l
+			top: t
+			position: 'absolute'
+	return
 
 root.camera = camera
 root.scene = scene
