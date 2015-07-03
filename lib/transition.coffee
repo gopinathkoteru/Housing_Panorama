@@ -141,7 +141,7 @@ class transition
 			@blur_pano.mesh.material.materials[i].map = @blur_pano.get_texture(@pano_id,path + root.Config.img_name[i] + ".jpg", dfrd[i], i)
 			@blur_pano.mesh.material.materials[i].opacity = 0
 			i++
-
+			
 		@blur_pano.mesh.position.x = dist*Math.cos(THREE.Math.degToRad(hotspot_angle ))
 		@blur_pano.mesh.position.z = dist*Math.sin(THREE.Math.degToRad(hotspot_angle ))
 
