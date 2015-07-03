@@ -1072,12 +1072,20 @@
 	        root.Hotspot.update();
 	        root.Annotation.update();
 	        if (root.Config.target_lon !== void 0 && root.Config.current_lon !== void 0 && Math.abs(root.Config.target_lon - root.Config.current_lon) > 0.1) {
-	          root.Config.current_lon = root.Config.current_lon + (root.Config.target_lon - root.Config.current_lon) * 0.15;
-	          root.Config.lon = (root.Config.current_lon + 360) % 360;
+	          if (root.Transition.moving === true) {
+	            root.Config.target_lon === void 0;
+	          } else {
+	            root.Config.current_lon = root.Config.current_lon + (root.Config.target_lon - root.Config.current_lon) * 0.15;
+	            root.Config.lon = (root.Config.current_lon + 360) % 360;
+	          }
 	        }
 	        if (root.Config.target_lat !== void 0 && root.Config.current_lat !== void 0 && Math.abs(root.Config.target_lat - root.Config.current_lat) > 0.1) {
-	          root.Config.current_lat = root.Config.current_lat + (root.Config.target_lat - root.Config.current_lat) * 0.15;
-	          root.Config.lat = root.Config.current_lat;
+	          if (root.Transition.moving === true) {
+	            root.Config.target_lat = void 0;
+	          } else {
+	            root.Config.current_lat = root.Config.current_lat + (root.Config.target_lat - root.Config.current_lat) * 0.15;
+	            root.Config.lat = root.Config.current_lat;
+	          }
 	        }
 	        if (flag === true) {
 	          if (root.Config.isUserInteracting === true) {

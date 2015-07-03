@@ -12,3 +12,6 @@ lib/fallback-pano.js
 lib/fallback-transition.js
 lib/fallback-hotspot.js
 lib/fallback-annotation.js
+lib/panel-init.js
+lib/panel-listeners.js
+lib/panel-pano.js
