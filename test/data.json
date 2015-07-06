@@ -1,0 +1,35 @@
+{
+  "panos-house": {
+    "0": {
+      "path": "./Dataset/panos-house/1/",
+      "title": "Main Entrance",
+      "hotspot": [
+        {
+          "to_id": 1,
+          "angle": 70,
+          "error": 0,
+          "text": "Kitchen"
+        },
+        {
+          "to_id": 2,
+          "angle": 343,
+          "error": 0,
+          "text": "Hall Entrance"
+        }
+      ]
+    },
+    "1": {
+      "path": "./Dataset/panos-house/2/",
+      "title": "Kitchen",
+      "hotspot": [
+        {
+          "to_id": 0,
+          "angle": 225,
+          "error": 0,
+          "text": "Entrance"
+        }
+      ]
+    },
+    "num_panos": 22
+  }
+}

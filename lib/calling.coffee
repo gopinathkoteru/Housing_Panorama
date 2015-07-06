@@ -16,7 +16,7 @@ DirectPano.show_pano = ()->
 	root.add_listeners()
 
 	root.Hotspot = new root.hotspot(DirectPano.hotspots_angle)
-	root.Transition = new root.transition(DirectPano.pano_path,DirectPano.hotspots_angle) 
+	root.Transition = new root.transition(DirectPano.pano, DirectPano.hotspots_angle)
 	root.Hotspot.add_hotspots(0)
 
 	anim = new root.animation()

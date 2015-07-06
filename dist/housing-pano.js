@@ -64,7 +64,7 @@
 	    root.scene.children.length = 0;
 	    root.add_listeners();
 	    root.Hotspot = new root.hotspot(DirectPano.hotspots_angle);
-	    root.Transition = new root.transition(DirectPano.pano_path, DirectPano.hotspots_angle);
+	    root.Transition = new root.transition(DirectPano.pano, DirectPano.hotspots_angle);
 	    root.Hotspot.add_hotspots(0);
 	    anim = new root.animation();
 	  };
@@ -281,8 +281,9 @@
 	  root = __webpack_require__(3);
 
 	  transition = (function() {
-	    function transition(path, hotspot_angles) {
-	      this.path = path;
+	    function transition(pano, hotspot_angles) {
+	      var path;
+	      this.pano = pano;
 	      this.current_pano = 0;
 	      this.moving = false;
 	      this.hotspot_angles = hotspot_angles;
@@ -290,7 +291,7 @@
 	      root.clear_images = {};
 	      root.blur_images = {};
 	      root.clear_images[this.current_pano] = [];
-	      path = path + (this.current_pano + 1) + "/mobile_";
+	      path = this.pano[this.current_pano][1] + "mobile_";
 	      this.blur_pano = new root.Pano(0, true);
 	      this.clear_pano = new root.Pano(0, false);
 	      this.blur_pano.create_pano(path, 0.0);
@@ -300,11 +301,11 @@
 	    }
 
 	    transition.prototype.save_clear_images = function() {
-	      var current_pano, i, path;
+	      var current_pano, i, pano, path;
 	      current_pano = this.current_pano;
-	      path = this.path;
+	      pano = this.pano;
 	      if (!root.clear_images[current_pano]) {
-	        path = path + (current_pano + 1) + "/mobile_";
+	        path = pano[current_pano][1] + "mobile_";
 	        root.clear_images[current_pano] = [];
 	        i = 0;
 	        while (i < 6) {
@@ -327,18 +328,18 @@
 	    };
 
 	    transition.prototype.preload_images = function() {
-	      var current_pano, hotspot_angles, i, path;
+	      var current_pano, hotspot_angles, i, pano;
 	      i = 0;
 	      current_pano = this.current_pano;
 	      hotspot_angles = this.hotspot_angles;
-	      path = this.path;
+	      pano = this.pano;
 	      while (i < hotspot_angles[current_pano].length) {
 	        (function() {
 	          var fpath, j, pano_id;
 	          pano_id = hotspot_angles[current_pano][i][0];
 	          if (!root.blur_images[pano_id]) {
 	            root.blur_images[pano_id] = [];
-	            fpath = path + "blur_" + (pano_id + 1) + "/mobile_";
+	            fpath = pano[pano_id][1] + "../blur_" + (pano_id + 1) + "/mobile_";
 	            j = 0;
 	            while (j < 6) {
 	              (function() {
@@ -367,7 +368,7 @@
 	      current_pano = this.current_pano;
 	      pano_id = this.hotspot_angles[current_pano][hotspot_id][0];
 	      hotspot_angle = this.hotspot_angles[current_pano][hotspot_id][1];
-	      dist = this.hotspot_angles[current_pano][hotspot_id][2];
+	      dist = 60;
 	      this.moving = true;
 	      this.current_pano = pano_id;
 	      this.save_clear_images();
@@ -404,7 +405,7 @@
 	      if (this.destroy) {
 	        return $.when().done(function() {}).promise();
 	      }
-	      path = this.path + "blur_" + (this.current_pano + 1) + "/mobile_";
+	      path = this.pano[this.current_pano][1] + "../blur_" + (this.current_pano + 1) + "/mobile_";
 	      dfrd = [];
 	      i = 0;
 	      while (i < 6) {
@@ -429,7 +430,7 @@
 	      if (this.destroy) {
 	        return $.when().done(function() {}).promise();
 	      }
-	      path = this.path + (this.current_pano + 1) + "/mobile_";
+	      path = this.pano[this.current_pano][1] + "mobile_";
 	      dfrd = [];
 	      i = 0;
 	      while (i < 6) {
@@ -755,15 +756,18 @@
 	      material = this.load_texture();
 	      hotspot = new THREE.Mesh(geometry, material);
 	      rad_angle = THREE.Math.degToRad(angle);
-	      hotspot.position.x = dist * Math.cos(rad_angle);
+	      hotspot.position.x = 60 * Math.cos(rad_angle);
 	      hotspot.position.y = -50;
-	      hotspot.position.z = dist * Math.sin(rad_angle);
+	      hotspot.position.z = 60 * Math.sin(rad_angle);
 	      hotspot.renderOrder = 1;
 	      v = new THREE.Vector3(-hotspot.position.x, 400, -hotspot.position.z);
 	      hotspot.lookAt(v);
 	      geometry = new THREE.PlaneBufferGeometry(1, 1, 1);
 	      panoid = this.panoid;
-	      text_to_show = DirectPano.hotspot_text[this.hotspot_angles[panoid][hotspotId][0]];
+	      text_to_show = "";
+	      if (this.hotspot_angles[panoid][hotspotId][3] !== void 0) {
+	        text_to_show = this.hotspot_angles[panoid][hotspotId][3];
+	      }
 	      hotspot.panoid = this.hotspot_angles[panoid][hotspotId][0];
 	      hotspot.deg_angle = angle;
 	      container = $("#" + DirectPano.pano_div_id);

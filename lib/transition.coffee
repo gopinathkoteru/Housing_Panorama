@@ -1,7 +1,7 @@
 root = require("./annotation.js")
 class transition
-	constructor:(path,hotspot_angles) ->
-		@path =  path
+	constructor:(pano, hotspot_angles) ->
+		@pano =  pano
 		@current_pano = 0
 		@moving = false
 		@hotspot_angles = hotspot_angles
@@ -12,7 +12,7 @@ class transition
 	
 		root.clear_images[@current_pano] = []
 
-		path = path + (@current_pano + 1) + "/mobile_"
+		path = @pano[@current_pano][1] + "mobile_"
 
 		@blur_pano = new root.Pano(0,true)
 		@clear_pano = new root.Pano(0, false)
@@ -26,9 +26,9 @@ class transition
 
 	save_clear_images: ->
 		current_pano = @current_pano
-		path = @path
+		pano = @pano
 		if not root.clear_images[current_pano]
-			path = path + (current_pano + 1) + "/mobile_"
+			path = pano[current_pano][1] + "mobile_"
 			root.clear_images[current_pano] = []	
 			i = 0
 			while i < 6
@@ -53,14 +53,14 @@ class transition
 		i = 0
 		current_pano = @current_pano
 		hotspot_angles = @hotspot_angles
-		path = @path
+		pano = @pano
 		while i < hotspot_angles[current_pano].length
 			do ->
 				pano_id = hotspot_angles[current_pano][i][0]
 
 				if not root.blur_images[pano_id]
 					root.blur_images[pano_id] = []
-					fpath = path + "blur_" + (pano_id + 1) + "/mobile_"
+					fpath = pano[pano_id][1] + "../blur_" + (pano_id + 1) + "/mobile_"
 					j = 0
 					while j < 6
 						do ->
@@ -87,7 +87,7 @@ class transition
 		current_pano = @current_pano
 		pano_id = @hotspot_angles[current_pano][hotspot_id][0]
 		hotspot_angle = @hotspot_angles[current_pano][hotspot_id][1]
-		dist = @hotspot_angles[current_pano][hotspot_id][2]
+		dist = 60
 
 		@moving = true
 		@current_pano = pano_id
@@ -127,7 +127,7 @@ class transition
 	load_blur_pano : (dist,hotspot_angle)->
 		if @destroy
 			return $.when().done(->).promise()
-		path = @path + "blur_" + (@current_pano + 1) + "/mobile_"
+		path = @pano[@current_pano][1] + "../blur_" + (@current_pano + 1) + "/mobile_"
 		dfrd = []
 		i = 0
 		while i < 6
@@ -150,7 +150,7 @@ class transition
 	load_clear_pano : ->
 		if @destroy
 			return $.when().done(->).promise()
-		path = @path + (@current_pano + 1) + "/mobile_"
+		path = @pano[@current_pano][1] + "mobile_"
 		dfrd = []
 		i = 0
 		while i < 6

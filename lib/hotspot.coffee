@@ -21,16 +21,17 @@ class hotspot
 		material = @load_texture()
 		hotspot = new THREE.Mesh( geometry, material )
 		rad_angle = THREE.Math.degToRad( angle )
-		hotspot.position.x = dist*Math.cos(rad_angle)
+		hotspot.position.x = 60*Math.cos(rad_angle)
 		hotspot.position.y = -50
-		hotspot.position.z = dist*Math.sin(rad_angle)
+		hotspot.position.z = 60*Math.sin(rad_angle)
 		hotspot.renderOrder = 1
 		v = new (THREE.Vector3)(-hotspot.position.x, 400, -hotspot.position.z)
 		hotspot.lookAt(v)
 		geometry = new THREE.PlaneBufferGeometry( 1, 1, 1 )
 		panoid = @panoid
-
-		text_to_show = DirectPano.hotspot_text[@hotspot_angles[panoid][hotspotId][0]]
+		text_to_show = ""
+		if @hotspot_angles[panoid][hotspotId][3] != undefined
+			text_to_show = @hotspot_angles[panoid][hotspotId][3]
 		hotspot.panoid = @hotspot_angles[panoid][hotspotId][0]
 		hotspot.deg_angle = angle
 		

@@ -119,12 +119,9 @@ $('#add-hotspot-button').click ->
 	return
 
 $('#save-hotspot-button').click ->
-	full_dataset = localStorage.getItem('full_dataset')
-	full_dataset = JSON.parse(full_dataset)
 	if full_dataset[$("#house-list").val()] == undefined
 		one_dataset = {
-			"pano_path": undefined,
-			"hotspot": {}
+			#"pano_path": undefined
 		}
 		full_dataset[$("#house-list").val()] = one_dataset
 	else
@@ -134,36 +131,50 @@ $('#save-hotspot-button').click ->
 	if from_id == to_id
 		alert "Cannot add hotspot to same pano"
 		return
+	pano_path = $("#pano-path").val()
+	title = $("#pano-title").val()
+	if one_dataset[from_id] == undefined
+		one_dataset[from_id] = {
+			"path": pano_path,   # The path of the folder where images are stored
+			"title": title,    # Title of the scene e.g. Hall
+			"hotspot": []
+		}
 	angle = root.theta
 	text = $("#hotspot-title").val()
 	error = $("#adjust").val()
 	error = parseInt(error)
-	pano_path = $("#pano-path").val()
-	one_dataset["pano_path"] = pano_path
-	dict = {
-		"to_id": to_id,
-		"angle": angle,
-		"text": text,
-		"error": error
-	}
-	hotspot = one_dataset["hotspot"]
-	if hotspot[from_id] == undefined
-		hotspot[from_id] = []
+	one_dataset["num_panos"] = $("#list1 option").size();
+	if text
+		dict = {
+			"to_id": to_id,
+			"angle": angle,
+			"error": error,
+			"text": text
+		}
+	else
+		dict = {
+			"to_id": to_id,
+			"angle": angle,
+			"error": error,
+		}
+	hotspot = one_dataset[from_id]["hotspot"]
 	i = 0
 	# Check if the hotspot already exist then replace the old one
-	while i < hotspot[from_id].length
-		if hotspot[from_id][i]["to_id"] == to_id
+	while i < hotspot.length
+		if hotspot[i]["to_id"] == to_id
 			break
 		i++
-	if i != hotspot[from_id].length
-		hotspot[from_id][i] = dict
+	if i != hotspot.length
+		hotspot[i] = dict
 	else
-		hotspot[from_id].push(dict)
-	one_dataset["hotspot"] = hotspot
+		hotspot.push(dict)
+	one_dataset[from_id]["hotspot"] = hotspot
 	console.log full_dataset
-	localStorage.setItem('full_dataset', JSON.stringify(full_dataset));
 	$('#add-hotspot-image').css 'display', 'none'
 	return
+
+$("#save-all-hotspots-button").click ->
+	localStorage.setItem('full_dataset', JSON.stringify(full_dataset))
 
 $('#container').click (e) ->
 	if $('#add-hotspot-image').css('display') == 'block'

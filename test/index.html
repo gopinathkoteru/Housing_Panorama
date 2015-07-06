@@ -47,20 +47,23 @@
                 var value = sel.options[sel.selectedIndex].value;
                 if(value=="pano1")
                 {
-                    DirectPano.hotspots_angle = [[[1, 70, 110], [2, 340, 90]], [[0, 225, 110]], [[0, 140, 90], [3, 0, 90]], [[2, 190, 90], [4, 330, 90], [5, 53, 140]], [[3, 135, 90], [9, 332, 90]], [[3, 222, 140], [6, 315, 55], [11, 47, 50]], [[5, 120, 55], [7, 210, 50], [8, 295, 130]], [[6, 25, 50]], [[6, 123, 130], [9, 220, 90]], [[8, 70, 50], [4, 177, 100]], [[11, 340, 45]], [[12, 320, 60], [5, 230, 45], [10, 170, 45]], [[11, 135, 60], [13, 45, 50], [18, 313, 53]], [[12, 245, 50], [14, 130, 75], [16, 63, 100]], [[13, 305, 75], [15, 145, 50]], [[14, 305, 50]], [[13, 220, 100], [17, 75, 50]], [[16, 255, 55]], [[12, 130, 53], [19, 328, 130], [20, 10, 110]], [[18, 135, 130]], [[18, 182, 90], [21, 40, 80]], [[20, 215, 85]]];
-                    DirectPano.hotspot_text = ["Exit", "Kitchen", "Hall Entrance", "Middle of Hall", "Sofa", "Somewhere", "1st Room Entrance", "Almirah", "Balcony 2" , "Balcony 1"];
+                    DirectPano.hotspots_angle = full_dataset["panos-house"].hotspots_angle;
+                    DirectPano.pano = full_dataset["panos-house"].pano;
+                    //DirectPano.hotspots_angle = [[[1, 70, 110, "Kitchen"], [2, 340, 90, "Hall Entrance"]], [[0, 225, 110, "Main Door"]], [[0, 140, 90, "Main Door"], [3, 0, 90, "Hall Center"]], [[2, 190, 90, "Hall Entrance"], [4, 330, 90, "Hall Window"], [5, 53, 140]], [[3, 135, 90, "Hall Center"], [9, 332, 90]], [[3, 222, 140, "Hall Center"], [6, 315, 55, "Bedroom 1"], [11, 47, 50]], [[5, 120, 55], [7, 210, 50], [8, 295, 130]], [[6, 25, 50, "Bedroom 1"]], [[6, 123, 130, "Bedroom 1"], [9, 220, 90]], [[8, 70, 50], [4, 177, 100, "Hall Window"]], [[11, 340, 45]], [[12, 320, 60], [5, 230, 45], [10, 170, 45, "Bathroom 1"]], [[11, 135, 60], [13, 45, 50, "Bedroom 3"], [18, 313, 53, "Bedroom 2"]], [[12, 245, 50], [14, 130, 75], [16, 63, 100]], [[13, 305, 75, "Bedroom 3"], [15, 145, 50, "Bathroom 3"]], [[14, 305, 50]], [[13, 220, 100, "Bedroom 3"], [17, 75, 50]], [[16, 255, 55]], [[12, 130, 53], [19, 328, 130, "Bathroom 2"], [20, 10, 110]], [[18, 135, 130, "Bedroom 2"]], [[18, 182, 90, "Bedroom 2"], [21, 40, 80]], [[20, 215, 85]]];
+                    DirectPano.pano = [];
+                    title = "Some Title";
+                    for(var i=0;i<22;i++)
+                        DirectPano.pano[i] = [title, "./Dataset/panos-house/" + (i + 1) + "/"];
                     DirectPano.pano_path = "./Dataset/panos-house/";
                 }
                 else if(value=="pano2")
                 {
-                    DirectPano.hotspots_angle = [[[1, 19, 47]], [[2, 322, 48], [4, 21, 98], [0, 213, 43]], [[3, 17, 58], [1, 140, 48]], [[2, 203, 58], [4, 95, 45]], [[3, 275, 41], [1, 198, 93]]];
-                    DirectPano.hotspot_text = ["Exit", "Door", "Almirah", "AC", "Curtains"];
+                    DirectPano.hotspots_angle = [[[1, 19, 47, "Door"]], [[2, 322, 48, "Almirah"], [4, 21, 98, "Curtains"], [0, 213, 43, "Exit"]], [[3, 17, 58, "AC"], [1, 140, 48, "Door"]], [[2, 203, 58, "Almirah"], [4, 95, 45, "AC"]], [[3, 275, 41, "Almirah"], [1, 198, 93, "Door"]]];
                     DirectPano.pano_path = "./Dataset/panos/";
                 }
                 else if(value=="pano3")
                 {
-                    DirectPano.hotspots_angle = [[[1, 7, 110], [3, 270, 80]], [[0, 185, 110], [2, 275, 80]], [[1, 100, 80], [3, 190, 110]], [[2, 3, 110], [0, 95, 85]]];
-                    DirectPano.hotspot_text = ["Corner 1", "Corner 2", "Corner 3", "Corner 4"];
+                    DirectPano.hotspots_angle = [[[1, 7, 110, "Corner 2"], [3, 270, 80, "Corner 4"]], [[0, 185, 110, "Corner 1"], [2, 275, 80, "Corner 3"]], [[1, 100, 80, "Corner 2"], [3, 190, 110, "Corner 4"]], [[2, 3, 110, "Corner 3"], [0, 95, 85, "Corner 1"]]];
                     DirectPano.pano_path = "./Dataset/panos4/";
                 }
                 remove_pano()
