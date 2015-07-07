@@ -617,11 +617,17 @@
 	      });
 	      div.prepend("<img class='annotation' height='40px' width='40px' src='../test/images/info.png'></img> <div class='hotspot-title'> <div class='hotspot-text'>" + this.annotation_angles[this.panoid][anno_id][2] + "</div> </div> <div class='info-hotspot'>" + this.annotation_angles[this.panoid][anno_id][3] + "</div>");
 	      $("#" + DirectPano.pano_div_id).append(div);
-	      $("#" + annotation_id).click(function() {
-	        if ($("#" + annotation_id).find('.info-hotspot').css('visibility') === 'visible') {
-	          return $("#" + annotation_id).find('.info-hotspot').css('visibility', 'hidden');
+	      $("#" + annotation_id).bind('click touchstart', function() {
+	        if ($("#" + annotation_id).find('.hotspot-title').css('visibility') === 'visible' || $("#" + annotation_id).find('.hotspot-title').css('opacity') === '1') {
+	          $("#" + annotation_id).find('.info-hotspot').css('visibility', 'hidden');
+	          $("#" + annotation_id).find('.hotspot-title').css('visibility', 'hidden');
+	          $("#" + annotation_id).find('.hotspot-title').css('opacity', '0');
+	          $("#" + annotation_id).find('.annotation').css('border-radius', '100px');
 	        } else {
-	          return $("#" + annotation_id).find('.info-hotspot').css('visibility', 'visible');
+	          $("#" + annotation_id).find('.info-hotspot').css('visibility', 'visible');
+	          $("#" + annotation_id).find('.hotspot-title').css('visibility', 'visible');
+	          $("#" + annotation_id).find('.hotspot-title').css('opacity', '1');
+	          $("#" + annotation_id).find('.annotation').css('border-radius', '10px 0px 0px 0px');
 	        }
 	      });
 	    };
@@ -1223,6 +1229,7 @@
 	  init = function() {
 	    var container;
 	    container = $("#" + DirectPano.pano_div_id);
+	    container.width(DirectPano.initial_width + 'px').height(DirectPano.initial_height + 'px');
 	    scene = new THREE.Scene;
 	    texture_placeholder = $('<canvas/>').width(128).height(128);
 	    renderer = detect_webgl() ? new THREE.WebGLRenderer : new THREE.CanvasRenderer;
@@ -1231,7 +1238,7 @@
 	    renderer.setSize(container.outerWidth(), container.outerHeight());
 	    camera = new THREE.PerspectiveCamera(65, container.outerWidth() / container.outerHeight(), 1, 1100);
 	    camera.target = new THREE.Vector3(0, 0, 0);
-	    $('#' + DirectPano.image_div_id).click(function() {
+	    $('#' + DirectPano.image_div_id).bind('touchstart click', function() {
 	      go_fullscreen();
 	    });
 	  };

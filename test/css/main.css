@@ -30,23 +30,6 @@ div[id^="annotation_"] > .annotation
     cursor: pointer;
     -webkit-transition:width 0.5s;
 }
-div[id^="annotation_"] > .annotation:hover
-{
-    border-radius: 10px;
-    border-top-right-radius:0px;
-    border-bottom-right-radius:0px;
-    border-bottom-left-radius:0px;
-    visibility: visible;
-}
-div[id^="annotation_"] > .annotation:hover + .hotspot-title, div[id^="annotation_"] .hotspot-title:hover
-{
-    visibility: visible;
-    opacity: 1;
-}
-div[id^="annotation_"] > .annotation:hover + .info-hotspot
-{
-    opacity: 1;
-}
 div[id^="annotation_"] .hotspot-text {
     display: inline-block;
     vertical-align: middle;
@@ -70,16 +53,14 @@ div[id^="annotation_"] .hotspot-title
     border-bottom-right-radius:0px;
     left: 40px;
     top: 0;
-    width: 200px;
+    width: 150px;
     height: 40px;
     padding: 0;
     overflow: hidden;
     transition: opacity 600ms;
     opacity: 0
 }
-.hotspot-title:hover + .annotation {
-    visibility: hidden;
-}
+
 div[id^="annotation_"] .info-hotspot {
     visibility: hidden;
     transition: opacity 600ms;
@@ -87,7 +68,7 @@ div[id^="annotation_"] .info-hotspot {
     font-size: 16px;
     color: #fff;
     position: absolute;
-    width: 220px;
+    width: 170px;
     height: auto;
     top: 40px;
     left: 0;

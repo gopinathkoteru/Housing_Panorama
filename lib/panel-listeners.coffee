@@ -26,7 +26,6 @@ on_mouse_down = (event) ->
 	else if vector.z <0 and vector.x < 0
 		theta += 180
 	root.theta = parseInt(theta)
-	#console.log "Theta: ", root.theta
 	return
 
 on_mouse_move = (event) ->

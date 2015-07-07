@@ -66,6 +66,8 @@ detect_webgl = ->
 
 init = ->
 	container = $("#"+DirectPano.pano_div_id)
+
+	container.width(DirectPano.initial_width + 'px').height(DirectPano.initial_height + 'px')
 	scene = new (THREE.Scene)
 	
 	texture_placeholder = $('<canvas/>').width(128).height(128)
@@ -78,9 +80,9 @@ init = ->
 	renderer.setSize container.outerWidth(), container.outerHeight()
 	camera = new (THREE.PerspectiveCamera)(65, container.outerWidth() / container.outerHeight(), 1, 1100)
 	camera.target = new (THREE.Vector3)(0, 0, 0)
-	$('#'+ DirectPano.image_div_id).click(->
+	$('#'+ DirectPano.image_div_id).bind 'touchstart click', ->
 		go_fullscreen()
-		return)
+		return
 	return
 
 destroy = (dfrd)->

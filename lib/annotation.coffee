@@ -20,11 +20,20 @@ class annotation
 			"</div>
 			")
 		$("#" + DirectPano.pano_div_id).append(div)
-		$("#" + annotation_id).click ->
-			if $("#" + annotation_id).find('.info-hotspot').css('visibility') == 'visible'
+
+		$("#" + annotation_id).bind 'click touchstart', ->
+			if $("#" + annotation_id).find('.hotspot-title').css('visibility') == 'visible' or  $("#" + annotation_id).find('.hotspot-title').css('opacity') == '1'
 				$("#" + annotation_id).find('.info-hotspot').css('visibility', 'hidden')
+				$("#" + annotation_id).find('.hotspot-title').css('visibility', 'hidden')
+				$("#" + annotation_id).find('.hotspot-title').css('opacity', '0')
+				$("#" + annotation_id).find('.annotation').css('border-radius', '100px')
+				return
 			else
 				$("#" + annotation_id).find('.info-hotspot').css('visibility', 'visible')
+				$("#" + annotation_id).find('.hotspot-title').css('visibility', 'visible')
+				$("#" + annotation_id).find('.hotspot-title').css('opacity', '1')
+				$("#" + annotation_id).find('.annotation').css('border-radius', '10px 0px 0px 0px')
+				return
 		return
 	
 	add_annotations:(panoid)->
