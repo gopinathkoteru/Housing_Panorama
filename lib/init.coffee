@@ -7,6 +7,7 @@ raycaster = new (THREE.Raycaster)
 blur_images = {}
 clear_images = {}
 active = undefined
+is_fullscreen = false
 Config = 
 	img_name: ['r'
 		'l' 
@@ -38,6 +39,7 @@ go_fullscreen = ->
 		})
 	camera.aspect = container.outerWidth() / container.outerHeight()
 	camera.updateProjectionMatrix()
+	is_fullscreen = true
 	return
 
 escape_fullscreen = ->
@@ -53,6 +55,7 @@ escape_fullscreen = ->
 		})
 	camera.aspect = container.outerWidth() / container.outerHeight()
 	camera.updateProjectionMatrix()
+	is_fullscreen = false
 	return
 
 
@@ -101,6 +104,17 @@ destroy = (dfrd)->
 	Config.lat = 0
 	Config.stop_time = undefined
 	Config.autoplay  = true
+	return
+
+$(window).resize ->
+	container = $("#" + DirectPano.pano_div_id)
+	if(is_fullscreen == false)
+		container.width(Math.min(DirectPano.initial_width, window.innerWidth) + 'px').height(Math.min(DirectPano.initial_height, window.innerHeight) + 'px')
+	else
+		container.width(window.innerWidth + 'px').height(window.innerHeight + 'px')
+	renderer.setSize container.outerWidth(), container.outerHeight()
+	camera.aspect = container.outerWidth() / container.outerHeight()
+	camera.updateProjectionMatrix()
 	return
 
 init()
