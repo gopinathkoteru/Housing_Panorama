@@ -4,6 +4,7 @@
         <title>Housing Panorama</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+         <link rel="stylesheet" type="text/css" href="../test/css/main.css">
         <style>
         #container
         {
@@ -18,6 +19,11 @@
             position: absolute;
             right: 0px;
             top: 510px;
+        }
+        #annotation-panel{
+            position: absolute;
+            top : 510px;
+            left : 500px;
         }
         </style>
     </head>
@@ -39,7 +45,16 @@
             <input type="range" min="-50" max = "50" value = "0" step ="1" id = "adjust"/>
             <div id ="error"></div>
         </div>
+        
         <img id="add-hotspot-image" style="display:none;width:50px;height:50px;" src="../test/images/logo.png">
+        <div id = "annotation-panel">
+            <input id = "add-annotation-button" type = "button" value = "Add Annotation"/>
+            <input id = "fix-annotation-button" type = "button" value = "Fix Annotation"/><br/>
+            <input id="annotation-title" placeholder="Annotation Title">
+            <input id="annotation-desc" placeholder="Annotation Description"><br/>
+            <input id = "save-annotation-button" type = "button" value = "Save Annotations"/>
+
+        </div>
         <div id="hotspot-panel">
                 <input id="add-hotspot-button" type="button" value="Add Hotspot">
                 <input id="save-hotspot-button" type="button" value="Save Hotspot">
@@ -48,6 +63,8 @@
                 <input id="pano-title" placeholder="Title of the Source Pano">
                 <input id="pano-path" placeholder="Enter path of images folder">
         </div>
+
+
     	<script src="../test/bower_components/jquery/jquery.min.js"></script>
     	<script src="./three.min.js"></script>  
     	<script  src="../lib/housing-pano-panel.js"></script>

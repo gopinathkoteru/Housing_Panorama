@@ -15,3 +15,4 @@ lib/fallback-annotation.js
 lib/panel-init.js
 lib/panel-listeners.js
 lib/panel-pano.js
+lib/panel-annotation.js

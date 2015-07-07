@@ -1,4 +1,4 @@
-root = require('./panel-listeners.js')
+root = require('./panel-annotation.js')
 front_pano = undefined
 back_pano = undefined
 path = "../test/Dataset/panos-house/"
@@ -37,13 +37,17 @@ camera.target = new (THREE.Vector3)(0, 0, 0)
 
 animate = ->
 	requestAnimationFrame(animate)
-	if(root.Config.target != undefined and root.Config.current != undefined and Math.abs(root.Config.target - root.Config.current) > 0.1)
-		root.Config.current = root.Config.current + (root.Config.target - root.Config.current)*0.15
-		root.Config.lon = (root.Config.current + 360)%360
+	if(root.Config.target_lon != undefined and root.Config.current_lon != undefined and Math.abs(root.Config.target_lon - root.Config.current_lon) > 0.1)
+		root.Config.current_lon = root.Config.current_lon + (root.Config.target_lon - root.Config.current_lon)*0.15
+		root.Config.lon = (root.Config.current_lon + 360)%360
+	if(root.Config.target_lat != undefined and root.Config.current_lat != undefined and Math.abs(root.Config.target_lat - root.Config.current_lat) > 0.1)
+		root.Config.current_lat = root.Config.current_lat + (root.Config.target_lat - root.Config.current_lat)*0.15
+		root.Config.lat = root.Config.current_lat
 	update()
 	return
 
 update = ->
+	root.Config.lon = (root.Config.lon + 360)%360
 	phi = THREE.Math.degToRad(90 - (root.Config.lat))
 	theta = THREE.Math.degToRad(root.Config.lon)
 	camera.target.x = 500 * Math.sin(phi) * Math.cos(theta)

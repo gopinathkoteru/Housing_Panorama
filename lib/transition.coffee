@@ -87,7 +87,7 @@ class transition
 		current_pano = @current_pano
 		pano_id = @hotspot_angles[current_pano][hotspot_id][0]
 		hotspot_angle = @hotspot_angles[current_pano][hotspot_id][1]
-		dist = 60
+		error = @hotspot_angles[current_pano][hotspot_id][2]
 
 		@moving = true
 		@current_pano = pano_id
@@ -100,8 +100,8 @@ class transition
 		
 		old_pano_to_blur_pano = @old_pano_to_blur_pano.bind(this)
 		@preload_images()
-		@load_blur_pano(dist,hotspot_angle).done ->
-			old_pano_to_blur_pano(dist,hotspot_angle,rotate_angle)
+		@load_blur_pano(error,hotspot_angle).done ->
+			old_pano_to_blur_pano(error,hotspot_angle,rotate_angle)
 			return
 	
 		return
@@ -124,11 +124,12 @@ class transition
 		rotate_angle = rotate_angle + root.Config.lon
 		return rotate_angle
 
-	load_blur_pano : (dist,hotspot_angle)->
+	load_blur_pano : (error,hotspot_angle)->
 		if @destroy
 			return $.when().done(->).promise()
 		path = @pano[@current_pano][1] + "../blur_" + (@current_pano + 1) + "/mobile_"
 		dfrd = []
+		dist = 60
 		i = 0
 		while i < 6
 			dfrd[i] = $.Deferred()
@@ -141,13 +142,14 @@ class transition
 			@blur_pano.mesh.material.materials[i].map = @blur_pano.get_texture(@pano_id,path + root.Config.img_name[i] + ".jpg", dfrd[i], i)
 			@blur_pano.mesh.material.materials[i].opacity = 0
 			i++
-			
+		
+		@blur_pano.mesh.rotation.y = THREE.Math.degToRad(error)	
 		@blur_pano.mesh.position.x = dist*Math.cos(THREE.Math.degToRad(hotspot_angle ))
 		@blur_pano.mesh.position.z = dist*Math.sin(THREE.Math.degToRad(hotspot_angle ))
 
 		$.when.apply($, dfrd).done(->).promise()
 
-	load_clear_pano : ->
+	load_clear_pano :(error) ->
 		if @destroy
 			return $.when().done(->).promise()
 		path = @pano[@current_pano][1] + "mobile_"
@@ -157,6 +159,7 @@ class transition
 			dfrd[i] = $.Deferred()
 			i++
 		@clear_pano.pano_id = @current_pano
+		@clear_pano.mesh.rotation.y = THREE.Math.degToRad(error)
 		i = 0
 		while i < 6
 			@clear_pano.mesh.material.materials[i].map.dispose()
@@ -166,7 +169,7 @@ class transition
 
 		$.when.apply($, dfrd).done(->).promise()
 
-	old_pano_to_blur_pano :(dist,hotspot_angle,rotate_angle) ->
+	old_pano_to_blur_pano :(error,hotspot_angle,rotate_angle) ->
 		if @destroy
 			return
 		time1 = 0.4
@@ -184,12 +187,12 @@ class transition
 			TweenLite.to(clear_pano.mesh.material.materials[i], time, {opacity: 0,delay:del, ease: Expo.easeOut})
 			TweenLite.to(blur_pano.mesh.material.materials[i], time, {opacity: 1, delay:del,ease: Expo.easeOut})
 			i++
-
-		TweenLite.to(clear_pano.mesh.position, time, {x:-1*dist*Math.cos(THREE.Math.degToRad(hotspot_angle )),z:-1*dist*Math.sin(THREE.Math.degToRad(hotspot_angle )),delay:del,ease: Expo.easeOut,onComplete: @check_new_pano_load.bind(this)})
+		dist = 60
+		TweenLite.to(clear_pano.mesh.position, time, {x:-1*dist*Math.cos(THREE.Math.degToRad(hotspot_angle )),z:-1*dist*Math.sin(THREE.Math.degToRad(hotspot_angle )),delay:del,ease: Expo.easeOut,onComplete: @check_new_pano_load.bind(this),onCompleteParams : [error]})
 		
 		return
 
-	check_new_pano_load : ->
+	check_new_pano_load : (error)->
 		if @destroy
 			return
 
@@ -204,12 +207,12 @@ class transition
 			i++
 
 		blur_pano_to_new_pano = @blur_pano_to_new_pano.bind(this)
-		@load_clear_pano().done ->
-			blur_pano_to_new_pano()
+		@load_clear_pano(error).done ->
+			blur_pano_to_new_pano(error)
 			return
 		return
 
-	blur_pano_to_new_pano : ->
+	blur_pano_to_new_pano : (error)->
 		if @destroy
 			return
 		blur_pano = @blur_pano
@@ -223,7 +226,7 @@ class transition
 
 		while i < 6
 			if i is 5
-				TweenLite.to(clear_pano.mesh.material.materials[i], time, {opacity: 1, ease: Power0.easeOut, onComplete: @complete.bind(this)})
+				TweenLite.to(clear_pano.mesh.material.materials[i], time, {opacity: 1, ease: Power0.easeOut, onComplete: @complete.bind(this),onCompleteParams : [error]})
 			else
 				TweenLite.to(clear_pano.mesh.material.materials[i], time, {opacity: 1, ease: Power0.easeOut})
 			i++
@@ -232,10 +235,12 @@ class transition
 	alter_moving : ->
 		@moving = false
 	
-	complete : ->
+	complete : (error)->
 		if @destroy
 			return
 		
+		@clear_pano.mesh.rotation.y = 0
+		root.Config.lon += error
 		pano_id = @current_pano
 		alter_moving = @alter_moving.bind(this)
 		root.Hotspot.add_hotspots(pano_id).done ->
@@ -263,7 +268,6 @@ module.exports = root
 
 			
 			
-
 
 
 
