@@ -54,17 +54,30 @@
                     title = "Some Title";
                     for(var i=0;i<22;i++)
                         DirectPano.pano[i] = [title, "./Dataset/panos-house/" + (i + 1) + "/"];
-                    DirectPano.pano_path = "./Dataset/panos-house/";
                 }
                 else if(value=="pano2")
                 {
                     DirectPano.hotspots_angle = [[[1, 19, 47, "Door"]], [[2, 322, 48, "Almirah"], [4, 21, 98, "Curtains"], [0, 213, 43, "Exit"]], [[3, 17, 58, "AC"], [1, 140, 48, "Door"]], [[2, 203, 58, "Almirah"], [4, 95, 45, "AC"]], [[3, 275, 41, "Almirah"], [1, 198, 93, "Door"]]];
-                    DirectPano.pano_path = "./Dataset/panos/";
+                    var test_pano = [];
+                    var title = "Some Title";
+                    for(var i=0;i<5;i++)
+                    {
+                        test_pano[i] = [title, "./Dataset/panos/" + (i + 1) + "/"];
+                    }
+
+                    DirectPano.pano = test_pano;
                 }
                 else if(value=="pano3")
                 {
                     DirectPano.hotspots_angle = [[[1, 7, 110, "Corner 2"], [3, 270, 80, "Corner 4"]], [[0, 185, 110, "Corner 1"], [2, 275, 80, "Corner 3"]], [[1, 100, 80, "Corner 2"], [3, 190, 110, "Corner 4"]], [[2, 3, 110, "Corner 3"], [0, 95, 85, "Corner 1"]]];
-                    DirectPano.pano_path = "./Dataset/panos4/";
+                    var test_pano = [];
+                    var title = "Some Title";
+                    for(var i=0;i<5;i++)
+                    {
+                        test_pano[i] = [title, "./Dataset/panos4/" + (i + 1) + "/"];
+                    }
+
+                    DirectPano.pano = test_pano;
                 }
                 remove_pano()
                 show_pano();
