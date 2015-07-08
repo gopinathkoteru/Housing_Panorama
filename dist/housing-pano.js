@@ -364,11 +364,11 @@
 	    };
 
 	    transition.prototype.start = function(hotspot_id) {
-	      var current_pano, dist, hotspot_angle, old_pano_to_blur_pano, pano_id, rotate_angle;
+	      var current_pano, error, hotspot_angle, old_pano_to_blur_pano, pano_id, rotate_angle;
 	      current_pano = this.current_pano;
 	      pano_id = this.hotspot_angles[current_pano][hotspot_id][0];
 	      hotspot_angle = this.hotspot_angles[current_pano][hotspot_id][1];
-	      dist = 60;
+	      error = this.hotspot_angles[current_pano][hotspot_id][2];
 	      this.moving = true;
 	      this.current_pano = pano_id;
 	      this.save_clear_images();
@@ -377,8 +377,8 @@
 	      root.Annotation.remove_annotations();
 	      old_pano_to_blur_pano = this.old_pano_to_blur_pano.bind(this);
 	      this.preload_images();
-	      this.load_blur_pano(dist, hotspot_angle).done(function() {
-	        old_pano_to_blur_pano(dist, hotspot_angle, rotate_angle);
+	      this.load_blur_pano(error, hotspot_angle).done(function() {
+	        old_pano_to_blur_pano(error, hotspot_angle, rotate_angle);
 	      });
 	    };
 
@@ -400,13 +400,14 @@
 	      return rotate_angle;
 	    };
 
-	    transition.prototype.load_blur_pano = function(dist, hotspot_angle) {
-	      var dfrd, i, path;
+	    transition.prototype.load_blur_pano = function(error, hotspot_angle) {
+	      var dfrd, dist, i, path;
 	      if (this.destroy) {
 	        return $.when().done(function() {}).promise();
 	      }
 	      path = this.pano[this.current_pano][1] + "../blur_" + (this.current_pano + 1) + "/mobile_";
 	      dfrd = [];
+	      dist = 60;
 	      i = 0;
 	      while (i < 6) {
 	        dfrd[i] = $.Deferred();
@@ -420,12 +421,13 @@
 	        this.blur_pano.mesh.material.materials[i].opacity = 0;
 	        i++;
 	      }
+	      this.blur_pano.mesh.rotation.y = THREE.Math.degToRad(error);
 	      this.blur_pano.mesh.position.x = dist * Math.cos(THREE.Math.degToRad(hotspot_angle));
 	      this.blur_pano.mesh.position.z = dist * Math.sin(THREE.Math.degToRad(hotspot_angle));
 	      return $.when.apply($, dfrd).done(function() {}).promise();
 	    };
 
-	    transition.prototype.load_clear_pano = function() {
+	    transition.prototype.load_clear_pano = function(error) {
 	      var dfrd, i, path;
 	      if (this.destroy) {
 	        return $.when().done(function() {}).promise();
@@ -438,6 +440,7 @@
 	        i++;
 	      }
 	      this.clear_pano.pano_id = this.current_pano;
+	      this.clear_pano.mesh.rotation.y = THREE.Math.degToRad(error);
 	      i = 0;
 	      while (i < 6) {
 	        this.clear_pano.mesh.material.materials[i].map.dispose();
@@ -448,8 +451,8 @@
 	      return $.when.apply($, dfrd).done(function() {}).promise();
 	    };
 
-	    transition.prototype.old_pano_to_blur_pano = function(dist, hotspot_angle, rotate_angle) {
-	      var blur_pano, clear_pano, del, i, time, time1;
+	    transition.prototype.old_pano_to_blur_pano = function(error, hotspot_angle, rotate_angle) {
+	      var blur_pano, clear_pano, del, dist, i, time, time1;
 	      if (this.destroy) {
 	        return;
 	      }
@@ -483,16 +486,18 @@
 	        });
 	        i++;
 	      }
+	      dist = 60;
 	      TweenLite.to(clear_pano.mesh.position, time, {
 	        x: -1 * dist * Math.cos(THREE.Math.degToRad(hotspot_angle)),
 	        z: -1 * dist * Math.sin(THREE.Math.degToRad(hotspot_angle)),
 	        delay: del,
 	        ease: Expo.easeOut,
-	        onComplete: this.check_new_pano_load.bind(this)
+	        onComplete: this.check_new_pano_load.bind(this),
+	        onCompleteParams: [error]
 	      });
 	    };
 
-	    transition.prototype.check_new_pano_load = function() {
+	    transition.prototype.check_new_pano_load = function(error) {
 	      var blur_pano_to_new_pano, i;
 	      if (this.destroy) {
 	        return;
@@ -507,12 +512,12 @@
 	        i++;
 	      }
 	      blur_pano_to_new_pano = this.blur_pano_to_new_pano.bind(this);
-	      this.load_clear_pano().done(function() {
-	        blur_pano_to_new_pano();
+	      this.load_clear_pano(error).done(function() {
+	        blur_pano_to_new_pano(error);
 	      });
 	    };
 
-	    transition.prototype.blur_pano_to_new_pano = function() {
+	    transition.prototype.blur_pano_to_new_pano = function(error) {
 	      var blur_pano, clear_pano, i, time;
 	      if (this.destroy) {
 	        return;
@@ -534,7 +539,8 @@
 	          TweenLite.to(clear_pano.mesh.material.materials[i], time, {
 	            opacity: 1,
 	            ease: Power0.easeOut,
-	            onComplete: this.complete.bind(this)
+	            onComplete: this.complete.bind(this),
+	            onCompleteParams: [error]
 	          });
 	        } else {
 	          TweenLite.to(clear_pano.mesh.material.materials[i], time, {
@@ -550,11 +556,13 @@
 	      return this.moving = false;
 	    };
 
-	    transition.prototype.complete = function() {
+	    transition.prototype.complete = function(error) {
 	      var alter_moving, pano_id;
 	      if (this.destroy) {
 	        return;
 	      }
+	      this.clear_pano.mesh.rotation.y = 0;
+	      root.Config.lon += error;
 	      pano_id = this.current_pano;
 	      alter_moving = this.alter_moving.bind(this);
 	      root.Hotspot.add_hotspots(pano_id).done(function() {
