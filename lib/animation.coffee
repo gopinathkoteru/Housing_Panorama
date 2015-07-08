@@ -17,12 +17,14 @@ class animation
 			if(root.Config.target_lon != undefined and root.Config.current_lon != undefined && Math.abs(root.Config.target_lon - root.Config.current_lon) > 0.1)
 				if root.Transition.moving == true
 					root.Config.target_lon == undefined
+					root.Config.current_lon = undefined
 				else
 					root.Config.current_lon = (root.Config.current_lon + (root.Config.target_lon - root.Config.current_lon)*0.15)
 					root.Config.lon = (root.Config.current_lon + 360)%360
 			if(root.Config.target_lat != undefined and root.Config.current_lat != undefined && Math.abs(root.Config.target_lat - root.Config.current_lat) > 0.1)
 				if root.Transition.moving == true
 					root.Config.target_lat = undefined
+					root.Config.current_lat = undefined
 				else
 					root.Config.current_lat = (root.Config.current_lat + (root.Config.target_lat - root.Config.current_lat)*0.15)
 					root.Config.lat = root.Config.current_lat

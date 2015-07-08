@@ -35,16 +35,22 @@ class transition
 				do ->
 					texture = new THREE.Texture( root.texture_placeholder )
 					image_index = i
-				
-					image = new Image()
-					image.onload = ->
-						image.onload = null
-						texture.image = this
-						texture.needsUpdate = true
-						root.clear_images[current_pano][image_index] = image
-						return
+					root.clear_images[current_pano][image_index] = {}
+					j = 0
+					while j < 4
+						do ->
+							offset = j
+							image = new Image()
+							image.onload = ->
+								image.onload = null
+								texture.image = this
+								texture.needsUpdate = true
+								root.clear_images[current_pano][image_index][offset] = image
+								return
 
-					image.src = path + root.Config.img_name[i] + ".jpg"
+							image.src = (path + root.Config.img_name[i] + "/" + j + ".jpg")
+							return
+						j++
 					return
 				i++
 		return
@@ -66,15 +72,22 @@ class transition
 						do ->
 							texture = new THREE.Texture( root.texture_placeholder )
 							image_index = j
+							root.blur_images[pano_id][image_index] = {}
+							k = 0
+							while k < 4
+								do ->
+									offset = k
 
-							image = new Image()
-							image.onload = ->
-								image.onload = null
-								texture.image = this
-								texture.needsUpdate = true
-								root.blur_images[pano_id][image_index] = image
-								return
-							image.src = fpath + root.Config.img_name[j] + ".jpg"
+									image = new Image()
+									image.onload = ->
+										image.onload = null
+										texture.image = this
+										texture.needsUpdate = true
+										root.blur_images[pano_id][image_index][offset] = image
+										return
+									image.src = (fpath + root.Config.img_name[j] + "/" + k + ".jpg")
+									return
+								k++
 							return
 						j++
 				return
@@ -131,16 +144,19 @@ class transition
 		dfrd = []
 		dist = 60
 		i = 0
-		while i < 6
+		while i < 24
 			dfrd[i] = $.Deferred()
 			i++
 
 		@blur_pano.pano_id = @current_pano
 		i = 0
 		while i < 6
-			@blur_pano.mesh.material.materials[i].map.dispose()
-			@blur_pano.mesh.material.materials[i].map = @blur_pano.get_texture(@pano_id,path + root.Config.img_name[i] + ".jpg", dfrd[i], i)
-			@blur_pano.mesh.material.materials[i].opacity = 0
+			j = 0
+			while j < 4
+				@blur_pano.mesh.children[i].children[j].material.map.dispose()
+				@blur_pano.mesh.children[i].children[j].material.map = @blur_pano.get_texture(@pano_id,path + root.Config.img_name[i] + "/" + j + ".jpg", dfrd[4*i + j], i,j)
+				@blur_pano.mesh.children[i].children[j].material.opacity = 0
+				j++
 			i++
 		
 		@blur_pano.mesh.rotation.y = THREE.Math.degToRad(error)	
@@ -155,16 +171,19 @@ class transition
 		path = @pano[@current_pano][1] + "mobile_"
 		dfrd = []
 		i = 0
-		while i < 6
+		while i < 24
 			dfrd[i] = $.Deferred()
 			i++
 		@clear_pano.pano_id = @current_pano
 		@clear_pano.mesh.rotation.y = THREE.Math.degToRad(error)
 		i = 0
 		while i < 6
-			@clear_pano.mesh.material.materials[i].map.dispose()
-			@clear_pano.mesh.material.materials[i].map = @clear_pano.get_texture(@pano_id,path + root.Config.img_name[i] + ".jpg", dfrd[i], i)
-			@clear_pano.mesh.material.materials[i].opacity = 0
+			j = 0
+			while j < 4 
+				@clear_pano.mesh.children[i].children[j].material.map.dispose()
+				@clear_pano.mesh.children[i].children[j].material.map = @clear_pano.get_texture(@pano_id,path + root.Config.img_name[i] + "/" + j + ".jpg", dfrd[4*i + j], i,j)
+				@clear_pano.mesh.children[i].children[j].material.opacity = 0
+				j++
 			i++
 
 		$.when.apply($, dfrd).done(->).promise()
@@ -184,8 +203,11 @@ class transition
 
 		i = 0
 		while i < 6
-			TweenLite.to(clear_pano.mesh.material.materials[i], time, {opacity: 0,delay:del, ease: Expo.easeOut})
-			TweenLite.to(blur_pano.mesh.material.materials[i], time, {opacity: 1, delay:del,ease: Expo.easeOut})
+			j = 0
+			while j < 4	
+				TweenLite.to(clear_pano.mesh.children[i].children[j].material, time, {opacity: 0,delay:del, ease: Expo.easeOut})
+				TweenLite.to(blur_pano.mesh.children[i].children[j].material, time, {opacity: 1, delay:del,ease: Expo.easeOut})
+				j++
 			i++
 		dist = 60
 		TweenLite.to(clear_pano.mesh.position, time, {x:-1*dist*Math.cos(THREE.Math.degToRad(hotspot_angle )),z:-1*dist*Math.sin(THREE.Math.degToRad(hotspot_angle )),delay:del,ease: Expo.easeOut,onComplete: @check_new_pano_load.bind(this),onCompleteParams : [error]})
@@ -201,9 +223,12 @@ class transition
 
 		i = 0
 		while i < 6
-			@clear_pano.mesh.material.materials[i].opacity = 0
-			@clear_pano.mesh.material.materials[i].map.dispose()
-			@blur_pano.mesh.material.materials[i].opacity = 1
+			j = 0
+			while j < 4
+				@clear_pano.mesh.children[i].children[j].material.opacity = 0
+				@clear_pano.mesh.children[i].children[j].material.map.dispose()
+				@blur_pano.mesh.children[i].children[j].material.opacity = 1
+				j++
 			i++
 
 		blur_pano_to_new_pano = @blur_pano_to_new_pano.bind(this)
@@ -220,15 +245,21 @@ class transition
 		time = 0.5
 		i = 0
 		while i < 6
-			TweenLite.to(blur_pano.mesh.material.materials[i], time, {opacity: 0, ease: Power0.easeOut})
+			j = 0
+			while j < 4
+				TweenLite.to(blur_pano.mesh.children[i].children[j].material, time, {opacity: 0, ease: Power0.easeOut})
+				j++
 			i++
 		i = 0
 
 		while i < 6
-			if i is 5
-				TweenLite.to(clear_pano.mesh.material.materials[i], time, {opacity: 1, ease: Power0.easeOut, onComplete: @complete.bind(this),onCompleteParams : [error]})
-			else
-				TweenLite.to(clear_pano.mesh.material.materials[i], time, {opacity: 1, ease: Power0.easeOut})
+			j = 0
+			while j < 4
+				if i is 5 and j is 3
+					TweenLite.to(clear_pano.mesh.children[i].children[j].material, time, {opacity: 1, ease: Power0.easeOut, onComplete: @complete.bind(this),onCompleteParams : [error]})
+				else
+					TweenLite.to(clear_pano.mesh.children[i].children[j].material, time, {opacity: 1, ease: Power0.easeOut})
+				j++
 			i++
 		return
 	
