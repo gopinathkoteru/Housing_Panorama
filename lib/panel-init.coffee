@@ -1,9 +1,9 @@
-root = require('./panel-annotation.js')
+root = require('./panel-hotspot.js')
 front_pano = undefined
 back_pano = undefined
 path = "../test/Dataset/panos-house/"
-full_dataset = {}
-localStorage.setItem('full_dataset', JSON.stringify(full_dataset))
+root.full_dataset = {}
+localStorage.setItem('full_dataset', JSON.stringify(root.full_dataset))
 one_dataset = {
 	"pano_path": undefined,
 	"hotspot": {}
@@ -118,67 +118,28 @@ $("#list2").on('change',->
 	change_pano(2,value)
 	return)
 
-$('#add-hotspot-button').click ->
-	$('#add-hotspot-image').css 'display', 'block'
-	return
-
-$('#save-hotspot-button').click ->
-	if full_dataset[$("#house-list").val()] == undefined
-		one_dataset = {
-			#"pano_path": undefined
-		}
-		full_dataset[$("#house-list").val()] = one_dataset
+$("#save-data-button").click ->
+	root.save_annotation()
+	root.save_hotspot()
+	if root.full_dataset[$("#house-list").val()] == undefined
+		one_dataset = {}
+		root.full_dataset[$("#house-list").val()] = one_dataset
 	else
-		one_dataset = full_dataset[$("#house-list").val()]
+		one_dataset = root.full_dataset[$("#house-list").val()]
 	from_id = $("#list1").val() - 1
-	to_id = $("#list2").val() - 1
-	if from_id == to_id
-		alert "Cannot add hotspot to same pano"
-		return
 	pano_path = $("#pano-path").val()
 	title = $("#pano-title").val()
 	if one_dataset[from_id] == undefined
 		one_dataset[from_id] = {
 			"path": pano_path,   # The path of the folder where images are stored
 			"title": title,    # Title of the scene e.g. Hall
-			"hotspot": []
+			"hotspot": [],
+			"annotation": [],
 		}
-	angle = root.theta
-	text = $("#hotspot-title").val()
-	error = $("#adjust").val()
-	error = parseInt(error)
 	one_dataset["num_panos"] = $("#list1 option").size();
-	if text
-		dict = {
-			"to_id": to_id,
-			"angle": angle,
-			"error": error,
-			"text": text
-		}
-	else
-		dict = {
-			"to_id": to_id,
-			"angle": angle,
-			"error": error,
-		}
-	hotspot = one_dataset[from_id]["hotspot"]
-	i = 0
-	# Check if the hotspot already exist then replace the old one
-	while i < hotspot.length
-		if hotspot[i]["to_id"] == to_id
-			break
-		i++
-	if i != hotspot.length
-		hotspot[i] = dict
-	else
-		hotspot.push(dict)
-	one_dataset[from_id]["hotspot"] = hotspot
-	console.log full_dataset
-	$('#add-hotspot-image').css 'display', 'none'
-	return
-
-$("#save-all-hotspots-button").click ->
-	localStorage.setItem('full_dataset', JSON.stringify(full_dataset))
+	one_dataset[from_id]["annotation"] = root.annotation_angles
+	one_dataset[from_id]["hotspot"] = root.hotspots_angle
+	localStorage.setItem('full_dataset', JSON.stringify(root.full_dataset))
 
 $('#container').click (e) ->
 	if $('#add-hotspot-image').css('display') == 'block'

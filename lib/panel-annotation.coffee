@@ -1,5 +1,5 @@
 root = require('./panel-listeners.js')
-annotation_count = 0
+root.annotation_count = 0
 angle = undefined
 angle1 = undefined
 onPointerDownPointerX = undefined
@@ -12,7 +12,7 @@ lon = 0
 uns_annotation = undefined
 
 $("#add-annotation-button").on('click',->
-	annotation_id = "annotation_" + annotation_count 
+	annotation_id = "annotation_" + root.annotation_count 
 	div = $("<div></div>",{id : annotation_id})
 	div.prepend("<img class='annotation' height='40px' width='40px' src='../test/images/info.png'></img>
 		<div class='hotspot-title'>
@@ -26,6 +26,7 @@ $("#add-annotation-button").on('click',->
 	delete_div = $("<img height='20px' width='20px' src = '../test/images/delete.png'/>")
 	delete_div.click ->
 		div.remove()
+		delete_div.remove()
 	div.append(delete_div)
 
 	div.attr('lat' ,parseInt(root.Config.lat))
@@ -38,42 +39,57 @@ $("#add-annotation-button").on('click',->
 	$("#container").append(div)
 	console.log(div)
 	uns_annotation = div
-	$("#" + annotation_id).click ->
-		if $("#" + annotation_id).find('.info-hotspot').css('visibility') == 'visible'
+	$("#" + annotation_id).bind 'click touchstart', ->
+		if $("#" + annotation_id).find('.hotspot-title').css('visibility') == 'visible' or  $("#" + annotation_id).find('.hotspot-title').css('opacity') == '1'
 			$("#" + annotation_id).find('.info-hotspot').css('visibility', 'hidden')
+			$("#" + annotation_id).find('.hotspot-title').css('visibility', 'hidden')
+			$("#" + annotation_id).find('.hotspot-title').css('opacity', '0')
+			$("#" + annotation_id).find('.annotation').css('border-radius', '100px')
+			return
 		else
 			$("#" + annotation_id).find('.info-hotspot').css('visibility', 'visible')
+			$("#" + annotation_id).find('.hotspot-title').css('visibility', 'visible')
+			$("#" + annotation_id).find('.hotspot-title').css('opacity', '1')
+			$("#" + annotation_id).find('.annotation').css('border-radius', '10px 0px 0px 0px')
+			return
 	return)
 
 $("#fix-annotation-button").on('click',->
 	uns_annotation.attr('lat',parseInt(root.Config.lat))
 	uns_annotation.attr('lon',parseInt(root.Config.lon))
 	uns_annotation.find('.hotspot-text').html($("#annotation-title").val())
-	uns_annotation.find('.info-hotspot').html($("#annotation-desc").val())
-	annotation_count += 1
+	uns_annotation.find('.info-hotspot').html(nl2br($("#annotation-desc").val()))
+	root.annotation_count += 1
 	return)
 
-$("#save-annotation-button").on('click',->
+root.save_annotation = () ->
 	count = 0
-	annotation_angles = {}
+	annotation_angles = []
 	i = 0
-	while i < annotation_count
+	while i < root.annotation_count
 		annotation_id = "#annotation_" + i
 		annotation = $(annotation_id)
 		data_annotation = {}
-		if annotation
-			data_annotation.lon =  annotation.attr('lon')
-			data_annotation.lat = annotation.attr('lat')
+		if annotation.length != 0
+			data_annotation.lon = parseInt(annotation.attr('lon'))
+			data_annotation.lat = parseInt(annotation.attr('lat'))
 			data_annotation.title = annotation.find('.hotspot-text').html()
-			data_annotation.desc = annotation.find('.info-hotspot').html()
+			data_annotation.desc = nl2br(annotation.find('.info-hotspot').html())
+			console.log data_annotation 
 			annotation_angles[count] = data_annotation
 			count = count + 1
+			annotation.remove()
 		i++
-	return)
+	root.annotation_angles = annotation_angles
+	return
+
+nl2br = (str)-> 
+	breakTag = '<br>'
+	return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag)
 	
 update = ()->
 	i = 0
-	while i < annotation_count
+	while i < root.annotation_count
 		annotation_id = "#annotation_" + i
 		annotation = $(annotation_id)
 	

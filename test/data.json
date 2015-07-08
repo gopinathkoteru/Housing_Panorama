@@ -2,21 +2,16 @@
   "panos-house": {
     "0": {
       "path": "./Dataset/panos-house/1/",
-      "title": "Main Entrance",
+      "title": "Entrance",
       "hotspot": [
         {
           "to_id": 1,
-          "angle": 70,
-          "error": 0,
+          "angle": 67,
+          "error": -26,
           "text": "Kitchen"
-        },
-        {
-          "to_id": 2,
-          "angle": 343,
-          "error": 0,
-          "text": "Hall Entrance"
         }
-      ]
+      ],
+      "annotation": []
     },
     "1": {
       "path": "./Dataset/panos-house/2/",
@@ -24,9 +19,23 @@
       "hotspot": [
         {
           "to_id": 0,
-          "angle": 225,
+          "angle": 221,
           "error": 0,
           "text": "Entrance"
+        }
+      ],
+      "annotation": [
+        {
+          "lon": 249,
+          "lat": 1,
+          "title": "Fridge",
+          "desc": "LG"
+        },
+        {
+          "lon": 51,
+          "lat": -26,
+          "title": "Washing Machine",
+          "desc": "LG"
         }
       ]
     },
