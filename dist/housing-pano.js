@@ -310,17 +310,26 @@
 	        i = 0;
 	        while (i < 6) {
 	          (function() {
-	            var image, image_index, texture;
+	            var image_index, j, texture;
 	            texture = new THREE.Texture(root.texture_placeholder);
 	            image_index = i;
-	            image = new Image();
-	            image.onload = function() {
-	              image.onload = null;
-	              texture.image = this;
-	              texture.needsUpdate = true;
-	              root.clear_images[current_pano][image_index] = image;
-	            };
-	            image.src = path + root.Config.img_name[i] + ".jpg";
+	            root.clear_images[current_pano][image_index] = {};
+	            j = 0;
+	            while (j < 4) {
+	              (function() {
+	                var image, offset;
+	                offset = j;
+	                image = new Image();
+	                image.onload = function() {
+	                  image.onload = null;
+	                  texture.image = this;
+	                  texture.needsUpdate = true;
+	                  root.clear_images[current_pano][image_index][offset] = image;
+	                };
+	                image.src = path + root.Config.img_name[i] + "/" + j + ".jpg";
+	              })();
+	              j++;
+	            }
 	          })();
 	          i++;
 	        }
@@ -343,17 +352,26 @@
 	            j = 0;
 	            while (j < 6) {
 	              (function() {
-	                var image, image_index, texture;
+	                var image_index, k, texture;
 	                texture = new THREE.Texture(root.texture_placeholder);
 	                image_index = j;
-	                image = new Image();
-	                image.onload = function() {
-	                  image.onload = null;
-	                  texture.image = this;
-	                  texture.needsUpdate = true;
-	                  root.blur_images[pano_id][image_index] = image;
-	                };
-	                image.src = fpath + root.Config.img_name[j] + ".jpg";
+	                root.blur_images[pano_id][image_index] = {};
+	                k = 0;
+	                while (k < 4) {
+	                  (function() {
+	                    var image, offset;
+	                    offset = k;
+	                    image = new Image();
+	                    image.onload = function() {
+	                      image.onload = null;
+	                      texture.image = this;
+	                      texture.needsUpdate = true;
+	                      root.blur_images[pano_id][image_index][offset] = image;
+	                    };
+	                    image.src = fpath + root.Config.img_name[j] + "/" + k + ".jpg";
+	                  })();
+	                  k++;
+	                }
 	              })();
 	              j++;
 	            }
@@ -401,7 +419,7 @@
 	    };
 
 	    transition.prototype.load_blur_pano = function(error, hotspot_angle) {
-	      var dfrd, dist, i, path;
+	      var dfrd, dist, i, j, path;
 	      if (this.destroy) {
 	        return $.when().done(function() {}).promise();
 	      }
@@ -409,16 +427,20 @@
 	      dfrd = [];
 	      dist = 60;
 	      i = 0;
-	      while (i < 6) {
+	      while (i < 24) {
 	        dfrd[i] = $.Deferred();
 	        i++;
 	      }
 	      this.blur_pano.pano_id = this.current_pano;
 	      i = 0;
 	      while (i < 6) {
-	        this.blur_pano.mesh.material.materials[i].map.dispose();
-	        this.blur_pano.mesh.material.materials[i].map = this.blur_pano.get_texture(this.pano_id, path + root.Config.img_name[i] + ".jpg", dfrd[i], i);
-	        this.blur_pano.mesh.material.materials[i].opacity = 0;
+	        j = 0;
+	        while (j < 4) {
+	          this.blur_pano.mesh.children[i].children[j].material.map.dispose();
+	          this.blur_pano.mesh.children[i].children[j].material.map = this.blur_pano.get_texture(this.pano_id, path + root.Config.img_name[i] + "/" + j + ".jpg", dfrd[4 * i + j], i, j);
+	          this.blur_pano.mesh.children[i].children[j].material.opacity = 0;
+	          j++;
+	        }
 	        i++;
 	      }
 	      this.blur_pano.mesh.rotation.y = THREE.Math.degToRad(error);
@@ -428,14 +450,14 @@
 	    };
 
 	    transition.prototype.load_clear_pano = function(error) {
-	      var dfrd, i, path;
+	      var dfrd, i, j, path;
 	      if (this.destroy) {
 	        return $.when().done(function() {}).promise();
 	      }
 	      path = this.pano[this.current_pano][1] + "mobile_";
 	      dfrd = [];
 	      i = 0;
-	      while (i < 6) {
+	      while (i < 24) {
 	        dfrd[i] = $.Deferred();
 	        i++;
 	      }
@@ -443,16 +465,20 @@
 	      this.clear_pano.mesh.rotation.y = THREE.Math.degToRad(error);
 	      i = 0;
 	      while (i < 6) {
-	        this.clear_pano.mesh.material.materials[i].map.dispose();
-	        this.clear_pano.mesh.material.materials[i].map = this.clear_pano.get_texture(this.pano_id, path + root.Config.img_name[i] + ".jpg", dfrd[i], i);
-	        this.clear_pano.mesh.material.materials[i].opacity = 0;
+	        j = 0;
+	        while (j < 4) {
+	          this.clear_pano.mesh.children[i].children[j].material.map.dispose();
+	          this.clear_pano.mesh.children[i].children[j].material.map = this.clear_pano.get_texture(this.pano_id, path + root.Config.img_name[i] + "/" + j + ".jpg", dfrd[4 * i + j], i, j);
+	          this.clear_pano.mesh.children[i].children[j].material.opacity = 0;
+	          j++;
+	        }
 	        i++;
 	      }
 	      return $.when.apply($, dfrd).done(function() {}).promise();
 	    };
 
 	    transition.prototype.old_pano_to_blur_pano = function(error, hotspot_angle, rotate_angle) {
-	      var blur_pano, clear_pano, del, dist, i, time, time1;
+	      var blur_pano, clear_pano, del, dist, i, j, time, time1;
 	      if (this.destroy) {
 	        return;
 	      }
@@ -474,16 +500,20 @@
 	      });
 	      i = 0;
 	      while (i < 6) {
-	        TweenLite.to(clear_pano.mesh.material.materials[i], time, {
-	          opacity: 0,
-	          delay: del,
-	          ease: Expo.easeOut
-	        });
-	        TweenLite.to(blur_pano.mesh.material.materials[i], time, {
-	          opacity: 1,
-	          delay: del,
-	          ease: Expo.easeOut
-	        });
+	        j = 0;
+	        while (j < 4) {
+	          TweenLite.to(clear_pano.mesh.children[i].children[j].material, time, {
+	            opacity: 0,
+	            delay: del,
+	            ease: Expo.easeOut
+	          });
+	          TweenLite.to(blur_pano.mesh.children[i].children[j].material, time, {
+	            opacity: 1,
+	            delay: del,
+	            ease: Expo.easeOut
+	          });
+	          j++;
+	        }
 	        i++;
 	      }
 	      dist = 60;
@@ -498,7 +528,7 @@
 	    };
 
 	    transition.prototype.check_new_pano_load = function(error) {
-	      var blur_pano_to_new_pano, i;
+	      var blur_pano_to_new_pano, i, j;
 	      if (this.destroy) {
 	        return;
 	      }
@@ -506,9 +536,13 @@
 	      this.clear_pano.mesh.position.z = 0;
 	      i = 0;
 	      while (i < 6) {
-	        this.clear_pano.mesh.material.materials[i].opacity = 0;
-	        this.clear_pano.mesh.material.materials[i].map.dispose();
-	        this.blur_pano.mesh.material.materials[i].opacity = 1;
+	        j = 0;
+	        while (j < 4) {
+	          this.clear_pano.mesh.children[i].children[j].material.opacity = 0;
+	          this.clear_pano.mesh.children[i].children[j].material.map.dispose();
+	          this.blur_pano.mesh.children[i].children[j].material.opacity = 1;
+	          j++;
+	        }
 	        i++;
 	      }
 	      blur_pano_to_new_pano = this.blur_pano_to_new_pano.bind(this);
@@ -518,7 +552,7 @@
 	    };
 
 	    transition.prototype.blur_pano_to_new_pano = function(error) {
-	      var blur_pano, clear_pano, i, time;
+	      var blur_pano, clear_pano, i, j, time;
 	      if (this.destroy) {
 	        return;
 	      }
@@ -527,26 +561,34 @@
 	      time = 0.5;
 	      i = 0;
 	      while (i < 6) {
-	        TweenLite.to(blur_pano.mesh.material.materials[i], time, {
-	          opacity: 0,
-	          ease: Power0.easeOut
-	        });
+	        j = 0;
+	        while (j < 4) {
+	          TweenLite.to(blur_pano.mesh.children[i].children[j].material, time, {
+	            opacity: 0,
+	            ease: Power0.easeOut
+	          });
+	          j++;
+	        }
 	        i++;
 	      }
 	      i = 0;
 	      while (i < 6) {
-	        if (i === 5) {
-	          TweenLite.to(clear_pano.mesh.material.materials[i], time, {
-	            opacity: 1,
-	            ease: Power0.easeOut,
-	            onComplete: this.complete.bind(this),
-	            onCompleteParams: [error]
-	          });
-	        } else {
-	          TweenLite.to(clear_pano.mesh.material.materials[i], time, {
-	            opacity: 1,
-	            ease: Power0.easeOut
-	          });
+	        j = 0;
+	        while (j < 4) {
+	          if (i === 5 && j === 3) {
+	            TweenLite.to(clear_pano.mesh.children[i].children[j].material, time, {
+	              opacity: 1,
+	              ease: Power0.easeOut,
+	              onComplete: this.complete.bind(this),
+	              onCompleteParams: [error]
+	            });
+	          } else {
+	            TweenLite.to(clear_pano.mesh.children[i].children[j].material, time, {
+	              opacity: 1,
+	              ease: Power0.easeOut
+	            });
+	          }
+	          j++;
 	        }
 	        i++;
 	      }
@@ -953,9 +995,45 @@
 
 	// Generated by CoffeeScript 1.9.3
 	(function() {
-	  var Pano, root;
+	  var Pano, dist, offset, root, sides;
 
 	  root = __webpack_require__(6);
+
+	  offset = [
+	    {
+	      position: [-150 / 2, 150 / 2, 0]
+	    }, {
+	      position: [150 / 2, 150 / 2, 0]
+	    }, {
+	      position: [-150 / 2, -150 / 2, 0]
+	    }, {
+	      position: [150 / 2, -150 / 2, 0]
+	    }
+	  ];
+
+	  dist = 150;
+
+	  sides = [
+	    {
+	      position: [-1 * dist, 0, 0],
+	      rotation: [0, Math.PI / 2, 0]
+	    }, {
+	      position: [dist, 0, 0],
+	      rotation: [0, -Math.PI / 2, 0]
+	    }, {
+	      position: [0, dist, 0],
+	      rotation: [Math.PI / 2, 0, Math.PI]
+	    }, {
+	      position: [0, -1 * dist, 0],
+	      rotation: [-Math.PI / 2, 0, Math.PI]
+	    }, {
+	      position: [0, 0, dist],
+	      rotation: [0, Math.PI, 0]
+	    }, {
+	      position: [0, 0, -1 * dist],
+	      rotation: [0, 0, 0]
+	    }
+	  ];
 
 	  Pano = (function() {
 	    function Pano(pano_id1, is_blur) {
@@ -966,39 +1044,61 @@
 	    }
 
 	    Pano.prototype.create_pano = function(path, opacity) {
-	      var geometry, i, materials;
-	      materials = [];
+	      var geometry, i, j, material, slice, slices;
+	      this.mesh = new THREE.Object3D();
 	      i = 0;
 	      while (i < 6) {
-	        materials.push(this.load_texture(path + root.Config.img_name[i] + ".jpg", i));
-	        i++;
-	      }
-	      geometry = root.Config.webgl ? new THREE.BoxGeometry(300, 300, 300, 7, 7, 7) : new THREE.BoxGeometry(300, 300, 300, 20, 20, 20);
-	      this.mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
-	      this.mesh.scale.x = -1;
-	      i = 0;
-	      while (i < 6) {
-	        this.mesh.material.materials[i].transparent = true;
-	        this.mesh.material.materials[i].opacity = opacity;
+	        j = 0;
+	        slices = new THREE.Object3D();
+	        root.clear_images[this.pano_id][i] = {};
+	        while (j < 4) {
+	          material = this.load_texture(path + root.Config.img_name[i] + '/' + j + ".jpg", i, j);
+	          geometry = root.Config.webgl ? new THREE.PlaneBufferGeometry(300 / 2, 300 / 2, 7, 7) : new THREE.PlaneGeometry(300 / 2, 300 / 2, 20, 20);
+	          slice = new THREE.Mesh(geometry, material);
+	          slice.material.transparent = true;
+	          slice.material.opacity = opacity;
+	          slice.position.x = offset[j].position[0];
+	          slice.position.y = offset[j].position[1];
+	          slice.position.z = offset[j].position[2];
+	          slices.add(slice);
+	          j++;
+	        }
+	        slices.rotation.x = sides[i].rotation[0];
+	        slices.rotation.y = sides[i].rotation[1];
+	        slices.rotation.z = sides[i].rotation[2];
+	        slices.updateMatrix();
+	        slices.position.x = sides[i].position[0];
+	        slices.position.y = sides[i].position[1];
+	        slices.position.z = sides[i].position[2];
+	        slices.updateMatrix();
+	        this.mesh.add(slices);
 	        i++;
 	      }
 	      root.scene.add(this.mesh);
 	    };
 
 	    Pano.prototype.destroy_pano = function() {
-	      var i;
+	      var i, j, results;
 	      this.destroy = true;
 	      root.scene.remove(this.mesh);
 	      i = 0;
+	      results = [];
 	      while (i < 6) {
-	        this.mesh.material.materials[i].map.dispose();
-	        this.mesh.material.materials[i].dispose();
-	        i++;
+	        j = 0;
+	        while (j < 4) {
+	          this.mesh.children[i].children[j].material.map.dispose();
+	          this.mesh.children[i].children[j].material.dispose();
+	          this.mesh.children[i].children[j].geometry.dispose();
+	          this.mesh.children[i].children[j] = null;
+	          j++;
+	        }
+	        this.mesh.children[i] = null;
+	        results.push(i++);
 	      }
-	      return this.mesh.geometry.dispose();
+	      return results;
 	    };
 
-	    Pano.prototype.load_texture = function(path, image_index) {
+	    Pano.prototype.load_texture = function(path, image_index, offset) {
 	      var image, material, pano_id, texture;
 	      texture = new THREE.Texture(root.texture_placeholder);
 	      material = new THREE.MeshBasicMaterial({
@@ -1014,27 +1114,27 @@
 	        image.onload = null;
 	        texture.image = this;
 	        texture.needsUpdate = true;
-	        root.clear_images[pano_id][image_index] = image;
+	        root.clear_images[pano_id][image_index][offset] = image;
 	      };
 	      image.src = path;
 	      return material;
 	    };
 
-	    Pano.prototype.get_texture = function(panoid, path, dfrd, image_index) {
+	    Pano.prototype.get_texture = function(panoid, path, dfrd, image_index, offset) {
 	      var flag, image, texture;
 	      flag = false;
 	      texture = new THREE.Texture(root.texture_placeholder);
 	      panoid = this.pano_id;
-	      if (root.clear_images[panoid][image_index]) {
+	      if (root.clear_images[panoid][image_index][offset]) {
 	        flag = true;
-	        texture.image = root.clear_images[panoid][image_index];
+	        texture.image = root.clear_images[panoid][image_index][offset];
 	        texture.needsUpdate = true;
 	        dfrd.resolve();
 	        return texture;
 	      }
-	      if (this.is_blur === true && root.blur_images[panoid][image_index]) {
+	      if (this.is_blur === true && root.blur_images[panoid][image_index][offset]) {
 	        flag = true;
-	        texture.image = root.blur_images[panoid][image_index];
+	        texture.image = root.blur_images[panoid][image_index][offset];
 	        texture.needsUpdate = true;
 	        dfrd.resolve();
 	        return texture;
@@ -1092,6 +1192,7 @@
 	        if (root.Config.target_lon !== void 0 && root.Config.current_lon !== void 0 && Math.abs(root.Config.target_lon - root.Config.current_lon) > 0.1) {
 	          if (root.Transition.moving === true) {
 	            root.Config.target_lon === void 0;
+	            root.Config.current_lon = void 0;
 	          } else {
 	            root.Config.current_lon = root.Config.current_lon + (root.Config.target_lon - root.Config.current_lon) * 0.15;
 	            root.Config.lon = (root.Config.current_lon + 360) % 360;
@@ -1100,6 +1201,7 @@
 	        if (root.Config.target_lat !== void 0 && root.Config.current_lat !== void 0 && Math.abs(root.Config.target_lat - root.Config.current_lat) > 0.1) {
 	          if (root.Transition.moving === true) {
 	            root.Config.target_lat = void 0;
+	            root.Config.current_lat = void 0;
 	          } else {
 	            root.Config.current_lat = root.Config.current_lat + (root.Config.target_lat - root.Config.current_lat) * 0.15;
 	            root.Config.lat = root.Config.current_lat;
