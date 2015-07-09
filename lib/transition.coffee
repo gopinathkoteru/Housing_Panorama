@@ -107,25 +107,38 @@ class transition
 
 	
 
-	start : (hotspot_id) ->
+	start : (hotspot_id, panoId) ->
 		current_pano = @current_pano
-		pano_id = @hotspot_angles[current_pano][hotspot_id][0]
-		hotspot_angle = @hotspot_angles[current_pano][hotspot_id][1]
-		error = @hotspot_angles[current_pano][hotspot_id][2]
+		pano_id = null
+		error = 0
+		hotspot_angle = 0
+		rotate_angle = 0
+		dist = 0
+		if hotspot_id != null
+			pano_id = @hotspot_angles[current_pano][hotspot_id][0]
+			hotspot_angle = @hotspot_angles[current_pano][hotspot_id][1]
+			error = @hotspot_angles[current_pano][hotspot_id][2]
+			dist = 60
+		else
+			pano_id = panoId
+			error = 0
 
 		@moving = true
 		@current_pano = pano_id
 		@save_clear_images()
 
-		rotate_angle = @find_rotation_angle(hotspot_angle)
+		if hotspot_id
+			rotate_angle = @find_rotation_angle(hotspot_angle)
+		else
+			rotate_angle = root.Config.lon
 
 		root.Hotspot.remove_hotspots()
 		root.Annotation.remove_annotations()
 		
 		old_pano_to_blur_pano = @old_pano_to_blur_pano.bind(this)
 		@preload_images()
-		@load_blur_pano(error,hotspot_angle).done ->
-			old_pano_to_blur_pano(error,hotspot_angle,rotate_angle)
+		@load_blur_pano(error,hotspot_angle,dist).done ->
+			old_pano_to_blur_pano(error,hotspot_angle,rotate_angle,dist)
 			return
 	
 		return
@@ -148,11 +161,10 @@ class transition
 		rotate_angle = rotate_angle + root.Config.lon
 		return rotate_angle
 
-	load_blur_pano : (error,hotspot_angle)->
+	load_blur_pano : (error,hotspot_angle,dist)->
 		if @destroy
 			return $.when().done(->).promise()
 		dfrd = []
-		dist = 60
 		i = 0
 		while i < 24
 			dfrd[i] = $.Deferred()
@@ -207,7 +219,7 @@ class transition
 
 		$.when.apply($, dfrd).done(->).promise()
 
-	old_pano_to_blur_pano :(error,hotspot_angle,rotate_angle) ->
+	old_pano_to_blur_pano :(error,hotspot_angle,rotate_angle,dist) ->
 		if @destroy
 			return
 		time1 = 0.4
@@ -228,7 +240,6 @@ class transition
 				TweenLite.to(blur_pano.mesh.children[i].children[j].material, time, {opacity: 1, delay:del,ease: Expo.easeOut})
 				j++
 			i++
-		dist = 60
 		TweenLite.to(clear_pano.mesh.position, time, {x:-1*dist*Math.cos(THREE.Math.degToRad(hotspot_angle )),z:-1*dist*Math.sin(THREE.Math.degToRad(hotspot_angle )),delay:del,ease: Expo.easeOut,onComplete: @check_new_pano_load.bind(this),onCompleteParams : [error]})
 		
 		return

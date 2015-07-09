@@ -395,22 +395,37 @@
 	      }
 	    };
 
-	    transition.prototype.start = function(hotspot_id) {
-	      var current_pano, error, hotspot_angle, old_pano_to_blur_pano, pano_id, rotate_angle;
+	    transition.prototype.start = function(hotspot_id, panoId) {
+	      var current_pano, dist, error, hotspot_angle, old_pano_to_blur_pano, pano_id, rotate_angle;
 	      current_pano = this.current_pano;
-	      pano_id = this.hotspot_angles[current_pano][hotspot_id][0];
-	      hotspot_angle = this.hotspot_angles[current_pano][hotspot_id][1];
-	      error = this.hotspot_angles[current_pano][hotspot_id][2];
+	      pano_id = null;
+	      error = 0;
+	      hotspot_angle = 0;
+	      rotate_angle = 0;
+	      dist = 0;
+	      if (hotspot_id !== null) {
+	        pano_id = this.hotspot_angles[current_pano][hotspot_id][0];
+	        hotspot_angle = this.hotspot_angles[current_pano][hotspot_id][1];
+	        error = this.hotspot_angles[current_pano][hotspot_id][2];
+	        dist = 60;
+	      } else {
+	        pano_id = panoId;
+	        error = 0;
+	      }
 	      this.moving = true;
 	      this.current_pano = pano_id;
 	      this.save_clear_images();
-	      rotate_angle = this.find_rotation_angle(hotspot_angle);
+	      if (hotspot_id) {
+	        rotate_angle = this.find_rotation_angle(hotspot_angle);
+	      } else {
+	        rotate_angle = root.Config.lon;
+	      }
 	      root.Hotspot.remove_hotspots();
 	      root.Annotation.remove_annotations();
 	      old_pano_to_blur_pano = this.old_pano_to_blur_pano.bind(this);
 	      this.preload_images();
-	      this.load_blur_pano(error, hotspot_angle).done(function() {
-	        old_pano_to_blur_pano(error, hotspot_angle, rotate_angle);
+	      this.load_blur_pano(error, hotspot_angle, dist).done(function() {
+	        old_pano_to_blur_pano(error, hotspot_angle, rotate_angle, dist);
 	      });
 	    };
 
@@ -432,13 +447,12 @@
 	      return rotate_angle;
 	    };
 
-	    transition.prototype.load_blur_pano = function(error, hotspot_angle) {
-	      var dfrd, dist, i, j, path;
+	    transition.prototype.load_blur_pano = function(error, hotspot_angle, dist) {
+	      var dfrd, i, j, path;
 	      if (this.destroy) {
 	        return $.when().done(function() {}).promise();
 	      }
 	      dfrd = [];
-	      dist = 60;
 	      i = 0;
 	      while (i < 24) {
 	        dfrd[i] = $.Deferred();
@@ -497,8 +511,8 @@
 	      return $.when.apply($, dfrd).done(function() {}).promise();
 	    };
 
-	    transition.prototype.old_pano_to_blur_pano = function(error, hotspot_angle, rotate_angle) {
-	      var blur_pano, clear_pano, del, dist, i, j, time, time1;
+	    transition.prototype.old_pano_to_blur_pano = function(error, hotspot_angle, rotate_angle, dist) {
+	      var blur_pano, clear_pano, del, i, j, time, time1;
 	      if (this.destroy) {
 	        return;
 	      }
@@ -536,7 +550,6 @@
 	        }
 	        i++;
 	      }
-	      dist = 60;
 	      TweenLite.to(clear_pano.mesh.position, time, {
 	        x: -1 * dist * Math.cos(THREE.Math.degToRad(hotspot_angle)),
 	        z: -1 * dist * Math.sin(THREE.Math.degToRad(hotspot_angle)),
@@ -1180,7 +1193,7 @@
 	        dfrd.resolve();
 	        return texture;
 	      }
-	      if (this.is_blur === true && root.blur_images[panoid][image_index][offset]) {
+	      if (this.is_blur === true && root.blur_images[panoid] && root.blur_images[panoid][image_index][offset]) {
 	        flag = true;
 	        texture.image = root.blur_images[panoid][image_index][offset];
 	        texture.needsUpdate = true;
@@ -1389,7 +1402,7 @@
 	  };
 
 	  init = function() {
-	    var container;
+	    var container, i, panos_list;
 	    container = $("#" + DirectPano.pano_div_id);
 	    container.width(DirectPano.initial_width + 'px').height(DirectPano.initial_height + 'px');
 	    scene = new THREE.Scene;
@@ -1403,17 +1416,33 @@
 	    $('#' + DirectPano.image_div_id).bind('touchstart click', function() {
 	      go_fullscreen();
 	    });
+	    panos_list = $("#panos-list");
+	    i = 0;
+	    while (i < 22) {
+	      if (DirectPano.pano[i][0]) {
+	        panos_list.append("<div id='panos-list-entry-" + i + "'>" + DirectPano.pano[i][0] + "</div>");
+	        $("#panos-list-entry-" + i).attr('pano_id', parseInt(i));
+	        $("#panos-list-entry-" + i).bind('click touchstart', function() {
+	          if (root.Transition.moving === false) {
+	            $('div[id^=panos-list-entry-]').removeClass('active');
+	            this.className = 'active';
+	            root.Transition.start(null, parseInt(this.getAttribute('pano_id')));
+	          }
+	        });
+	      }
+	      i++;
+	    }
 	  };
 
 	  destroy = function(dfrd) {
-	    var i, j, len, len1, prop;
+	    var j, k, len, len1, prop;
 	    root.Hotspot = void 0;
-	    for (i = 0, len = clear_images.length; i < len; i++) {
-	      prop = clear_images[i];
+	    for (j = 0, len = clear_images.length; j < len; j++) {
+	      prop = clear_images[j];
 	      clear_images[prop] = null;
 	    }
-	    for (j = 0, len1 = blur_images.length; j < len1; j++) {
-	      prop = blur_images[j];
+	    for (k = 0, len1 = blur_images.length; k < len1; k++) {
+	      prop = blur_images[k];
 	      blur_images[prop] = null;
 	    }
 	    clear_images = {};

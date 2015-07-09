@@ -86,3 +86,33 @@ div[id^="annotation_"] .info-hotspot {
     overflow-y: auto;
     -webkit-user-select: text;
 }
+#panos-list {
+  position: absolute;
+  left: -5px;
+  z-index: 20px;
+  max-height: 400px;
+  height: auto;
+  overflow-y: auto;
+  display: block;
+  padding-top: 50px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  vertical-align: middle;
+}
+div[id^="panos-list-entry-"] {
+  border: 1px solid rgba(1, 1, 1, 0.1);
+  border-right: 1px;
+  padding: 10px 20px 10px 20px;
+  cursor: pointer;
+  position: relative;
+  color: #fff;
+  font-size: 14px;
+  font-family: "din", "Calibri", "Cantarell", sans-serif;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.6) 0%, transparent);
+  left: -5;
+  opacity: 1;
+  vertical-align: middle;
+}
+div[id^="panos-list-entry-"]:hover, div[id^="panos-list-entry-"].active {
+  background: linear-gradient(to right, rgb(0, 0, 0) 50%, transparent);
+}

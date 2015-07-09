@@ -203,7 +203,7 @@ class Pano
 			dfrd.resolve()
 			return texture
 
-		if @is_blur is true and root.blur_images[panoid][image_index][offset]
+		if @is_blur is true and root.blur_images[panoid] and root.blur_images[panoid][image_index][offset]
 			flag = true
 			texture.image = root.blur_images[panoid][image_index][offset]
 			texture.needsUpdate = true

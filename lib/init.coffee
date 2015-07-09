@@ -86,6 +86,19 @@ init = ->
 	$('#'+ DirectPano.image_div_id).bind 'touchstart click', ->
 		go_fullscreen()
 		return
+	panos_list = $("#panos-list")
+	i = 0
+	while i < 22
+		if DirectPano.pano[i][0]
+			panos_list.append("<div id='panos-list-entry-" + i + "'>" + DirectPano.pano[i][0] + "</div>")
+			$("#panos-list-entry-" + i).attr('pano_id', parseInt(i))
+			$("#panos-list-entry-" + i).bind 'click touchstart', ->
+				if root.Transition.moving == false
+					$('div[id^=panos-list-entry-]').removeClass('active')
+					this.className = 'active'
+					root.Transition.start(null, parseInt(this.getAttribute('pano_id')))
+				return
+		i++
 	return
 
 destroy = (dfrd)->
