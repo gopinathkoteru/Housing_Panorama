@@ -171,8 +171,11 @@ slider.on('change mousemove',->
 	value.html(opacity)
 	i = 0
 	while i < 6
-		front_pano.mesh.material.materials[i].opacity = opacity
-		back_pano.mesh.material.materials[i].opacity = 1 - opacity
+		j = 0
+		while j < 4
+			front_pano.mesh.children[i].children[j].material.opacity = opacity
+			back_pano.mesh.children[i].children[j].material.opacity = 1 - opacity
+			j++
 		i++
 	return)
 

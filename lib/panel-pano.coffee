@@ -1,28 +1,147 @@
 root = {}
+offset = [
+		{
+			position: [
+				-150/2
+				150/2
+				0
+			]
+		}
+		{
+			position:[
+				150/2
+				150/2
+				0
+			]
+		}
+		{
+			position: [
+				-150/2
+				-150/2
+				0
+			]
+		}
+		{
+			position:[
+				150/2
+				-150/2
+				0
+			]
+		}
+]
+dist = 150
+sides = [
+  {
+    position: [
+      -1*dist
+      0
+      0
+    ]
+    rotation: [
+      0
+      Math.PI/2
+      0
+    ]
+  }
+  {
+    position: [
+      dist
+      0
+      0
+    ]
+    rotation: [
+      0
+      -Math.PI/2
+      0
+    ]
+  }
+  {
+    position: [
+      0
+      dist
+      0
+    ]
+    rotation: [
+      Math.PI / 2
+      0
+      Math.PI
+    ]
+  }
+  {
+    position: [
+      0
+      -1*dist
+      0
+    ]
+    rotation: [
+      -Math.PI / 2
+      0
+      Math.PI
+    ]
+  }
+  {
+    position: [
+      0
+      0
+      dist
+    ]
+    rotation: [
+      0
+      Math.PI
+      0
+    ]
+  }
+  {
+    position: [
+      0
+      0
+      -1*dist
+    ]
+    rotation: [
+      0
+      0
+      0
+    ]
+  }
+]
 class Pano
 	constructor: (@pano_id,@is_blur) ->
 		@name = "panorama"
 		@destroy = false
 
 	create_pano: (path,opacity) ->
-		materials = []
+		@mesh = new THREE.Object3D()
 		i = 0
 		while i < 6
-			materials.push @load_texture path + root.Config.img_name[i] + ".jpg" , i
-			i++ 
+			j = 0
+			slices = new THREE.Object3D()
+			while j < 4
+				material = @load_texture (path + root.Config.img_name[i] + '/'+ j + ".jpg" ) , i,j
+				geometry = if root.Config.webgl then new THREE.PlaneBufferGeometry( 300/2, 300/2, 7, 7 ) else  new THREE.PlaneGeometry( 300/2, 300/2, 20, 20)
+				slice = new THREE.Mesh geometry , material
+					
+				slice.material.transparent = true
+				slice.material.opacity = opacity
+				slice.position.x = offset[j].position[0]
+				slice.position.y = offset[j].position[1]
+				slice.position.z = offset[j].position[2]
+					
+				slices.add(slice)
+				j++
+			slices.rotation.x = sides[i].rotation[0]
+			slices.rotation.y = sides[i].rotation[1]
+			slices.rotation.z = sides[i].rotation[2]
 
-		geometry = if root.Config.webgl then new THREE.BoxGeometry( 300, 300, 300, 7, 7, 7 ) else  new THREE.BoxGeometry( 300, 300, 300, 20, 20, 20 )
+			slices.updateMatrix()
 
-		@mesh = new THREE.Mesh geometry, new THREE.MeshFaceMaterial materials
+			slices.position.x = sides[i].position[0]
+			slices.position.y = sides[i].position[1]
+			slices.position.z = sides[i].position[2]
 
-		@mesh.scale.x = -1
+			slices.updateMatrix()
 
-		i=0
-		while i < 6
-			@mesh.material.materials[i].transparent = true;
-			@mesh.material.materials[i].opacity = opacity
+			@mesh.add(slices)
 			i++
-
 		root.scene.add @mesh
 
 		return
@@ -31,12 +150,16 @@ class Pano
 		root.scene.remove(@mesh)
 		i = 0
 		while i < 6
-			@mesh.material.materials[i].map.dispose()
-			@mesh.material.materials[i].dispose()
+			j = 0
+			while j < 4
+				@mesh.children[i].children[j].material.map.dispose()
+				@mesh.children[i].children[j].material.dispose()
+				@mesh.children[i].children[j].geometry.dispose()
+				@mesh.children[i].children[j] = null
+				j++
+			@mesh.children[i] = null
 			i++
-		@mesh.geometry.dispose()
-		
-	load_texture: (path,image_index) ->
+	load_texture: (path,image_index,offset) ->
 		texture = new THREE.Texture root.texture_placeholder
 		material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0 ,side:THREE.DoubleSide,blending: THREE.AdditiveBlending ,depthTest: false } )
 		pano_id = @pano_id
@@ -54,10 +177,11 @@ class Pano
 
 		return material
 
-	
-
 root.Pano = Pano
 module.exports = root
+
+
+
 
 
 
