@@ -9,6 +9,7 @@
     <body>
 
         <div id="container" tabindex="0" style = "display:none">
+            <img id="start-image"/>
             <img id="fullscreen-image" src="images/tour.png" style = "visibility:hidden" >
         </div>
 
@@ -26,7 +27,7 @@
 
         <script type="text/javascript" src="./config.js"></script>
 
-        <script  src="../dist/housing-pano.min.js"></script>
+        <script  src="../dist/housing-pano.js"></script>
 
         <script>
             function detect_webgl()
@@ -54,7 +55,10 @@
                     DirectPano.pano = [];
                     title = "Some Title";
                     for(var i=0;i<22;i++)
-                        DirectPano.pano[i] = [title, "./Dataset/panos-house/" + (i + 1) + "/"];
+                    {
+                        DirectPano.pano[i] = [title, "./Dataset/panos-house/" + (i + 1) + "/%s/%h_%v.jpg"];
+                        console.log(DirectPano.pano[i]);
+                    }
                 }
                 else if(value=="pano2")
                 {

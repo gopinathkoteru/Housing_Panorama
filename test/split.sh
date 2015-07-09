@@ -2,22 +2,38 @@ cd $1
 for folder in `ls`
 do
 	cd $folder
-	test = `echo $folder | cut -d'_' -f1`
+	
 	echo "**************************************"
 	echo $folder | grep "blur"
 	for file in `ls`
 	do
-		if [ $file == "mobile_b.jpg" ] || [ $file == "mobile_d.jpg" ] || [ $file == "mobile_f.jpg" ] || [ $file == "mobile_l.jpg" ] || [ $file == "mobile_r.jpg" ] || [ $file == "mobile_u.jpg" ]
+		if [ $file == "mobile_b" ] || [ $file == "mobile_d" ] || [ $file == "mobile_f" ] || [ $file == "mobile_l" ] || [ $file == "mobile_r" ] || [ $file == "mobile_u" ]
 		then
-			name=`echo "$file" | cut -d'.' -f1`
-			mkdir $name
-			if echo $folder | grep "blur"
-			then
-				convert -crop 128x128 $file $name/%d.jpg
-			else
-				convert -crop 512x512 $file $name/%d.jpg
-			fi
-			rm $file
+			cd $file
+			for img in `ls`
+			do
+				test=$img
+				echo $test
+				if [[ $img == "0.jpg" ]]
+				then
+					test="0_0.jpg"
+					echo $test
+				elif [[ $img == "1.jpg" ]]
+				then
+					test="0_1.jpg"
+					echo $test
+				elif [[ $img == "2.jpg" ]]
+				then
+					test="1_0.jpg"
+					echo $test
+				elif [[ $img == "3.jpg" ]]
+				then
+					test="1_1.jpg"
+					echo $test
+				fi
+				mv $img $test
+			done
+			cd ..
 		fi
 	done
 	cd ..

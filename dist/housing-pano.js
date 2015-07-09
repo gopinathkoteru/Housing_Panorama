@@ -54,6 +54,7 @@
 
 	  DirectPano.show_pano = function() {
 	    var image;
+	    $("#" + DirectPano.start_image_div_id).attr("src", "./Dataset/panos-house/start.jpg");
 	    root = __webpack_require__(1);
 	    image = $("#" + DirectPano.image_div_id);
 	    image.css({
@@ -67,6 +68,7 @@
 	    root.Transition = new root.transition(DirectPano.pano, DirectPano.hotspots_angle);
 	    root.Hotspot.add_hotspots(0);
 	    anim = new root.animation();
+	    root.Config.isUserInteracting = true;
 	  };
 
 	  DirectPano.remove_pano = function() {
@@ -291,21 +293,26 @@
 	      root.clear_images = {};
 	      root.blur_images = {};
 	      root.clear_images[this.current_pano] = [];
-	      path = this.pano[this.current_pano][1] + "mobile_";
+	      path = this.pano[this.current_pano][1];
 	      this.blur_pano = new root.Pano(0, true);
 	      this.clear_pano = new root.Pano(0, false);
 	      this.blur_pano.create_pano(path, 0.0);
-	      this.clear_pano.create_pano(path, 1.0);
+	      this.clear_pano.create_pano(path, 1.0).done(function() {
+	        var time;
+	        time = 1000;
+	        return $("#" + DirectPano.start_image_div_id).fadeTo(time, 0, function() {
+	          root.Config.isUserInteracting = false;
+	        });
+	      });
 	      this.preload_images();
 	      return;
 	    }
 
 	    transition.prototype.save_clear_images = function() {
-	      var current_pano, i, pano, path;
+	      var current_pano, i, pano;
 	      current_pano = this.current_pano;
 	      pano = this.pano;
 	      if (!root.clear_images[current_pano]) {
-	        path = pano[current_pano][1] + "mobile_";
 	        root.clear_images[current_pano] = [];
 	        i = 0;
 	        while (i < 6) {
@@ -317,7 +324,7 @@
 	            j = 0;
 	            while (j < 4) {
 	              (function() {
-	                var image, offset;
+	                var image, offset, path;
 	                offset = j;
 	                image = new Image();
 	                image.onload = function() {
@@ -326,7 +333,11 @@
 	                  texture.needsUpdate = true;
 	                  root.clear_images[current_pano][image_index][offset] = image;
 	                };
-	                image.src = path + root.Config.img_name[i] + "/" + j + ".jpg";
+	                path = pano[current_pano][1];
+	                path = path.replace("%s", root.Config.img_name[i]);
+	                path = path.replace("%v", j % 2);
+	                path = path.replace("%h", parseInt(j / 2));
+	                image.src = path;
 	              })();
 	              j++;
 	            }
@@ -344,11 +355,10 @@
 	      pano = this.pano;
 	      while (i < hotspot_angles[current_pano].length) {
 	        (function() {
-	          var fpath, j, pano_id;
+	          var j, pano_id;
 	          pano_id = hotspot_angles[current_pano][i][0];
 	          if (!root.blur_images[pano_id]) {
 	            root.blur_images[pano_id] = [];
-	            fpath = pano[pano_id][1] + "../blur_" + (pano_id + 1) + "/mobile_";
 	            j = 0;
 	            while (j < 6) {
 	              (function() {
@@ -359,7 +369,7 @@
 	                k = 0;
 	                while (k < 4) {
 	                  (function() {
-	                    var image, offset;
+	                    var fpath, image, offset;
 	                    offset = k;
 	                    image = new Image();
 	                    image.onload = function() {
@@ -368,7 +378,11 @@
 	                      texture.needsUpdate = true;
 	                      root.blur_images[pano_id][image_index][offset] = image;
 	                    };
-	                    image.src = fpath + root.Config.img_name[j] + "/" + k + ".jpg";
+	                    fpath = pano[pano_id][1];
+	                    fpath = fpath.replace("%s", "../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j]);
+	                    fpath = fpath.replace("%v", offset % 2);
+	                    fpath = fpath.replace("%h", parseInt(offset / 2));
+	                    image.src = fpath;
 	                  })();
 	                  k++;
 	                }
@@ -423,7 +437,6 @@
 	      if (this.destroy) {
 	        return $.when().done(function() {}).promise();
 	      }
-	      path = this.pano[this.current_pano][1] + "../blur_" + (this.current_pano + 1) + "/mobile_";
 	      dfrd = [];
 	      dist = 60;
 	      i = 0;
@@ -436,8 +449,12 @@
 	      while (i < 6) {
 	        j = 0;
 	        while (j < 4) {
+	          path = this.pano[this.current_pano][1];
+	          path = path.replace("%s", "../blur_" + (this.current_pano + 1) + "/" + root.Config.img_name[i]);
+	          path = path.replace("%v", j % 2);
+	          path = path.replace("%h", parseInt(j / 2));
 	          this.blur_pano.mesh.children[i].children[j].material.map.dispose();
-	          this.blur_pano.mesh.children[i].children[j].material.map = this.blur_pano.get_texture(this.pano_id, path + root.Config.img_name[i] + "/" + j + ".jpg", dfrd[4 * i + j], i, j);
+	          this.blur_pano.mesh.children[i].children[j].material.map = this.blur_pano.get_texture(this.pano_id, path, dfrd[4 * i + j], i, j);
 	          this.blur_pano.mesh.children[i].children[j].material.opacity = 0;
 	          j++;
 	        }
@@ -454,7 +471,6 @@
 	      if (this.destroy) {
 	        return $.when().done(function() {}).promise();
 	      }
-	      path = this.pano[this.current_pano][1] + "mobile_";
 	      dfrd = [];
 	      i = 0;
 	      while (i < 24) {
@@ -467,8 +483,12 @@
 	      while (i < 6) {
 	        j = 0;
 	        while (j < 4) {
+	          path = this.pano[this.current_pano][1];
+	          path = path.replace("%s", root.Config.img_name[i]);
+	          path = path.replace("%v", j % 2);
+	          path = path.replace("%h", parseInt(j / 2));
 	          this.clear_pano.mesh.children[i].children[j].material.map.dispose();
-	          this.clear_pano.mesh.children[i].children[j].material.map = this.clear_pano.get_texture(this.pano_id, path + root.Config.img_name[i] + "/" + j + ".jpg", dfrd[4 * i + j], i, j);
+	          this.clear_pano.mesh.children[i].children[j].material.map = this.clear_pano.get_texture(this.pano_id, path, dfrd[4 * i + j], i, j);
 	          this.clear_pano.mesh.children[i].children[j].material.opacity = 0;
 	          j++;
 	        }
@@ -1058,16 +1078,27 @@
 	      this.destroy = false;
 	    }
 
-	    Pano.prototype.create_pano = function(path, opacity) {
-	      var geometry, i, j, material, slice, slices;
+	    Pano.prototype.create_pano = function(path1, opacity) {
+	      var dfrd, geometry, i, j, material, path, slice, slices;
 	      this.mesh = new THREE.Object3D();
+	      dfrd = [];
+	      i = 0;
+	      while (i < 24) {
+	        dfrd[i] = $.Deferred();
+	        i++;
+	      }
 	      i = 0;
 	      while (i < 6) {
 	        j = 0;
 	        slices = new THREE.Object3D();
 	        root.clear_images[this.pano_id][i] = {};
 	        while (j < 4) {
-	          material = this.load_texture(path + root.Config.img_name[i] + '/' + j + ".jpg", i, j);
+	          path = path1;
+	          console.log(path);
+	          path = path.replace("%s", root.Config.img_name[i]);
+	          path = path.replace("%v", j % 2);
+	          path = path.replace("%h", parseInt(j / 2));
+	          material = this.load_texture(path, i, j, dfrd[4 * i + j]);
 	          geometry = root.Config.webgl ? new THREE.PlaneBufferGeometry(300 / 2, 300 / 2, 7, 7) : new THREE.PlaneGeometry(300 / 2, 300 / 2, 20, 20);
 	          slice = new THREE.Mesh(geometry, material);
 	          slice.material.transparent = true;
@@ -1090,6 +1121,7 @@
 	        i++;
 	      }
 	      root.scene.add(this.mesh);
+	      return $.when.apply($, dfrd).done(function() {}).promise();
 	    };
 
 	    Pano.prototype.destroy_pano = function() {
@@ -1113,7 +1145,7 @@
 	      return results;
 	    };
 
-	    Pano.prototype.load_texture = function(path, image_index, offset) {
+	    Pano.prototype.load_texture = function(path, image_index, offset, dfrd) {
 	      var image, material, pano_id, texture;
 	      texture = new THREE.Texture(root.texture_placeholder);
 	      material = new THREE.MeshBasicMaterial({
@@ -1129,6 +1161,7 @@
 	        image.onload = null;
 	        texture.image = this;
 	        texture.needsUpdate = true;
+	        dfrd.resolve();
 	        root.clear_images[pano_id][image_index][offset] = image;
 	      };
 	      image.src = path;
@@ -1302,7 +1335,7 @@
 	  is_fullscreen = false;
 
 	  Config = {
-	    img_name: ['r', 'l', 'u', 'd', 'f', 'b'],
+	    img_name: ['mobile_r', 'mobile_l', 'mobile_u', 'mobile_d', 'mobile_f', 'mobile_b'],
 	    isUserInteracting: false,
 	    lon: 0,
 	    lat: 0,

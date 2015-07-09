@@ -109,15 +109,26 @@ class Pano
 		@name = "panorama"
 		@destroy = false
 
-	create_pano: (path,opacity) ->
+	create_pano: (path1,opacity) ->
 		@mesh = new THREE.Object3D()
+		dfrd = []
+		i = 0
+		while i < 24
+			dfrd[i] = $.Deferred()
+			i++
 		i = 0
 		while i < 6
 			j = 0
 			slices = new THREE.Object3D()
 			root.clear_images[@pano_id][i] = {}
 			while j < 4
-				material = @load_texture (path + root.Config.img_name[i] + '/'+ j + ".jpg" ) , i,j
+				path = path1
+				console.log(path)
+				path = path.replace("%s",root.Config.img_name[i])
+				path = path.replace("%v",j%2)
+				path = path.replace("%h",parseInt(j/2))
+				
+				material = @load_texture(path , i,j,dfrd[4*i+j])
 				geometry = if root.Config.webgl then new THREE.PlaneBufferGeometry( 300/2, 300/2, 7, 7 ) else  new THREE.PlaneGeometry( 300/2, 300/2, 20, 20)
 				slice = new THREE.Mesh geometry , material
 					
@@ -145,7 +156,8 @@ class Pano
 			i++
 		root.scene.add @mesh
 
-		return
+		return $.when.apply($, dfrd).done(->).promise()
+		
 	destroy_pano: () ->
 		@destroy = true
 		root.scene.remove(@mesh)
@@ -160,7 +172,7 @@ class Pano
 				j++
 			@mesh.children[i] = null
 			i++
-	load_texture: (path,image_index,offset) ->
+	load_texture: (path,image_index,offset,dfrd) ->
 		texture = new THREE.Texture root.texture_placeholder
 		material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0 ,side:THREE.DoubleSide,blending: THREE.AdditiveBlending ,depthTest: false } )
 		pano_id = @pano_id
@@ -171,6 +183,7 @@ class Pano
 			image.onload = null
 			texture.image = this
 			texture.needsUpdate = true
+			dfrd.resolve()
 			root.clear_images[pano_id][image_index][offset] = image;
 			
 			return
