@@ -1,6 +1,7 @@
 root = undefined
 anim = undefined
 DirectPano.show_pano = ()->
+	$("#" + DirectPano.start_image_div_id).attr("src","./Dataset/panos-house/start.jpg") 
 	root = require("./listeners.js")
 
 	image = $("#"+DirectPano.image_div_id)
@@ -20,6 +21,7 @@ DirectPano.show_pano = ()->
 	root.Hotspot.add_hotspots(0)
 
 	anim = new root.animation()
+	root.Config.isUserInteracting = true
 	return
 
 DirectPano.remove_pano = ->

@@ -9,12 +9,12 @@ clear_images = {}
 active = undefined
 is_fullscreen = false
 Config = 
-	img_name: ['r'
-		'l' 
-		'u' 
-		'd' 
-		'f' 
-		'b'
+	img_name: ['mobile_r'
+		'mobile_l' 
+		'mobile_u' 
+		'mobile_d' 
+		'mobile_f' 
+		'mobile_b'
 	]
 	isUserInteracting: false
 	lon: 0

@@ -12,13 +12,17 @@ class transition
 	
 		root.clear_images[@current_pano] = []
 
-		path = @pano[@current_pano][1] + "mobile_"
+		path = @pano[@current_pano][1]
 
 		@blur_pano = new root.Pano(0,true)
 		@clear_pano = new root.Pano(0, false)
 
 		@blur_pano.create_pano( path, 0.0)
-		@clear_pano.create_pano(path, 1.0)
+		@clear_pano.create_pano(path, 1.0).done ->
+			time = 1000
+			$("#" + DirectPano.start_image_div_id).fadeTo(time, 0,->
+				root.Config.isUserInteracting = false
+				return)
 
 		@preload_images()
 
@@ -28,7 +32,6 @@ class transition
 		current_pano = @current_pano
 		pano = @pano
 		if not root.clear_images[current_pano]
-			path = pano[current_pano][1] + "mobile_"
 			root.clear_images[current_pano] = []	
 			i = 0
 			while i < 6
@@ -47,8 +50,12 @@ class transition
 								texture.needsUpdate = true
 								root.clear_images[current_pano][image_index][offset] = image
 								return
-
-							image.src = (path + root.Config.img_name[i] + "/" + j + ".jpg")
+							path = pano[current_pano][1]
+							path = path.replace("%s",root.Config.img_name[i])
+							path = path.replace("%v",j%2)
+							path = path.replace("%h",parseInt(j/2))
+							
+							image.src = path
 							return
 						j++
 					return
@@ -66,7 +73,7 @@ class transition
 
 				if not root.blur_images[pano_id]
 					root.blur_images[pano_id] = []
-					fpath = pano[pano_id][1] + "../blur_" + (pano_id + 1) + "/mobile_"
+					
 					j = 0
 					while j < 6
 						do ->
@@ -85,7 +92,11 @@ class transition
 										texture.needsUpdate = true
 										root.blur_images[pano_id][image_index][offset] = image
 										return
-									image.src = (fpath + root.Config.img_name[j] + "/" + k + ".jpg")
+									fpath = pano[pano_id][1]
+									fpath = fpath.replace("%s","../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j])
+									fpath = fpath.replace("%v",offset%2)
+									fpath = fpath.replace("%h",parseInt(offset/2))
+									image.src = fpath
 									return
 								k++
 							return
@@ -140,7 +151,6 @@ class transition
 	load_blur_pano : (error,hotspot_angle)->
 		if @destroy
 			return $.when().done(->).promise()
-		path = @pano[@current_pano][1] + "../blur_" + (@current_pano + 1) + "/mobile_"
 		dfrd = []
 		dist = 60
 		i = 0
@@ -153,8 +163,12 @@ class transition
 		while i < 6
 			j = 0
 			while j < 4
+				path = @pano[@current_pano][1]
+				path = path.replace("%s","../blur_" + (@current_pano + 1) + "/" +root.Config.img_name[i])
+				path = path.replace("%v",j%2)
+				path = path.replace("%h",parseInt(j/2))
 				@blur_pano.mesh.children[i].children[j].material.map.dispose()
-				@blur_pano.mesh.children[i].children[j].material.map = @blur_pano.get_texture(@pano_id,path + root.Config.img_name[i] + "/" + j + ".jpg", dfrd[4*i + j], i,j)
+				@blur_pano.mesh.children[i].children[j].material.map = @blur_pano.get_texture(@pano_id,path, dfrd[4*i + j], i,j)
 				@blur_pano.mesh.children[i].children[j].material.opacity = 0
 				j++
 			i++
@@ -168,7 +182,8 @@ class transition
 	load_clear_pano :(error) ->
 		if @destroy
 			return $.when().done(->).promise()
-		path = @pano[@current_pano][1] + "mobile_"
+		
+		
 		dfrd = []
 		i = 0
 		while i < 24
@@ -179,9 +194,13 @@ class transition
 		i = 0
 		while i < 6
 			j = 0
-			while j < 4 
+			while j < 4
+				path = @pano[@current_pano][1]
+				path = path.replace("%s",root.Config.img_name[i])
+				path = path.replace("%v",j%2)
+				path = path.replace("%h",parseInt(j/2))
 				@clear_pano.mesh.children[i].children[j].material.map.dispose()
-				@clear_pano.mesh.children[i].children[j].material.map = @clear_pano.get_texture(@pano_id,path + root.Config.img_name[i] + "/" + j + ".jpg", dfrd[4*i + j], i,j)
+				@clear_pano.mesh.children[i].children[j].material.map = @clear_pano.get_texture(@pano_id,path, dfrd[4*i + j], i,j)
 				@clear_pano.mesh.children[i].children[j].material.opacity = 0
 				j++
 			i++

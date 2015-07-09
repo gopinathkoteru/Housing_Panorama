@@ -11,6 +11,13 @@ body {
     height: 336px;
     position: relative;
 }
+#start-image {
+    height: 336px;
+    width: 490px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
 #fullscreen-image {
     height: 100px;
     width: 80px;
