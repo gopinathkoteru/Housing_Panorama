@@ -61,5 +61,6 @@ class animation
 		root.renderer.render root.scene, root.camera
 		return
 
+
 root.animation = animation
 module.exports = root

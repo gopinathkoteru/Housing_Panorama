@@ -668,7 +668,7 @@
 	      div.prepend("<img class='annotation' height='40px' width='40px' src='../test/images/info.png'></img> <div class='hotspot-title'> <div class='hotspot-text'>" + this.annotation_angles[this.panoid][anno_id][2] + "</div> </div> <div class='info-hotspot'>" + this.annotation_angles[this.panoid][anno_id][3] + "</div>");
 	      $("#" + DirectPano.pano_div_id).append(div);
 	      $("#" + annotation_id).bind('click touchstart', function() {
-	        if ($("#" + annotation_id).find('.hotspot-title').css('visibility') === 'visible' || $("#" + annotation_id).find('.hotspot-title').css('opacity') === '1') {
+	        if ($("#" + annotation_id).find('.info-hotspot').css('visibility') === 'visible') {
 	          $("#" + annotation_id).find('.info-hotspot').css('visibility', 'hidden');
 	          $("#" + annotation_id).find('.hotspot-title').css('visibility', 'hidden');
 	          $("#" + annotation_id).find('.hotspot-title').css('opacity', '0');
@@ -677,7 +677,22 @@
 	          $("#" + annotation_id).find('.info-hotspot').css('visibility', 'visible');
 	          $("#" + annotation_id).find('.hotspot-title').css('visibility', 'visible');
 	          $("#" + annotation_id).find('.hotspot-title').css('opacity', '1');
+	          $("#" + annotation_id).find('.hotspot-title').css('border-radius', '0px 10px 0px 0px');
 	          $("#" + annotation_id).find('.annotation').css('border-radius', '10px 0px 0px 0px');
+	        }
+	      });
+	      $("#" + annotation_id).hover((function() {
+	        $("#" + annotation_id).find('.hotspot-title').css('visibility', 'visible');
+	        $("#" + annotation_id).find('.hotspot-title').css('opacity', '1');
+	        if ($("#" + annotation_id).find('.info-hotspot').css('visibility') === 'hidden') {
+	          $("#" + annotation_id).find('.hotspot-title').css('border-radius', '0px 10px 10px 0px');
+	          $("#" + annotation_id).find('.annotation').css('border-radius', '10px 0px 0px 10px');
+	        }
+	      }), function() {
+	        if ($("#" + annotation_id).find('.info-hotspot').css('visibility') === 'hidden') {
+	          $("#" + annotation_id).find('.hotspot-title').css('visibility', 'hidden');
+	          $("#" + annotation_id).find('.hotspot-title').css('opacity', '0');
+	          $("#" + annotation_id).find('.annotation').css('border-radius', '100px');
 	        }
 	      });
 	    };
