@@ -54,12 +54,19 @@
 
 	  DirectPano.show_pano = function() {
 	    var image;
-	    $("#" + DirectPano.start_image_div_id).attr("src", "./Dataset/panos-house/start.jpg");
-	    root = __webpack_require__(1);
-	    image = $("#" + DirectPano.image_div_id);
+	    image = $("<img id='start-image'/>");
 	    image.css({
-	      'visibility': 'visible'
+	      'visibility': 'visible',
+	      'height': Math.min(DirectPano.initial_height, window.innerHeight) + 'px',
+	      'width': Math.min(DirectPano.initial_width, window.innerWidth) + 'px',
+	      'z-index': '1',
+	      'position': 'absolute',
+	      'left': '0px',
+	      'top': '0px'
 	    });
+	    image.attr("src", "./Dataset/panos-house/start.jpg");
+	    $("#" + DirectPano.pano_div_id).append(image);
+	    root = __webpack_require__(1);
 	    root.Annotation = new root.annotation(DirectPano.annotation_angles);
 	    root.Annotation.add_annotations(0);
 	    root.scene.children.length = 0;
@@ -300,7 +307,8 @@
 	      this.clear_pano.create_pano(path, 1.0).done(function() {
 	        var time;
 	        time = 1000;
-	        return $("#" + DirectPano.start_image_div_id).fadeTo(time, 0, function() {
+	        return $("#start-image").fadeTo(time, 0, function() {
+	          $("#start-image").remove();
 	          root.Config.isUserInteracting = false;
 	        });
 	      });
@@ -1404,7 +1412,7 @@
 	  init = function() {
 	    var container, i, panos_list;
 	    container = $("#" + DirectPano.pano_div_id);
-	    container.width(DirectPano.initial_width + 'px').height(DirectPano.initial_height + 'px');
+	    container.width(Math.min(DirectPano.initial_width, window.innerWidth) + 'px').height(Math.min(DirectPano.initial_height, window.innerHeight) + 'px');
 	    scene = new THREE.Scene;
 	    texture_placeholder = $('<canvas/>').width(128).height(128);
 	    renderer = detect_webgl() ? new THREE.WebGLRenderer : new THREE.CanvasRenderer;

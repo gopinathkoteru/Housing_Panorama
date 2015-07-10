@@ -20,7 +20,8 @@ class transition
 		@blur_pano.create_pano( path, 0.0)
 		@clear_pano.create_pano(path, 1.0).done ->
 			time = 1000
-			$("#" + DirectPano.start_image_div_id).fadeTo(time, 0,->
+			$("#start-image").fadeTo(time, 0,->
+				$("#start-image").remove()
 				root.Config.isUserInteracting = false
 				return)
 

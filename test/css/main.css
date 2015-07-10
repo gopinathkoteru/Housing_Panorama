@@ -11,17 +11,10 @@ body {
     height: 336px;
     position: relative;
 }
-#start-image {
-    height: 336px;
-    width: 490px;
-    position: absolute;
-    left: 0px;
-    top: 0px;
-}
 #fullscreen-image {
     height: 100px;
     width: 80px;
-    z-index: 20px;
+    z-index: 20;
     position: absolute;
     bottom: 0px;
     right: 0px;
@@ -89,7 +82,7 @@ div[id^="annotation_"] .info-hotspot {
 #panos-list {
   position: absolute;
   left: -5px;
-  z-index: 20px;
+  z-index: 20;
   max-height: 400px;
   height: auto;
   overflow-y: auto;
