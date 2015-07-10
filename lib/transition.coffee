@@ -25,6 +25,7 @@ class transition
 				root.Config.isUserInteracting = false
 				return)
 
+		@preload_panel_images()
 		@preload_images()
 
 		return
@@ -105,6 +106,45 @@ class transition
 				return
 			i++
 		return
+
+	preload_panel_images: () ->
+		i = 0
+		pano = @pano
+		while i < pano.length
+			if pano[i][2] == true
+				pano_id = i
+				if not root.blur_images[pano_id]
+					root.blur_images[pano_id] = []
+					j = 0
+					while j < 6
+						do ->
+							texture = new THREE.Texture( root.texture_placeholder )
+							image_index = j
+							root.blur_images[pano_id][image_index] = {}
+							k = 0
+							while k < 4
+								do ->
+									offset = k
+
+									image = new Image()
+									image.onload = ->
+										image.onload = null
+										texture.image = this
+										texture.needsUpdate = true
+										root.blur_images[pano_id][image_index][offset] = image
+										return
+									fpath = pano[pano_id][1]
+									fpath = fpath.replace("%s","../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j])
+									fpath = fpath.replace("%v",offset%2)
+									fpath = fpath.replace("%h",parseInt(offset/2))
+									image.src = fpath
+									return
+								k++
+							return
+						j++
+			i++
+		return
+
 
 	
 

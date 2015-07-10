@@ -334,6 +334,7 @@
 	          root.Config.isUserInteracting = false;
 	        });
 	      });
+	      this.preload_panel_images();
 	      this.preload_images();
 	      return;
 	    }
@@ -421,6 +422,51 @@
 	            }
 	          }
 	        })();
+	        i++;
+	      }
+	    };
+
+	    transition.prototype.preload_panel_images = function() {
+	      var i, j, pano, pano_id;
+	      i = 0;
+	      pano = this.pano;
+	      while (i < pano.length) {
+	        if (pano[i][2] === true) {
+	          pano_id = i;
+	          if (!root.blur_images[pano_id]) {
+	            root.blur_images[pano_id] = [];
+	            j = 0;
+	            while (j < 6) {
+	              (function() {
+	                var image_index, k, texture;
+	                texture = new THREE.Texture(root.texture_placeholder);
+	                image_index = j;
+	                root.blur_images[pano_id][image_index] = {};
+	                k = 0;
+	                while (k < 4) {
+	                  (function() {
+	                    var fpath, image, offset;
+	                    offset = k;
+	                    image = new Image();
+	                    image.onload = function() {
+	                      image.onload = null;
+	                      texture.image = this;
+	                      texture.needsUpdate = true;
+	                      root.blur_images[pano_id][image_index][offset] = image;
+	                    };
+	                    fpath = pano[pano_id][1];
+	                    fpath = fpath.replace("%s", "../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j]);
+	                    fpath = fpath.replace("%v", offset % 2);
+	                    fpath = fpath.replace("%h", parseInt(offset / 2));
+	                    image.src = fpath;
+	                  })();
+	                  k++;
+	                }
+	              })();
+	              j++;
+	            }
+	          }
+	        }
 	        i++;
 	      }
 	    };
