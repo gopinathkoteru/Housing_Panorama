@@ -1,13 +1,20 @@
 root = undefined
 anim = undefined
 DirectPano.show_pano = ()->
-	$("#" + DirectPano.start_image_div_id).attr("src","./Dataset/panos-house/start.jpg") 
-	root = require("./listeners.js")
-
-	image = $("#"+DirectPano.image_div_id)
+	image = $("<img id='start-image'/>")
 	image.css({
-		'visibility': 'visible'
+		'visibility': 'visible',
+		'height': Math.min(DirectPano.initial_height, window.innerHeight)  + 'px',
+		'width': Math.min(DirectPano.initial_width, window.innerWidth) + 'px',
+		'z-index': '1',
+		'position': 'absolute',
+		'left':'0px',
+		'top': '0px' 
 		})
+	image.attr("src","./Dataset/panos-house/start.jpg")
+	$("#" + DirectPano.pano_div_id).append(image)
+
+	root = require("./listeners.js")
 
 	root.Annotation = new root.annotation(DirectPano.annotation_angles)
 	root.Annotation.add_annotations(0)

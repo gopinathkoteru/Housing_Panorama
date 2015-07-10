@@ -70,7 +70,7 @@ detect_webgl = ->
 init = ->
 	container = $("#"+DirectPano.pano_div_id)
 
-	container.width(DirectPano.initial_width + 'px').height(DirectPano.initial_height + 'px')
+	container.width(Math.min(DirectPano.initial_width, window.innerWidth) + 'px').height(Math.min(DirectPano.initial_height, window.innerHeight) + 'px')
 	scene = new (THREE.Scene)
 	
 	texture_placeholder = $('<canvas/>').width(128).height(128)
