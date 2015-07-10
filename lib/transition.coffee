@@ -231,11 +231,16 @@ class transition
 	old_pano_to_blur_pano :(error,hotspot_angle,rotate_angle,dist) ->
 		if @destroy
 			return
-		time1 = 0.4
-		TweenLite.to(root.Config, time1, {lon: rotate_angle, lat: 0, ease: Power0.easeOut})
+		time1 = 0.1
+		if dist
+			time1 = 0.4
+			TweenLite.to(root.Config, time1, {lon: rotate_angle, lat: 0, ease: Power0.easeOut})
 
-		time = 2
-		del = 0.3
+		time = 1
+		del = 0
+		if dist
+			time = 2
+			del = 0.3
 		blur_pano = @blur_pano
 		clear_pano = @clear_pano
 

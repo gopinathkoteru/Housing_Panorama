@@ -556,14 +556,21 @@
 	      if (this.destroy) {
 	        return;
 	      }
-	      time1 = 0.4;
-	      TweenLite.to(root.Config, time1, {
-	        lon: rotate_angle,
-	        lat: 0,
-	        ease: Power0.easeOut
-	      });
-	      time = 2;
-	      del = 0.3;
+	      time1 = 0.1;
+	      if (dist) {
+	        time1 = 0.4;
+	        TweenLite.to(root.Config, time1, {
+	          lon: rotate_angle,
+	          lat: 0,
+	          ease: Power0.easeOut
+	        });
+	      }
+	      time = 1;
+	      del = 0;
+	      if (dist) {
+	        time = 2;
+	        del = 0.3;
+	      }
 	      blur_pano = this.blur_pano;
 	      clear_pano = this.clear_pano;
 	      TweenLite.to(blur_pano.mesh.position, time, {
