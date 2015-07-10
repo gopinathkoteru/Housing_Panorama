@@ -175,15 +175,21 @@
 	  };
 
 	  on_mouse_wheel = function(event) {
-	    if (event.wheelDeltaY) {
-	      root.camera.fov -= event.wheelDeltaY * 0.05;
-	    } else if (event.wheelDelta) {
-	      root.camera.fov -= event.wheelDelta * 0.05;
-	    } else if (event.detail) {
-	      root.camera.fov += event.detail * 1.0;
+	    var elementMouseIsOver, x, y;
+	    x = event.pageX;
+	    y = event.pageY;
+	    elementMouseIsOver = document.elementFromPoint(x, y);
+	    if ($("#" + elementMouseIsOver.id).parent().attr('id') !== 'panos-list') {
+	      if (event.wheelDeltaY) {
+	        root.camera.fov -= event.wheelDeltaY * 0.05;
+	      } else if (event.wheelDelta) {
+	        root.camera.fov -= event.wheelDelta * 0.05;
+	      } else if (event.detail) {
+	        root.camera.fov += event.detail * 1.0;
+	      }
+	      root.camera.fov = Math.max(60, Math.min(90, root.camera.fov));
+	      root.camera.updateProjectionMatrix();
 	    }
-	    root.camera.fov = Math.max(60, Math.min(90, root.camera.fov));
-	    root.camera.updateProjectionMatrix();
 	  };
 
 	  on_key_down = function(event) {
@@ -404,7 +410,7 @@
 	    };
 
 	    transition.prototype.start = function(hotspot_id, panoId) {
-	      var current_pano, dist, error, hotspot_angle, old_pano_to_blur_pano, pano_id, rotate_angle;
+	      var current_pano, dist, error, hotspot_angle, i, old_pano_to_blur_pano, pano_id, rotate_angle, title;
 	      current_pano = this.current_pano;
 	      pano_id = null;
 	      error = 0;
@@ -419,6 +425,16 @@
 	      } else {
 	        pano_id = panoId;
 	        error = 0;
+	      }
+	      $('div[id^=panos-list-entry-]').removeClass('active');
+	      title = this.pano[pano_id][0];
+	      i = 0;
+	      while (i < this.pano.length) {
+	        if (this.pano[i][0] === title && this.pano[i][2] === true) {
+	          $('#panos-list-entry-' + i).addClass('active');
+	          break;
+	        }
+	        i++;
 	      }
 	      this.moving = true;
 	      this.current_pano = pano_id;
@@ -1378,6 +1394,7 @@
 	    image.css({
 	      'visibility': 'hidden'
 	    });
+	    $("#panos-list").css('max-height', Math.min(400, window.innerHeight) + 'px');
 	    camera.aspect = container.outerWidth() / container.outerHeight();
 	    camera.updateProjectionMatrix();
 	    is_fullscreen = true;
@@ -1392,6 +1409,7 @@
 	    image.css({
 	      'visibility': 'visible'
 	    });
+	    $("#panos-list").css('max-height', Math.min(400, DirectPano.initial_height) + 'px');
 	    camera.aspect = container.outerWidth() / container.outerHeight();
 	    camera.updateProjectionMatrix();
 	    is_fullscreen = false;
@@ -1413,6 +1431,7 @@
 	    var container, i, panos_list;
 	    container = $("#" + DirectPano.pano_div_id);
 	    container.width(Math.min(DirectPano.initial_width, window.innerWidth) + 'px').height(Math.min(DirectPano.initial_height, window.innerHeight) + 'px');
+	    $("#panos-list").css('max-height', Math.min(400, DirectPano.initial_height) + 'px');
 	    scene = new THREE.Scene;
 	    texture_placeholder = $('<canvas/>').width(128).height(128);
 	    renderer = detect_webgl() ? new THREE.WebGLRenderer : new THREE.CanvasRenderer;
@@ -1426,14 +1445,12 @@
 	    });
 	    panos_list = $("#panos-list");
 	    i = 0;
-	    while (i < 22) {
-	      if (DirectPano.pano[i][0]) {
+	    while (i < DirectPano.pano.length) {
+	      if (DirectPano.pano[i][2] === true) {
 	        panos_list.append("<div id='panos-list-entry-" + i + "'>" + DirectPano.pano[i][0] + "</div>");
 	        $("#panos-list-entry-" + i).attr('pano_id', parseInt(i));
 	        $("#panos-list-entry-" + i).bind('click touchstart', function() {
 	          if (root.Transition.moving === false) {
-	            $('div[id^=panos-list-entry-]').removeClass('active');
-	            this.className = 'active';
 	            root.Transition.start(null, parseInt(this.getAttribute('pano_id')));
 	          }
 	        });
@@ -1465,8 +1482,10 @@
 	    var container;
 	    container = $("#" + DirectPano.pano_div_id);
 	    if (is_fullscreen === false) {
+	      $("#panos-list").css('max-height', Math.min(400, DirectPano.initial_height) + 'px');
 	      container.width(Math.min(DirectPano.initial_width, window.innerWidth) + 'px').height(Math.min(DirectPano.initial_height, window.innerHeight) + 'px');
 	    } else {
+	      $("#panos-list").css('max-height', Math.min(400, window.innerHeight) + 'px');
 	      container.width(window.innerWidth + 'px').height(window.innerHeight + 'px');
 	    }
 	    renderer.setSize(container.outerWidth(), container.outerHeight());

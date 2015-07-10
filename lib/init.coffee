@@ -37,6 +37,8 @@ go_fullscreen = ->
 	image.css({
 		'visibility': 'hidden'
 		})
+
+	$("#panos-list").css('max-height', Math.min( 400, window.innerHeight ) + 'px')
 	camera.aspect = container.outerWidth() / container.outerHeight()
 	camera.updateProjectionMatrix()
 	is_fullscreen = true
@@ -53,6 +55,8 @@ escape_fullscreen = ->
 	image.css({
 		'visibility': 'visible'
 		})
+
+	$("#panos-list").css('max-height', Math.min( 400, DirectPano.initial_height ) + 'px')
 	camera.aspect = container.outerWidth() / container.outerHeight()
 	camera.updateProjectionMatrix()
 	is_fullscreen = false
@@ -71,6 +75,7 @@ init = ->
 	container = $("#"+DirectPano.pano_div_id)
 
 	container.width(Math.min(DirectPano.initial_width, window.innerWidth) + 'px').height(Math.min(DirectPano.initial_height, window.innerHeight) + 'px')
+	$("#panos-list").css('max-height', Math.min( 400, DirectPano.initial_height ) + 'px')
 	scene = new (THREE.Scene)
 	
 	texture_placeholder = $('<canvas/>').width(128).height(128)
@@ -88,14 +93,12 @@ init = ->
 		return
 	panos_list = $("#panos-list")
 	i = 0
-	while i < 22
-		if DirectPano.pano[i][0]
+	while i < DirectPano.pano.length
+		if DirectPano.pano[i][2] == true
 			panos_list.append("<div id='panos-list-entry-" + i + "'>" + DirectPano.pano[i][0] + "</div>")
 			$("#panos-list-entry-" + i).attr('pano_id', parseInt(i))
 			$("#panos-list-entry-" + i).bind 'click touchstart', ->
 				if root.Transition.moving == false
-					$('div[id^=panos-list-entry-]').removeClass('active')
-					this.className = 'active'
 					root.Transition.start(null, parseInt(this.getAttribute('pano_id')))
 				return
 		i++
@@ -122,8 +125,10 @@ destroy = (dfrd)->
 $(window).resize ->
 	container = $("#" + DirectPano.pano_div_id)
 	if(is_fullscreen == false)
+		$("#panos-list").css('max-height', Math.min( 400, DirectPano.initial_height ) + 'px')
 		container.width(Math.min(DirectPano.initial_width, window.innerWidth) + 'px').height(Math.min(DirectPano.initial_height, window.innerHeight) + 'px')
 	else
+		$("#panos-list").css('max-height', Math.min( 400, window.innerHeight ) + 'px')
 		container.width(window.innerWidth + 'px').height(window.innerHeight + 'px')
 	renderer.setSize container.outerWidth(), container.outerHeight()
 	camera.aspect = container.outerWidth() / container.outerHeight()

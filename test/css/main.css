@@ -81,13 +81,12 @@ div[id^="annotation_"] .info-hotspot {
 }
 #panos-list {
   position: absolute;
-  left: -5px;
+  left: 0px;
   z-index: 20;
   max-height: 400px;
   height: auto;
   overflow-y: auto;
   display: block;
-  padding-top: 50px;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
   vertical-align: middle;

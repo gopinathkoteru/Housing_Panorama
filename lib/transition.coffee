@@ -124,6 +124,14 @@ class transition
 			pano_id = panoId
 			error = 0
 
+		$('div[id^=panos-list-entry-]').removeClass('active')
+		title = @pano[pano_id][0]
+		i = 0
+		while i < @pano.length
+			if @pano[i][0] == title and @pano[i][2] == true
+				$('#panos-list-entry-' + i).addClass('active')
+				break
+			i++
 		@moving = true
 		@current_pano = pano_id
 		@save_clear_images()

@@ -5,10 +5,11 @@ var full_dataset = {};
 //}
 
 var test_pano = [];
-var titles = ["Entrance", "Kitchen", "", "Hall", "", "", "Bedroom 1", "", "", "", "", "", "", "Bedroom 3", "", "", "", "", "Bedroom 2"];
+var titles = ["Entrance", "Kitchen", "Hall", "Hall", "Hall", "", "Bedroom 1", "Bedroom 1", "Bedroom 1", "Bedroom 1", "Bathroom 1", "", "", "Bedroom 3", "Bedroom 3", "Bathroom 3", "Bedroom 3", "Bedroom 3", "Bedroom 2", "Bathroom 2", "Bedroom 2", "Bedroom 2"];
+var side_panel = [true, true, false, true, false, false, true, false, false, false, true, false, false, true, false, true, false, false, true, true, false, false];
 for(var i=0;i<22;i++)
 {
-    test_pano[i] = [titles[i], "./Dataset/panos-house/" + (i + 1) + "/%s/%h_%v.jpg"];
+    test_pano[i] = [titles[i], "./Dataset/panos-house/" + (i + 1) + "/%s/%h_%v.jpg", side_panel[i]];
     console.log(test_pano[i]);
 }
 var DirectPano = 

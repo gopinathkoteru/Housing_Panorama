@@ -58,14 +58,18 @@ on_mouse_up = (event) ->
 	return
 
 on_mouse_wheel = (event) ->
-	if event.wheelDeltaY
-		root.camera.fov -= event.wheelDeltaY * 0.05
-	else if event.wheelDelta
-		root.camera.fov -= event.wheelDelta * 0.05
-	else if event.detail
-		root.camera.fov += event.detail * 1.0
-	root.camera.fov = Math.max(60, Math.min(90, root.camera.fov))
-	root.camera.updateProjectionMatrix()
+	x = event.pageX
+	y = event.pageY
+	elementMouseIsOver = document.elementFromPoint(x, y)
+	if $("#" + elementMouseIsOver.id).parent().attr('id') != 'panos-list'
+		if event.wheelDeltaY
+			root.camera.fov -= event.wheelDeltaY * 0.05
+		else if event.wheelDelta
+			root.camera.fov -= event.wheelDelta * 0.05
+		else if event.detail
+			root.camera.fov += event.detail * 1.0
+		root.camera.fov = Math.max(60, Math.min(90, root.camera.fov))
+		root.camera.updateProjectionMatrix()
 	return
 
 on_key_down = (event) ->
