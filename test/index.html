@@ -27,7 +27,7 @@
 
         <script type="text/javascript" src="./config.js"></script>
 
-        <script  src="../dist/housing-pano.min.js"></script>
+        <script  src="../dist/housing-pano.js"></script>
 
         <script>
             function detect_webgl()
@@ -79,7 +79,7 @@
                     var title = "Some Title";
                     for(var i=0;i<5;i++)
                     {
-                        test_pano[i] = [title, "./Dataset/panos4/" + (i + 1) + "/"];
+                        test_pano[i] = [title, "./Dataset/panos4/" + (i + 1) + "/%s/%h_%v.jpg"];
                     }
 
                     DirectPano.pano = test_pano;
