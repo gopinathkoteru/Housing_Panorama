@@ -41,7 +41,7 @@ class animation
 		return
 	
 	update : ->
-		if root.Config.isUserInteracting == false and root.Config.autoplay == true
+		if root.Config.isUserInteracting == false and root.Config.autoplay == true and root.Transition.moving == false
 			root.Config.lon += 0.2
 		else if root.Config.isUserInteracting == false
 			duration = Date.now() - root.Config.stop_time

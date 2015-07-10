@@ -53,7 +53,7 @@
 	  anim = void 0;
 
 	  DirectPano.show_pano = function() {
-	    var image;
+	    var i, image, panos_list;
 	    image = $("<img id='start-image'/>");
 	    image.css({
 	      'visibility': 'visible',
@@ -66,6 +66,22 @@
 	    });
 	    image.attr("src", "./Dataset/panos-house/start.jpg");
 	    $("#" + DirectPano.pano_div_id).append(image);
+	    $("#panos-list").remove();
+	    $("#" + DirectPano.pano_div_id).append("<div id='panos-list'></div>");
+	    panos_list = $("#panos-list");
+	    i = 0;
+	    while (i < DirectPano.pano.length) {
+	      if (DirectPano.pano[i][2] === true) {
+	        panos_list.append("<div id='panos-list-entry-" + i + "'>" + DirectPano.pano[i][0] + "</div>");
+	        $("#panos-list-entry-" + i).attr('pano_id', parseInt(i));
+	        $("#panos-list-entry-" + i).bind('click touchstart', function() {
+	          if (root.Transition.moving === false) {
+	            root.Transition.start(null, parseInt(this.getAttribute('pano_id')));
+	          }
+	        });
+	      }
+	      i++;
+	    }
 	    root = __webpack_require__(1);
 	    root.Annotation = new root.annotation(DirectPano.annotation_angles);
 	    root.Annotation.add_annotations(0);
@@ -1310,7 +1326,7 @@
 
 	    animation.prototype.update = function() {
 	      var duration, phi, theta;
-	      if (root.Config.isUserInteracting === false && root.Config.autoplay === true) {
+	      if (root.Config.isUserInteracting === false && root.Config.autoplay === true && root.Transition.moving === false) {
 	        root.Config.lon += 0.2;
 	      } else if (root.Config.isUserInteracting === false) {
 	        duration = Date.now() - root.Config.stop_time;
@@ -1428,7 +1444,7 @@
 	  };
 
 	  init = function() {
-	    var container, i, panos_list;
+	    var container;
 	    container = $("#" + DirectPano.pano_div_id);
 	    container.width(Math.min(DirectPano.initial_width, window.innerWidth) + 'px').height(Math.min(DirectPano.initial_height, window.innerHeight) + 'px');
 	    $("#panos-list").css('max-height', Math.min(400, DirectPano.initial_height) + 'px');
@@ -1443,31 +1459,17 @@
 	    $('#' + DirectPano.image_div_id).bind('touchstart click', function() {
 	      go_fullscreen();
 	    });
-	    panos_list = $("#panos-list");
-	    i = 0;
-	    while (i < DirectPano.pano.length) {
-	      if (DirectPano.pano[i][2] === true) {
-	        panos_list.append("<div id='panos-list-entry-" + i + "'>" + DirectPano.pano[i][0] + "</div>");
-	        $("#panos-list-entry-" + i).attr('pano_id', parseInt(i));
-	        $("#panos-list-entry-" + i).bind('click touchstart', function() {
-	          if (root.Transition.moving === false) {
-	            root.Transition.start(null, parseInt(this.getAttribute('pano_id')));
-	          }
-	        });
-	      }
-	      i++;
-	    }
 	  };
 
 	  destroy = function(dfrd) {
-	    var j, k, len, len1, prop;
+	    var i, j, len, len1, prop;
 	    root.Hotspot = void 0;
-	    for (j = 0, len = clear_images.length; j < len; j++) {
-	      prop = clear_images[j];
+	    for (i = 0, len = clear_images.length; i < len; i++) {
+	      prop = clear_images[i];
 	      clear_images[prop] = null;
 	    }
-	    for (k = 0, len1 = blur_images.length; k < len1; k++) {
-	      prop = blur_images[k];
+	    for (j = 0, len1 = blur_images.length; j < len1; j++) {
+	      prop = blur_images[j];
 	      blur_images[prop] = null;
 	    }
 	    clear_images = {};
