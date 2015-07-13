@@ -2,6 +2,7 @@ root = require('./panel-hotspot.js')
 front_pano = undefined
 back_pano = undefined
 house_id = undefined
+position = undefined
 root.pano_paths = []
 
 root.full_dataset = {}
@@ -89,6 +90,8 @@ change_pano = (id,value) ->
 		error_value = $("#adjust")[0].value
 		back_pano.mesh.rotation.y = THREE.Math.degToRad(error_value)
 
+		
+
 animate()
 
 
@@ -145,10 +148,10 @@ $("#save-data-button").click ->
 			"title": title,    # Title of the scene e.g. Hall
 			"path": root.pano_paths[from_id],
 			"side_panel": to_show_side_panel,
+			"start_position" : position,
 			"hotspot": [],
 			"annotation": [],
 		}
-	#one_dataset["pano_paths"] = root.pano_paths
 	one_dataset[from_id]["annotation"] = root.annotation_angles
 	one_dataset[from_id]["hotspot"] = root.hotspots_angle
 	console.log(one_dataset)
@@ -185,6 +188,18 @@ slider.on('change mousemove',->
 			back_pano.mesh.children[i].children[j].material.opacity = 1 - opacity
 			j++
 		i++
+	return)
+
+position = $("#start-position")
+position.on('change mousemove',->
+	start_position = $("#start-position").val()
+	front_pano.mesh.rotation.y = THREE.Math.degToRad(start_position)
+	$("#position").html(start_position)
+	return)
+$("#set-position").on('click',->
+	position = $("#start-position").val()
+	$("#start-position").val(0)
+	front_pano.mesh.rotation.y = 0
 	return)
 
 adjust = $("#adjust")

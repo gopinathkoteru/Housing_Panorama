@@ -410,9 +410,9 @@
 	                      root.blur_images[pano_id][image_index][offset] = image;
 	                    };
 	                    fpath = pano[pano_id][1];
-	                    fpath = fpath.replace("%s", "../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j]);
-	                    fpath = fpath.replace("%v", offset % 2);
-	                    fpath = fpath.replace("%h", parseInt(offset / 2));
+	                    fpath = fpath.replace(/%s/g, "../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j]);
+	                    fpath = fpath.replace(/%v/g, offset % 2);
+	                    fpath = fpath.replace(/%h/g, parseInt(offset / 2));
 	                    image.src = fpath;
 	                  })();
 	                  k++;
@@ -455,9 +455,9 @@
 	                      root.blur_images[pano_id][image_index][offset] = image;
 	                    };
 	                    fpath = pano[pano_id][1];
-	                    fpath = fpath.replace("%s", "../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j]);
-	                    fpath = fpath.replace("%v", offset % 2);
-	                    fpath = fpath.replace("%h", parseInt(offset / 2));
+	                    fpath = fpath.replace(/%s/g, "../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j]);
+	                    fpath = fpath.replace(/%v/g, offset % 2);
+	                    fpath = fpath.replace(/%h/g, parseInt(offset / 2));
 	                    image.src = fpath;
 	                  })();
 	                  k++;
@@ -504,7 +504,8 @@
 	      if (hotspot_id !== null) {
 	        rotate_angle = this.find_rotation_angle(hotspot_angle);
 	      } else {
-	        rotate_angle = root.Config.lon;
+	        root.Config.lon = this.pano[pano_id][3];
+	        root.Config.lat = 0;
 	      }
 	      root.Hotspot.remove_hotspots();
 	      root.Annotation.remove_annotations();
@@ -551,9 +552,9 @@
 	        j = 0;
 	        while (j < 4) {
 	          path = this.pano[this.current_pano][1];
-	          path = path.replace("%s", "../blur_" + (this.current_pano + 1) + "/" + root.Config.img_name[i]);
-	          path = path.replace("%v", j % 2);
-	          path = path.replace("%h", parseInt(j / 2));
+	          path = path.replace(/%s/g, "../blur_" + (this.current_pano + 1) + "/" + root.Config.img_name[i]);
+	          path = path.replace(/%v/g, j % 2);
+	          path = path.replace(/%h/g, parseInt(j / 2));
 	          this.blur_pano.mesh.children[i].children[j].material.map.dispose();
 	          this.blur_pano.mesh.children[i].children[j].material.map = this.blur_pano.get_texture(this.pano_id, path, dfrd[4 * i + j], i, j);
 	          this.blur_pano.mesh.children[i].children[j].material.opacity = 0;
@@ -585,9 +586,9 @@
 	        j = 0;
 	        while (j < 4) {
 	          path = this.pano[this.current_pano][1];
-	          path = path.replace("%s", root.Config.img_name[i]);
-	          path = path.replace("%v", j % 2);
-	          path = path.replace("%h", parseInt(j / 2));
+	          path = path.replace(/%s/g, root.Config.img_name[i]);
+	          path = path.replace(/%v/g, j % 2);
+	          path = path.replace(/%h/g, parseInt(j / 2));
 	          this.clear_pano.mesh.children[i].children[j].material.map.dispose();
 	          this.clear_pano.mesh.children[i].children[j].material.map = this.clear_pano.get_texture(this.pano_id, path, dfrd[4 * i + j], i, j);
 	          this.clear_pano.mesh.children[i].children[j].material.opacity = 0;
@@ -1203,9 +1204,9 @@
 	        while (j < 4) {
 	          path = path1;
 	          console.log(path);
-	          path = path.replace("%s", root.Config.img_name[i]);
-	          path = path.replace("%v", j % 2);
-	          path = path.replace("%h", parseInt(j / 2));
+	          path = path.replace(/%s/g, root.Config.img_name[i]);
+	          path = path.replace(/%v/g, j % 2);
+	          path = path.replace(/%h/g, parseInt(j / 2));
 	          material = this.load_texture(path, i, j, dfrd[4 * i + j]);
 	          geometry = root.Config.webgl ? new THREE.PlaneBufferGeometry(300 / 2, 300 / 2, 7, 7) : new THREE.PlaneGeometry(300 / 2, 300 / 2, 20, 20);
 	          slice = new THREE.Mesh(geometry, material);

@@ -10,7 +10,7 @@ var titles = ["Entrance", "Kitchen", "Hall", "Hall", "Hall", "", "Bedroom 1", "B
 var side_panel = [true, true, false, true, false, false, true, false, false, false, true, false, false, true, false, true, false, false, true, true, false, false];
 for(var i=0;i<22;i++)
 {
-    test_pano[i] = [titles[i], "./Dataset/panos-house/" + (i + 1) + "/%s/%h_%v.jpg", side_panel[i]];
+    test_pano[i] = [titles[i], "./Dataset/panos-house/" + (i + 1) + "/%s/%h_%v.jpg", side_panel[i],0];
     fallback_pano[i] = "./Dataset/panos-house/" + (i + 1) + '/';
 }
 var DirectPano = 
