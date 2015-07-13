@@ -1,4 +1,6 @@
 root = require("./fallback-transition.js")
+root.width = undefined
+root.height = undefined
 flag = false
 offset = 1500 - window.innerWidth
 (($) ->
@@ -69,7 +71,7 @@ offset = 1500 - window.innerWidth
 						$(hotspots[i]).trigger('click')
 						return
 					i++
-			if keypressed == 37
+			else if keypressed == 37
 				$(this).offset left: p - 10
 				p = $(this).offset().left
 				p = p + offset
@@ -91,20 +93,91 @@ offset = 1500 - window.innerWidth
 					else
 						q = $('#screen2').offset().left - p
 						$('#screen1').offset left: q - 1500 + p
+			else if keypressed == 27
+				escape_fullscreen()
 			return
 		).on 'click', (e) ->
 			$(this).focus()
 			return
 	return
 ) jQuery
+update_dimensions = ->
+	$("#" + DirectPano.pano_div_id).css({
+		width : root.width,
+		height : root.height
+		})
+	$("#screen1").css({
+		height : root.height
+		})
+	$("#screen2").css({
+		height : root.height
+		})
+
+	$("#screen2").offset({
+		top:0,
+		left:-1500
+	})
+
+	$("#image-screen1_" + root.pano.pano_id).css({
+		height : root.height + 30
+		})
+	$("#image-screen2_" + root.pano.pano_id).css({
+		height : root.height + 30
+		})
+	num_hotspots = root.hotspot_angles[root.hotspot.pano_id].length
+	i = 0
+	while i < num_hotspots
+		$("#hotspot_" + i + "_0").css({
+			top : root.height/2
+			})
+		$("#hotspot_" + i + "_1").css({
+			top : root.height/2
+			})
+		i++
+
+	num_annotations = root.annotation_angles[root.annotation.pano_id].length
+	i = 0
+	while i < num_annotations
+		offset = root.annotation_angles[root.annotation.pano_id][i][1]
+		$("#annotation_1_" + i).css({
+			top : root.height/2 - 2*offset
+			})
+		$("#annotation_2_" + i).css({
+			top : root.height/2 - 2*offset
+			})
+		i++
+	return
+go_fullscreen = ->
+	root.width = window.innerWidth
+	root.height = window.innerHeight
+	$('#'+ DirectPano.image_div_id).css({
+		'visibility': 'hidden'
+		})
+	update_dimensions()
+	return
+escape_fullscreen = ->
+	root.width = DirectPano.initial_width
+	root.height = DirectPano.initial_height
+	$('#'+ DirectPano.image_div_id).css({
+		'visibility': 'visible'
+		})
+	update_dimensions()
+	return
+
+$('#'+ DirectPano.image_div_id).bind 'touchstart click', ->
+	go_fullscreen()
+	return
 
 container = $("#" + DirectPano.pano_div_id)
 container.css("overflow","hidden")
+root.width = DirectPano.initial_width
+root.height = DirectPano.initial_height
 
 container.css({
-	'width' : '600px',
-	'height' : '550px'
+	'width' : root.width,
+	'height' : root.height
 	})
+
 div = $("<div></div>",{id : "drag",tabindex : 0})
 
 div.width(window.innerWidth).height(window.innerHeight)
@@ -114,11 +187,11 @@ div2 = $("<div></div>",{id: "screen2"})
 
 div1.css({
 	"width" : "1500px",
-	"height": "620px"
+	"height": root.height
 	})
 div2.css({
 	"width" : "1500px",
-	"height": "620px",
+	"height": root.height
 	})
 
 div.append(div1)

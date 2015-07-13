@@ -176,7 +176,7 @@ class transition
 		@current_pano = pano_id
 		@save_clear_images()
 
-		if hotspot_id
+		if hotspot_id!=null
 			rotate_angle = @find_rotation_angle(hotspot_angle)
 		else
 			rotate_angle = root.Config.lon
@@ -193,6 +193,7 @@ class transition
 		return
 		
 	find_rotation_angle : (hotspot_angle)->
+		console.log(hotspot_angle)
 		
 		rotate_angle = hotspot_angle - root.Config.lon
 
@@ -269,6 +270,7 @@ class transition
 		$.when.apply($, dfrd).done(->).promise()
 
 	old_pano_to_blur_pano :(error,hotspot_angle,rotate_angle,dist) ->
+		console.log(rotate_angle,root.Config.lon)
 		if @destroy
 			return
 		time1 = 0.1
