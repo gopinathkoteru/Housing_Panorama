@@ -8,14 +8,15 @@ class Pano
 		img1 = $('<img/>',{id : "image-screen1_" + pano_id})
 		img2 = $('<img/>',{id : "image-screen2_" + pano_id})
 
+		img_width = root.height + 30
 		img1.css({
 			"width" : "1500px",
-			"height": "620px"
+			"height": img_width
 		})
 
 		img2.css({
 			"width" : "1500px",
-			"height": "620px",
+			"height": img_width
 		})
 		
 		img1.css("position","absolute")
@@ -28,7 +29,8 @@ class Pano
 		img2.css("top","0px")
 		img2.css("opacity", "0")
 
-		path = DirectPano.pano[pano_id][1] + (pano_id+1) + ".jpg"
+		console.log(DirectPano.fallback_pano)
+		path = DirectPano.fallback_pano[pano_id] + (pano_id+1) + ".jpg"
 		console.log(path)
 		img1.attr("src",path)
 		img2.attr("src",path)

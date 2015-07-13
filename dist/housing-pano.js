@@ -501,7 +501,7 @@
 	      this.moving = true;
 	      this.current_pano = pano_id;
 	      this.save_clear_images();
-	      if (hotspot_id) {
+	      if (hotspot_id !== null) {
 	        rotate_angle = this.find_rotation_angle(hotspot_angle);
 	      } else {
 	        rotate_angle = root.Config.lon;
@@ -517,6 +517,7 @@
 
 	    transition.prototype.find_rotation_angle = function(hotspot_angle) {
 	      var rotate_angle;
+	      console.log(hotspot_angle);
 	      rotate_angle = hotspot_angle - root.Config.lon;
 	      while (rotate_angle > 180) {
 	        rotate_angle = rotate_angle - 360;
@@ -599,6 +600,7 @@
 
 	    transition.prototype.old_pano_to_blur_pano = function(error, hotspot_angle, rotate_angle, dist) {
 	      var blur_pano, clear_pano, del, i, j, time, time1;
+	      console.log(rotate_angle, root.Config.lon);
 	      if (this.destroy) {
 	        return;
 	      }

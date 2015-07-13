@@ -71,7 +71,8 @@ class Annotation
 		@length = root.annotation_angles[pano_id].length
 		i = 0
 		while i < @length
-			top = "400px"
+			top = (root.height/2 - 2*root.annotation_angles[pano_id][i][1]) + 'px'
+			console.log(root.annotation_angles[pano_id][i][1] , top)
 			angle = (root.annotation_angles[pano_id][i][0] + 80)%360
 			left = ((angle/360)*1500) + 'px'
 			@add_annotation(i,top,left)

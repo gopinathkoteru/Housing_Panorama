@@ -54,9 +54,9 @@ class Hotspot
 		img2 = $("#screen2")
 		i = 0
 		while i < num_hotspots
-			angle = (root.hotspot_angles[pano_id][i][1] + 80)%360
+			angle = (root.hotspot_angles[pano_id][i][1] + 85)%360
 			left = ((angle/360)*1500) + 'px'
-			top = "400px" 
+			top = root.height/2 + 'px'
 			@add_hotspot(left, top, i, img1, img2)
 			i++
 		return
