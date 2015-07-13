@@ -20,7 +20,7 @@ class Annotation
 			<div class='info-hotspot'>
 				" + root.annotation_angles[pano_id][anno_id][3] +
 			"</div>
-			")
+			")	
 		anno_div1.on('click' , ->
 			if anno_div1.find('.info-hotspot').css('visibility') == 'visible'
 				anno_div1.find('.info-hotspot').css('visibility', 'hidden')

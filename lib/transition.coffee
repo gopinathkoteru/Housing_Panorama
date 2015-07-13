@@ -95,9 +95,9 @@ class transition
 										root.blur_images[pano_id][image_index][offset] = image
 										return
 									fpath = pano[pano_id][1]
-									fpath = fpath.replace("%s","../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j])
-									fpath = fpath.replace("%v",offset%2)
-									fpath = fpath.replace("%h",parseInt(offset/2))
+									fpath = fpath.replace(/%s/g,"../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j])
+									fpath = fpath.replace(/%v/g,offset%2)
+									fpath = fpath.replace(/%h/g,parseInt(offset/2))
 									image.src = fpath
 									return
 								k++
@@ -134,9 +134,9 @@ class transition
 										root.blur_images[pano_id][image_index][offset] = image
 										return
 									fpath = pano[pano_id][1]
-									fpath = fpath.replace("%s","../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j])
-									fpath = fpath.replace("%v",offset%2)
-									fpath = fpath.replace("%h",parseInt(offset/2))
+									fpath = fpath.replace(/%s/g,"../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j])
+									fpath = fpath.replace(/%v/g,offset%2)
+									fpath = fpath.replace(/%h/g,parseInt(offset/2))
 									image.src = fpath
 									return
 								k++
@@ -179,7 +179,8 @@ class transition
 		if hotspot_id!=null
 			rotate_angle = @find_rotation_angle(hotspot_angle)
 		else
-			rotate_angle = root.Config.lon
+			root.Config.lon = @pano[pano_id][3]
+			root.Config.lat = 0
 
 		root.Hotspot.remove_hotspots()
 		root.Annotation.remove_annotations()
@@ -226,9 +227,9 @@ class transition
 			j = 0
 			while j < 4
 				path = @pano[@current_pano][1]
-				path = path.replace("%s","../blur_" + (@current_pano + 1) + "/" +root.Config.img_name[i])
-				path = path.replace("%v",j%2)
-				path = path.replace("%h",parseInt(j/2))
+				path = path.replace(/%s/g,"../blur_" + (@current_pano + 1) + "/" +root.Config.img_name[i])
+				path = path.replace(/%v/g,j%2)
+				path = path.replace(/%h/g,parseInt(j/2))
 				@blur_pano.mesh.children[i].children[j].material.map.dispose()
 				@blur_pano.mesh.children[i].children[j].material.map = @blur_pano.get_texture(@pano_id,path, dfrd[4*i + j], i,j)
 				@blur_pano.mesh.children[i].children[j].material.opacity = 0
@@ -258,9 +259,9 @@ class transition
 			j = 0
 			while j < 4
 				path = @pano[@current_pano][1]
-				path = path.replace("%s",root.Config.img_name[i])
-				path = path.replace("%v",j%2)
-				path = path.replace("%h",parseInt(j/2))
+				path = path.replace(/%s/g,root.Config.img_name[i])
+				path = path.replace(/%v/g,j%2)
+				path = path.replace(/%h/g,parseInt(j/2))
 				@clear_pano.mesh.children[i].children[j].material.map.dispose()
 				@clear_pano.mesh.children[i].children[j].material.map = @clear_pano.get_texture(@pano_id,path, dfrd[4*i + j], i,j)
 				@clear_pano.mesh.children[i].children[j].material.opacity = 0

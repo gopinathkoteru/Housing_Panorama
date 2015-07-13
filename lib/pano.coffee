@@ -124,9 +124,9 @@ class Pano
 			while j < 4
 				path = path1
 				console.log(path)
-				path = path.replace("%s",root.Config.img_name[i])
-				path = path.replace("%v",j%2)
-				path = path.replace("%h",parseInt(j/2))
+				path = path.replace(/%s/g,root.Config.img_name[i])
+				path = path.replace(/%v/g,j%2)
+				path = path.replace(/%h/g,parseInt(j/2))
 				
 				material = @load_texture(path , i,j,dfrd[4*i+j])
 				geometry = if root.Config.webgl then new THREE.PlaneBufferGeometry( 300/2, 300/2, 7, 7 ) else  new THREE.PlaneGeometry( 300/2, 300/2, 20, 20)
