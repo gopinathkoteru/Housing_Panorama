@@ -37,7 +37,6 @@ $("#add-annotation-button").on('click',->
 	div.css('top', $("#container").outerHeight()/2 + 'px')
 
 	$("#container").append(div)
-	console.log(div)
 	uns_annotation = div
 	$("#" + annotation_id).bind 'click touchstart', ->
 		if $("#" + annotation_id).find('.hotspot-title').css('visibility') == 'visible' or  $("#" + annotation_id).find('.hotspot-title').css('opacity') == '1'

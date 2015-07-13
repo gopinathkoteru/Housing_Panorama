@@ -1,22 +1,23 @@
 root = require('./panel-hotspot.js')
 front_pano = undefined
 back_pano = undefined
-path = "../test/Dataset/panos-house/"
+house_id = undefined
+root.pano_paths = []
+
 root.full_dataset = {}
 localStorage.setItem('full_dataset', JSON.stringify(root.full_dataset))
 one_dataset = {
 	"pano_path": undefined,
 	"hotspot": {}
 }
-hotspot = {}
 
 root.Config = 
-	img_name: ['r'
-		'l' 
-		'u' 
-		'd' 
-		'f' 
-		'b'
+	img_name: ['mobile_r'
+		'mobile_l' 
+		'mobile_u' 
+		'mobile_d' 
+		'mobile_f' 
+		'mobile_b'
 	]
 	webgl : true
 	lon : 0
@@ -68,39 +69,46 @@ init = (scrollid,num_panos) ->
 change_pano = (id,value) ->
 	opc = $("#opacity")[0].value
 	if id == 1
-		front_pano.destroy_pano()
+		try
+			front_pano.destroy_pano()
+			front_pano = undefined
+		catch error
+			front_pano = undefined
+		  
 		front_pano = new root.Pano(value-1,false)
-		front_pano.create_pano(path + value + '/mobile_',opc)
+		front_pano.create_pano(opc)
 	else
-		back_pano.destroy_pano()
+		try
+			back_pano.destroy_pano()
+			back_pano = undefined
+		catch error
+			back_pano = undefined
+
 		back_pano = new root.Pano(value-1,false)
-		back_pano.create_pano(path + value + '/mobile_',1-opc)
+		back_pano.create_pano(1-opc)
 		error_value = $("#adjust")[0].value
 		back_pano.mesh.rotation.y = THREE.Math.degToRad(error_value)
 
 animate()
 
-init("list1",22)
-init("list2",22)
 
-$("#house-list").on('change',->
-	one_dataset = {
-		"pano_path": undefined,
-		"hotspot": {}
-	}
-	hotspot = {}
-	house = $("#house-list")[0]
-	house_path = house.options[house.selectedIndex].value
-	path = '../test/Dataset/' + house_path + '/'
-	count = 0
-	if house_path=="panos-house"
-		count = 22
-	else if house_path =="panos"
-		count = 5
-	else 
-		count = 4
-	init("list1",count)
-	init("list2",count)
+$("#xml-submit").on('click',->
+	xmlhttp=new XMLHttpRequest()
+	xmlhttp.open("GET",$("#xml-path").val(),false)
+	xmlhttp.send()
+	xmlDoc=xmlhttp.responseXML
+	house_id = $("#xml-path").val()
+	console.log(house_id)
+
+	num_panos = xmlDoc.getElementsByTagName("scene").length
+	root.pano_paths = []
+	i = 0
+	while i < num_panos
+		root.pano_paths[i] = xmlDoc.getElementsByTagName("scene")[i].childNodes[2].childNodes[0].childNodes[0].getAttribute("url")
+		i++
+	
+	init("list1",num_panos)
+	init("list2",num_panos)
 
 	$("#list1").trigger('change')
 	$("#list2").trigger('change')
@@ -121,24 +129,24 @@ $("#list2").on('change',->
 $("#save-data-button").click ->
 	root.save_annotation()
 	root.save_hotspot()
-	if root.full_dataset[$("#house-list").val()] == undefined
+	if root.full_dataset[house_id] == undefined
 		one_dataset = {}
-		root.full_dataset[$("#house-list").val()] = one_dataset
+		root.full_dataset[house_id] = one_dataset
 	else
-		one_dataset = root.full_dataset[$("#house-list").val()]
+		one_dataset = root.full_dataset[house_id]
 	from_id = $("#list1").val() - 1
-	pano_path = $("#pano-path").val()
 	title = $("#pano-title").val()
 	if one_dataset[from_id] == undefined
 		one_dataset[from_id] = {
-			"path": pano_path,   # The path of the folder where images are stored
 			"title": title,    # Title of the scene e.g. Hall
 			"hotspot": [],
 			"annotation": [],
 		}
-	one_dataset["num_panos"] = $("#list1 option").size();
+	one_dataset["pano_paths"] = root.pano_paths
 	one_dataset[from_id]["annotation"] = root.annotation_angles
 	one_dataset[from_id]["hotspot"] = root.hotspots_angle
+	console.log(one_dataset)
+	console.log(root.full_dataset)
 	localStorage.setItem('full_dataset', JSON.stringify(root.full_dataset))
 
 $('#container').click (e) ->
@@ -157,12 +165,6 @@ root.camera = camera
 root.scene = scene
 root.renderer = renderer
 root.texture_placeholder = texture_placeholder
-
-front_pano = new root.Pano(0,false)
-front_pano.create_pano('../test/Dataset/panos-house/1/mobile_',1)
-
-back_pano = new root.Pano(0,false)
-back_pano.create_pano('../test/Dataset/panos-house/1/mobile_',0)
 
 slider = $("#opacity")
 slider.on('change mousemove',->

@@ -31,7 +31,6 @@ $("#add-hotspot-button").on('click',->
 	div.css('top', $("#container").outerHeight()/2 + 'px')
 
 	$("#container").append(div)
-	console.log(div)
 	uns_hotspot = div
 	return)
 

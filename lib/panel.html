@@ -4,8 +4,11 @@
         <title>Housing Panorama</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-         <link rel="stylesheet" type="text/css" href="../test/css/main.css">
+        <link rel="stylesheet" type="text/css" href="../test/css/main.css">
         <style>
+        body{
+            overflow: visible;
+        }
         #container
         {
         	width : 1280px;
@@ -36,6 +39,10 @@
         </style>
     </head>
     <body>
+        <div>
+            <input id = "xml-path" placeholder="XML path"/>
+            <button id ="xml-submit"/>Submit </button>
+        </div>
         <div id = "container" tabindex = "0"></div>
         <div>
             <select id = "list1" >
@@ -63,7 +70,6 @@
                 <input id="save-hotspot-button" type="button" value="Save Hotspot">
                 <input id="hotspot-title" placeholder="Hotspot Title"><br>
                 <input id="pano-title" placeholder="Title of the Source Pano">
-                <input id="pano-path" placeholder="Enter path of images folder">
         </div>
         <input id="save-data-button" type="button" value="Save Data"><br>
 
