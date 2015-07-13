@@ -10,10 +10,10 @@ active = undefined
 is_fullscreen = false
 Config = 
 	img_name: ['mobile_r'
-		'mobile_l' 
-		'mobile_u' 
-		'mobile_d' 
-		'mobile_f' 
+		'mobile_l'
+		'mobile_u'
+		'mobile_d'
+		'mobile_f'
 		'mobile_b'
 	]
 	isUserInteracting: false

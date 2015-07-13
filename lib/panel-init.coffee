@@ -136,18 +136,24 @@ $("#save-data-button").click ->
 		one_dataset = root.full_dataset[house_id]
 	from_id = $("#list1").val() - 1
 	title = $("#pano-title").val()
+	to_show_side_panel = false
+	if $("#side-panel").val() == "on"
+		to_show_side_panel = true
+	#console.log to_show_side_panel
 	if one_dataset[from_id] == undefined
 		one_dataset[from_id] = {
 			"title": title,    # Title of the scene e.g. Hall
+			"path": root.pano_paths[from_id],
+			"side_panel": to_show_side_panel,
 			"hotspot": [],
 			"annotation": [],
 		}
-	one_dataset["pano_paths"] = root.pano_paths
+	#one_dataset["pano_paths"] = root.pano_paths
 	one_dataset[from_id]["annotation"] = root.annotation_angles
 	one_dataset[from_id]["hotspot"] = root.hotspots_angle
 	console.log(one_dataset)
 	console.log(root.full_dataset)
-	localStorage.setItem('full_dataset', JSON.stringify(root.full_dataset))
+	localStorage.setItem('full_dataset', JSON.stringify(one_dataset))
 
 $('#container').click (e) ->
 	if $('#add-hotspot-image').css('display') == 'block'

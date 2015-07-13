@@ -1,44 +1,43 @@
 {
-  "panos-house": {
-    "0": {
-      "path": "./Dataset/panos-house/1/",
-      "title": "Entrance",
-      "hotspot": [
-        {
-          "to_id": 1,
-          "angle": 67,
-          "error": -26,
-          "text": "Kitchen"
-        }
-      ],
-      "annotation": []
-    },
-    "1": {
-      "path": "./Dataset/panos-house/2/",
-      "title": "Kitchen",
-      "hotspot": [
-        {
-          "to_id": 0,
-          "angle": 221,
-          "error": 0,
-          "text": "Entrance"
-        }
-      ],
-      "annotation": [
-        {
-          "lon": 249,
-          "lat": 1,
-          "title": "Fridge",
-          "desc": "LG"
-        },
-        {
-          "lon": 51,
-          "lat": -26,
-          "title": "Washing Machine",
-          "desc": "LG"
-        }
-      ]
-    },
-    "num_panos": 22
+  "0": {
+    "title": "Entrance",
+    "path": "../test/Dataset/panos-house/1/%s/%h_%v.jpg",
+    "side_panel": true,
+    "hotspot": [
+      {
+        "to_id": 1,
+        "angle": 66,
+        "error": -26,
+        "text": "Kitchen"
+      }
+    ],
+    "annotation": []
+  },
+  "1": {
+    "title": "Kitchen",
+    "path": "../test/Dataset/panos-house/2/%s/%h_%v.jpg",
+    "side_panel": false,
+    "hotspot": [
+      {
+        "to_id": 0,
+        "angle": 232,
+        "error": 25,
+        "text": "Entrance"
+      }
+    ],
+    "annotation": [
+      {
+        "lon": 52,
+        "lat": -26,
+        "title": "Washing Machine",
+        "desc": "LG<br>5.5 Kg"
+      },
+      {
+        "lon": 248,
+        "lat": 1,
+        "title": "Fridge",
+        "desc": "LG<br>x Litres"
+      }
+    ]
   }
 }
