@@ -109,15 +109,20 @@ class Pano
 		@name = "panorama"
 		@destroy = false
 
-	create_pano: (path,opacity) ->
+	create_pano: (opacity) ->
 		@mesh = new THREE.Object3D()
 		i = 0
 		while i < 6
 			j = 0
 			slices = new THREE.Object3D()
 			while j < 4
-				material = @load_texture (path + root.Config.img_name[i] + '/'+ j + ".jpg" ) , i,j
-				geometry = if root.Config.webgl then new THREE.PlaneBufferGeometry( 300/2, 300/2, 7, 7 ) else  new THREE.PlaneGeometry( 300/2, 300/2, 20, 20)
+				path = root.pano_paths[@pano_id]
+				path = path.replace(/%s/g,root.Config.img_name[i])
+				path = path.replace(/%v/g,j%2)
+				path = path.replace(/%h/g,parseInt(j/2))
+
+				material = @load_texture(path,i,j)
+				geometry = new THREE.PlaneBufferGeometry( 300/2, 300/2, 7, 7 )
 				slice = new THREE.Mesh geometry , material
 					
 				slice.material.transparent = true
