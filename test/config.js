@@ -66,7 +66,8 @@ $.getJSON( "data.json", function( data ) {
 		title = Scene[k]["title"];
 		path = Scene[k]["path"];
 		side_panel = Scene[k]["side_panel"]
-		pano[mapping[k]] = [title, path, side_panel];
+		start_position = Scene[k]["start_position"]
+		pano[mapping[k]] = [title, path, side_panel, start_position];
 		for(var i = 0; i < Scene[k]["hotspot"].length; i++)
 		{
 			new_dict = Scene[k]["hotspot"][i];

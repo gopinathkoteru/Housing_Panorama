@@ -190,16 +190,8 @@ slider.on('change mousemove',->
 		i++
 	return)
 
-position = $("#start-position")
-position.on('change mousemove',->
-	start_position = $("#start-position").val()
-	front_pano.mesh.rotation.y = THREE.Math.degToRad(start_position)
-	$("#position").html(start_position)
-	return)
 $("#set-position").on('click',->
-	position = $("#start-position").val()
-	$("#start-position").val(0)
-	front_pano.mesh.rotation.y = 0
+	position = parseInt(root.Config.lon)
 	return)
 
 adjust = $("#adjust")
