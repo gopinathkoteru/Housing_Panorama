@@ -1,8 +1,7 @@
 root = require("./pano.js")
 class hotspot
-	constructor: (hotspot_angles)->
+	constructor: ()->
 		@panoid = undefined
-		@hotspot_angles = hotspot_angles
 		@destroy = false
 
 	load_texture : () ->
@@ -16,7 +15,7 @@ class hotspot
 		image.src = '../test/images/logo.png' 
 		return material
 
-	add_hotspot :(angle, dist, hotspotId, dfrd) ->
+	add_hotspot :(angle, hotspotId, dfrd) ->
 		geometry = new THREE.PlaneBufferGeometry( 10, 10, 10 )
 		material = @load_texture()
 		hotspot = new THREE.Mesh( geometry, material )
@@ -30,13 +29,13 @@ class hotspot
 		geometry = new THREE.PlaneBufferGeometry( 1, 1, 1 )
 		panoid = @panoid
 		text_to_show = ""
-		if @hotspot_angles[panoid][hotspotId][3] != undefined
-			text_to_show = @hotspot_angles[panoid][hotspotId][3]
-		hotspot.panoid = @hotspot_angles[panoid][hotspotId][0]
+		if root.house[panoid][HOTSPOTS][hotspotId][TEXT] != undefined
+			text_to_show = root.house[panoid][HOTSPOTS][hotspotId][TEXT]
+		hotspot.panoid = root.house[panoid][HOTSPOTS][hotspotId][TO_ID]
 		hotspot.deg_angle = angle
 		
 		container = $("#"+DirectPano.pano_div_id)
-		text = $("<div></div>",{id : "hotspot_" + @hotspot_angles[panoid][hotspotId][0]})
+		text = $("<div></div>",{id : "hotspot_" + root.house[panoid][HOTSPOTS][hotspotId][TO_ID]})
 		text.html(text_to_show)
 		$("#" + DirectPano.pano_div_id).append(text)
 
@@ -48,7 +47,7 @@ class hotspot
 
 	add_hotspots :(panoid) ->
 		@panoid = panoid
-		num_hotspots = @hotspot_angles[panoid].length
+		num_hotspots = root.house[panoid][HOTSPOTS].length
 		dfrd = []
 		i = 0
 		while i < num_hotspots
@@ -59,7 +58,7 @@ class hotspot
 			if @destroy
 				@remove_hotspots()
 				return
-			@add_hotspot @hotspot_angles[panoid][i][1] ,@hotspot_angles[panoid][i][2] ,i, dfrd[i]
+			@add_hotspot root.house[panoid][HOTSPOTS][i][ANGLE] ,i , dfrd[i]
 			i++
 		$.when.apply($, dfrd).done(->).promise()
 
@@ -80,13 +79,13 @@ class hotspot
 		return
 
 	front_nearest_hotspot :(panoid)->	
-		num_hotspots = @hotspot_angles[panoid].length
+		num_hotspots = root.house[panoid][HOTSPOTS].length
 		near_id = -1
 		near_angle = undefined
 		flag = false
 		i = 0
 		while i < num_hotspots
-			temp = @hotspot_angles[panoid][i][1]
+			temp = root.house[panoid][HOTSPOTS][i][ANGLE]
 			lon = (root.Config.lon + 360) % 360
 			if temp < 0
 				temp += 360
@@ -99,13 +98,13 @@ class hotspot
 		return near_id
 
 	back_nearest_hotspot : (panoid) ->
-		num_hotspots = @hotspot_angles[panoid].length
+		num_hotspots = root.house[panoid][HOTSPOTS].length
 		near_id = -1
 		near_angle = undefined
 		flag = false
 		i = 0
 		while i < num_hotspots
-			temp = @hotspot_angles[panoid][i][1]
+			temp = root.house[panoid][HOTSPOTS][i][ANGLE]
 			lon = (root.Config.lon + 360 + 180) % 360
 			if temp < 0
 				temp += 360
@@ -138,13 +137,13 @@ class hotspot
 					y: -(vector.y - 1)/2 * container.outerHeight()
 				if text
 					if(vector.x > 1 or vector.x < -1 or vector.y > 1 or vector.y < -1 or vector.z > 1 or vector.z < -1)
-						if( $("#hotspot_" + object.panoid).css('display') != 'none')
-							$("#hotspot_" + object.panoid).removeAttr('style')
-							$("#hotspot_" + object.panoid).css({
+						if( text.css('display') != 'none')
+							text.removeAttr('style')
+							text.css({
 								'display': 'none'
 							})
 					else
-						$("#hotspot_" + object.panoid).css({
+						text.css({
 							'display': 'block',
 							'left': '-10px',
 							'top': '0px',

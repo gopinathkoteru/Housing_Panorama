@@ -70,25 +70,26 @@
 	    $("#" + DirectPano.pano_div_id).append("<div id='panos-list'></div>");
 	    panos_list = $("#panos-list");
 	    i = 0;
-	    while (i < DirectPano.pano.length) {
-	      if (DirectPano.pano[i][2] === true) {
-	        panos_list.append("<div id='panos-list-entry-" + i + "'>" + DirectPano.pano[i][0] + "</div>");
+	    while (i < Object.keys(house).length) {
+	      if (house[i][SIDE_PANEL] === true) {
+	        panos_list.append("<div id='panos-list-entry-" + i + "'>" + house[i][TITLE] + "</div>");
 	        $("#panos-list-entry-" + i).attr('pano_id', parseInt(i));
 	        $("#panos-list-entry-" + i).bind('click touchstart', function() {
 	          if (root.Transition.moving === false) {
-	            root.Transition.start(null, parseInt(this.getAttribute('pano_id')));
+	            root.Transition.start(null, this.getAttribute('pano_id'));
 	          }
 	        });
 	      }
 	      i++;
 	    }
 	    root = __webpack_require__(1);
-	    root.Annotation = new root.annotation(DirectPano.annotation_angles);
+	    root.house = house;
+	    root.Annotation = new root.annotation();
 	    root.Annotation.add_annotations(0);
 	    root.scene.children.length = 0;
 	    root.add_listeners();
-	    root.Hotspot = new root.hotspot(DirectPano.hotspots_angle);
-	    root.Transition = new root.transition(DirectPano.pano, DirectPano.hotspots_angle);
+	    root.Hotspot = new root.hotspot();
+	    root.Transition = new root.transition();
 	    root.Hotspot.add_hotspots(0);
 	    anim = new root.animation();
 	    root.Config.isUserInteracting = true;
@@ -312,17 +313,15 @@
 	  root = __webpack_require__(3);
 
 	  transition = (function() {
-	    function transition(pano, hotspot_angles) {
+	    function transition() {
 	      var path;
-	      this.pano = pano;
 	      this.current_pano = 0;
 	      this.moving = false;
-	      this.hotspot_angles = hotspot_angles;
 	      this.destroy = false;
 	      root.clear_images = {};
 	      root.blur_images = {};
 	      root.clear_images[this.current_pano] = [];
-	      path = this.pano[this.current_pano][1];
+	      path = root.house[this.current_pano][PATH];
 	      this.blur_pano = new root.Pano(0, true);
 	      this.clear_pano = new root.Pano(0, false);
 	      this.blur_pano.create_pano(path, 0.0);
@@ -334,15 +333,13 @@
 	          root.Config.isUserInteracting = false;
 	        });
 	      });
-	      this.preload_panel_images();
 	      this.preload_images();
 	      return;
 	    }
 
 	    transition.prototype.save_clear_images = function() {
-	      var current_pano, i, pano;
+	      var current_pano, i;
 	      current_pano = this.current_pano;
-	      pano = this.pano;
 	      if (!root.clear_images[current_pano]) {
 	        root.clear_images[current_pano] = [];
 	        i = 0;
@@ -364,7 +361,7 @@
 	                  texture.needsUpdate = true;
 	                  root.clear_images[current_pano][image_index][offset] = image;
 	                };
-	                path = pano[current_pano][1];
+	                path = root.house[current_pano][PATH];
 	                path = path.replace("%s", root.Config.img_name[i]);
 	                path = path.replace("%v", j % 2);
 	                path = path.replace("%h", parseInt(j / 2));
@@ -379,15 +376,13 @@
 	    };
 
 	    transition.prototype.preload_images = function() {
-	      var current_pano, hotspot_angles, i, pano;
+	      var current_pano, i;
 	      i = 0;
 	      current_pano = this.current_pano;
-	      hotspot_angles = this.hotspot_angles;
-	      pano = this.pano;
-	      while (i < hotspot_angles[current_pano].length) {
+	      while (i < root.house[current_pano][HOTSPOTS].length) {
 	        (function() {
 	          var j, pano_id;
-	          pano_id = hotspot_angles[current_pano][i][0];
+	          pano_id = root.house[current_pano][HOTSPOTS][i][TO_ID];
 	          if (!root.blur_images[pano_id]) {
 	            root.blur_images[pano_id] = [];
 	            j = 0;
@@ -409,7 +404,7 @@
 	                      texture.needsUpdate = true;
 	                      root.blur_images[pano_id][image_index][offset] = image;
 	                    };
-	                    fpath = pano[pano_id][1];
+	                    fpath = root.house[pano_id][PATH];
 	                    fpath = fpath.replace(/%s/g, "../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j]);
 	                    fpath = fpath.replace(/%v/g, offset % 2);
 	                    fpath = fpath.replace(/%h/g, parseInt(offset / 2));
@@ -427,11 +422,10 @@
 	    };
 
 	    transition.prototype.preload_panel_images = function() {
-	      var i, j, pano, pano_id;
+	      var i, j, pano_id;
 	      i = 0;
-	      pano = this.pano;
-	      while (i < pano.length) {
-	        if (pano[i][2] === true) {
+	      while (i < Object.keys(root.house).length) {
+	        if (root.house[i][SIDE_PANEL] === true) {
 	          pano_id = i;
 	          if (!root.blur_images[pano_id]) {
 	            root.blur_images[pano_id] = [];
@@ -454,7 +448,7 @@
 	                      texture.needsUpdate = true;
 	                      root.blur_images[pano_id][image_index][offset] = image;
 	                    };
-	                    fpath = pano[pano_id][1];
+	                    fpath = root.house[pano_id][PATH];
 	                    fpath = fpath.replace(/%s/g, "../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j]);
 	                    fpath = fpath.replace(/%v/g, offset % 2);
 	                    fpath = fpath.replace(/%h/g, parseInt(offset / 2));
@@ -480,19 +474,19 @@
 	      rotate_angle = 0;
 	      dist = 0;
 	      if (hotspot_id !== null) {
-	        pano_id = this.hotspot_angles[current_pano][hotspot_id][0];
-	        hotspot_angle = this.hotspot_angles[current_pano][hotspot_id][1];
-	        error = this.hotspot_angles[current_pano][hotspot_id][2];
+	        pano_id = root.house[current_pano][HOTSPOTS][hotspot_id][TO_ID];
+	        hotspot_angle = root.house[current_pano][HOTSPOTS][hotspot_id][ANGLE];
+	        error = root.house[current_pano][HOTSPOTS][hotspot_id][ERROR];
 	        dist = 60;
 	      } else {
 	        pano_id = panoId;
 	        error = 0;
 	      }
 	      $('div[id^=panos-list-entry-]').removeClass('active');
-	      title = this.pano[pano_id][0];
+	      title = root.house[pano_id][TITLE];
 	      i = 0;
-	      while (i < this.pano.length) {
-	        if (this.pano[i][0] === title && this.pano[i][2] === true) {
+	      while (i < Object.keys(root.house).length) {
+	        if (root.house[i][TITLE] === title && root.house[i][SIDE_PANEL] === true) {
 	          $('#panos-list-entry-' + i).addClass('active');
 	          break;
 	        }
@@ -504,7 +498,7 @@
 	      if (hotspot_id !== null) {
 	        rotate_angle = this.find_rotation_angle(hotspot_angle);
 	      } else {
-	        root.Config.lon = this.pano[pano_id][3];
+	        root.Config.lon = root.house[pano_id][START_POSITION];
 	        root.Config.lat = 0;
 	      }
 	      root.Hotspot.remove_hotspots();
@@ -518,7 +512,6 @@
 
 	    transition.prototype.find_rotation_angle = function(hotspot_angle) {
 	      var rotate_angle;
-	      console.log(hotspot_angle);
 	      rotate_angle = hotspot_angle - root.Config.lon;
 	      while (rotate_angle > 180) {
 	        rotate_angle = rotate_angle - 360;
@@ -551,7 +544,7 @@
 	      while (i < 6) {
 	        j = 0;
 	        while (j < 4) {
-	          path = this.pano[this.current_pano][1];
+	          path = root.house[this.current_pano][PATH];
 	          path = path.replace(/%s/g, "../blur_" + (this.current_pano + 1) + "/" + root.Config.img_name[i]);
 	          path = path.replace(/%v/g, j % 2);
 	          path = path.replace(/%h/g, parseInt(j / 2));
@@ -585,7 +578,7 @@
 	      while (i < 6) {
 	        j = 0;
 	        while (j < 4) {
-	          path = this.pano[this.current_pano][1];
+	          path = root.house[this.current_pano][PATH];
 	          path = path.replace(/%s/g, root.Config.img_name[i]);
 	          path = path.replace(/%v/g, j % 2);
 	          path = path.replace(/%h/g, parseInt(j / 2));
@@ -601,7 +594,6 @@
 
 	    transition.prototype.old_pano_to_blur_pano = function(error, hotspot_angle, rotate_angle, dist) {
 	      var blur_pano, clear_pano, del, i, j, time, time1;
-	      console.log(rotate_angle, root.Config.lon);
 	      if (this.destroy) {
 	        return;
 	      }
@@ -779,49 +771,48 @@
 	  object = void 0;
 
 	  annotation = (function() {
-	    function annotation(annotation_angles, content) {
-	      this.annotation_angles = annotation_angles;
-	      this.content = content;
+	    function annotation() {
 	      this.panoid = void 0;
 	      this.length = 0;
 	      this.destroy = false;
 	    }
 
 	    annotation.prototype.add_annotation = function(annotation_id) {
-	      var anno_id, div;
+	      var anno, anno_id, div;
 	      anno_id = annotation_id;
 	      annotation_id = "annotation_" + annotation_id;
 	      div = $("<div></div>", {
 	        id: annotation_id
 	      });
-	      div.prepend("<img class='annotation' height='40px' width='40px' src='../test/images/info.png'></img> <div class='hotspot-title'> <div class='hotspot-text'>" + this.annotation_angles[this.panoid][anno_id][2] + "</div> </div> <div class='info-hotspot'>" + this.annotation_angles[this.panoid][anno_id][3] + "</div>");
+	      div.prepend("<img class='annotation' height='40px' width='40px' src='../test/images/info.png'></img> <div class='hotspot-title'> <div class='hotspot-text'>" + root.house[this.panoid][ANNOTATIONS][anno_id][TITLE] + "</div> </div> <div class='info-hotspot'>" + root.house[this.panoid][ANNOTATIONS][anno_id][DESC] + "</div>");
 	      $("#" + DirectPano.pano_div_id).append(div);
-	      $("#" + annotation_id).bind('click touchstart', function() {
-	        if ($("#" + annotation_id).find('.info-hotspot').css('visibility') === 'visible') {
-	          $("#" + annotation_id).find('.info-hotspot').css('visibility', 'hidden');
-	          $("#" + annotation_id).find('.hotspot-title').css('visibility', 'hidden');
-	          $("#" + annotation_id).find('.hotspot-title').css('opacity', '0');
-	          $("#" + annotation_id).find('.annotation').css('border-radius', '100px');
+	      anno = $("#" + annotation_id);
+	      anno.bind('click touchstart', function() {
+	        if (anno.find('.info-hotspot').css('visibility') === 'visible') {
+	          anno.find('.info-hotspot').css('visibility', 'hidden');
+	          anno.find('.hotspot-title').css('visibility', 'hidden');
+	          anno.find('.hotspot-title').css('opacity', '0');
+	          anno.find('.annotation').css('border-radius', '100px');
 	        } else {
-	          $("#" + annotation_id).find('.info-hotspot').css('visibility', 'visible');
-	          $("#" + annotation_id).find('.hotspot-title').css('visibility', 'visible');
-	          $("#" + annotation_id).find('.hotspot-title').css('opacity', '1');
-	          $("#" + annotation_id).find('.hotspot-title').css('border-radius', '0px 10px 0px 0px');
-	          $("#" + annotation_id).find('.annotation').css('border-radius', '10px 0px 0px 0px');
+	          anno.find('.info-hotspot').css('visibility', 'visible');
+	          anno.find('.hotspot-title').css('visibility', 'visible');
+	          anno.find('.hotspot-title').css('opacity', '1');
+	          anno.find('.hotspot-title').css('border-radius', '0px 10px 0px 0px');
+	          anno.find('.annotation').css('border-radius', '10px 0px 0px 0px');
 	        }
 	      });
-	      $("#" + annotation_id).hover((function() {
-	        $("#" + annotation_id).find('.hotspot-title').css('visibility', 'visible');
-	        $("#" + annotation_id).find('.hotspot-title').css('opacity', '1');
-	        if ($("#" + annotation_id).find('.info-hotspot').css('visibility') === 'hidden') {
-	          $("#" + annotation_id).find('.hotspot-title').css('border-radius', '0px 10px 10px 0px');
-	          $("#" + annotation_id).find('.annotation').css('border-radius', '10px 0px 0px 10px');
+	      anno.hover((function() {
+	        anno.find('.hotspot-title').css('visibility', 'visible');
+	        anno.find('.hotspot-title').css('opacity', '1');
+	        if (anno.find('.info-hotspot').css('visibility') === 'hidden') {
+	          anno.find('.hotspot-title').css('border-radius', '0px 10px 10px 0px');
+	          anno.find('.annotation').css('border-radius', '10px 0px 0px 10px');
 	        }
 	      }), function() {
-	        if ($("#" + annotation_id).find('.info-hotspot').css('visibility') === 'hidden') {
-	          $("#" + annotation_id).find('.hotspot-title').css('visibility', 'hidden');
-	          $("#" + annotation_id).find('.hotspot-title').css('opacity', '0');
-	          $("#" + annotation_id).find('.annotation').css('border-radius', '100px');
+	        if (anno.find('.info-hotspot').css('visibility') === 'hidden') {
+	          anno.find('.hotspot-title').css('visibility', 'hidden');
+	          anno.find('.hotspot-title').css('opacity', '0');
+	          anno.find('.annotation').css('border-radius', '100px');
 	        }
 	      });
 	    };
@@ -830,7 +821,7 @@
 	      var i;
 	      this.panoid = panoid;
 	      try {
-	        this.length = this.annotation_angles[panoid].length;
+	        this.length = root.house[panoid][ANNOTATIONS].length;
 	        i = 0;
 	        while (i < this.length) {
 	          if (this.destroy) {
@@ -867,9 +858,9 @@
 	      while (i < this.length) {
 	        annotation_id = "#annotation_" + i;
 	        annotation = $(annotation_id);
-	        angle = this.annotation_angles[panoid][i][0];
+	        angle = root.house[panoid][ANNOTATIONS][i][LON];
 	        rad_angle = THREE.Math.degToRad(angle);
-	        vector = new THREE.Vector3(30 * Math.cos(rad_angle), this.annotation_angles[this.panoid][i][1], 30 * Math.sin(rad_angle));
+	        vector = new THREE.Vector3(30 * Math.cos(rad_angle), root.house[panoid][ANNOTATIONS][i][LAT], 30 * Math.sin(rad_angle));
 	        vector.x += 13 * Math.cos(rad_angle);
 	        vector.z += 13 * Math.sin(rad_angle);
 	        vector = vector.project(root.camera);
@@ -880,20 +871,20 @@
 	        };
 	        if (annotation) {
 	          if (vector.x > 1 || vector.x < -1 || vector.y > 1 || vector.y < -1 || vector.z > 1 || vector.z < -1) {
-	            if ($(annotation_id).css('display') !== 'none') {
-	              $(annotation_id).removeAttr('style');
-	              $(annotation_id).css('display', 'none');
+	            if (annotation.css('display') !== 'none') {
+	              annotation.removeAttr('style');
+	              annotation.css('display', 'none');
 	            }
 	          } else {
-	            $(annotation_id).css('display', 'inline');
-	            $(annotation_id).css('left', '-10px');
-	            $(annotation_id).css('top', '0px');
-	            $(annotation_id).css('transform', 'translate3d(' + pos.x + 'px,' + pos.y + 'px,0px)');
-	            $(annotation_id).css('position', 'absolute');
-	            $(annotation_id).css({
+	            annotation.css('display', 'inline');
+	            annotation.css('left', '-10px');
+	            annotation.css('top', '0px');
+	            annotation.css('transform', 'translate3d(' + pos.x + 'px,' + pos.y + 'px,0px)');
+	            annotation.css('position', 'absolute');
+	            annotation.css({
 	              'font-family': "'Helvetica Neue', Helvetica, Arial, sans-serif"
 	            });
-	            $(annotation_id).css('font-size', '16px');
+	            annotation.css('font-size', '16px');
 	          }
 	        }
 	        i++;
@@ -922,9 +913,8 @@
 	  root = __webpack_require__(5);
 
 	  hotspot = (function() {
-	    function hotspot(hotspot_angles) {
+	    function hotspot() {
 	      this.panoid = void 0;
-	      this.hotspot_angles = hotspot_angles;
 	      this.destroy = false;
 	    }
 
@@ -950,7 +940,7 @@
 	      return material;
 	    };
 
-	    hotspot.prototype.add_hotspot = function(angle, dist, hotspotId, dfrd) {
+	    hotspot.prototype.add_hotspot = function(angle, hotspotId, dfrd) {
 	      var container, geometry, material, panoid, rad_angle, text, text_to_show, v;
 	      geometry = new THREE.PlaneBufferGeometry(10, 10, 10);
 	      material = this.load_texture();
@@ -965,14 +955,14 @@
 	      geometry = new THREE.PlaneBufferGeometry(1, 1, 1);
 	      panoid = this.panoid;
 	      text_to_show = "";
-	      if (this.hotspot_angles[panoid][hotspotId][3] !== void 0) {
-	        text_to_show = this.hotspot_angles[panoid][hotspotId][3];
+	      if (root.house[panoid][HOTSPOTS][hotspotId][TEXT] !== void 0) {
+	        text_to_show = root.house[panoid][HOTSPOTS][hotspotId][TEXT];
 	      }
-	      hotspot.panoid = this.hotspot_angles[panoid][hotspotId][0];
+	      hotspot.panoid = root.house[panoid][HOTSPOTS][hotspotId][TO_ID];
 	      hotspot.deg_angle = angle;
 	      container = $("#" + DirectPano.pano_div_id);
 	      text = $("<div></div>", {
-	        id: "hotspot_" + this.hotspot_angles[panoid][hotspotId][0]
+	        id: "hotspot_" + root.house[panoid][HOTSPOTS][hotspotId][TO_ID]
 	      });
 	      text.html(text_to_show);
 	      $("#" + DirectPano.pano_div_id).append(text);
@@ -985,7 +975,7 @@
 	    hotspot.prototype.add_hotspots = function(panoid) {
 	      var dfrd, i, num_hotspots;
 	      this.panoid = panoid;
-	      num_hotspots = this.hotspot_angles[panoid].length;
+	      num_hotspots = root.house[panoid][HOTSPOTS].length;
 	      dfrd = [];
 	      i = 0;
 	      while (i < num_hotspots) {
@@ -998,7 +988,7 @@
 	          this.remove_hotspots();
 	          return;
 	        }
-	        this.add_hotspot(this.hotspot_angles[panoid][i][1], this.hotspot_angles[panoid][i][2], i, dfrd[i]);
+	        this.add_hotspot(root.house[panoid][HOTSPOTS][i][ANGLE], i, dfrd[i]);
 	        i++;
 	      }
 	      return $.when.apply($, dfrd).done(function() {}).promise();
@@ -1025,13 +1015,13 @@
 
 	    hotspot.prototype.front_nearest_hotspot = function(panoid) {
 	      var flag, i, lon, near_angle, near_id, num_hotspots, temp;
-	      num_hotspots = this.hotspot_angles[panoid].length;
+	      num_hotspots = root.house[panoid][HOTSPOTS].length;
 	      near_id = -1;
 	      near_angle = void 0;
 	      flag = false;
 	      i = 0;
 	      while (i < num_hotspots) {
-	        temp = this.hotspot_angles[panoid][i][1];
+	        temp = root.house[panoid][HOTSPOTS][i][ANGLE];
 	        lon = (root.Config.lon + 360) % 360;
 	        if (temp < 0) {
 	          temp += 360;
@@ -1050,13 +1040,13 @@
 
 	    hotspot.prototype.back_nearest_hotspot = function(panoid) {
 	      var flag, i, lon, near_angle, near_id, num_hotspots, temp;
-	      num_hotspots = this.hotspot_angles[panoid].length;
+	      num_hotspots = root.house[panoid][HOTSPOTS].length;
 	      near_id = -1;
 	      near_angle = void 0;
 	      flag = false;
 	      i = 0;
 	      while (i < num_hotspots) {
-	        temp = this.hotspot_angles[panoid][i][1];
+	        temp = root.house[panoid][HOTSPOTS][i][ANGLE];
 	        lon = (root.Config.lon + 360 + 180) % 360;
 	        if (temp < 0) {
 	          temp += 360;
@@ -1098,14 +1088,14 @@
 	          };
 	          if (text) {
 	            if (vector.x > 1 || vector.x < -1 || vector.y > 1 || vector.y < -1 || vector.z > 1 || vector.z < -1) {
-	              if ($("#hotspot_" + object.panoid).css('display') !== 'none') {
-	                $("#hotspot_" + object.panoid).removeAttr('style');
-	                $("#hotspot_" + object.panoid).css({
+	              if (text.css('display') !== 'none') {
+	                text.removeAttr('style');
+	                text.css({
 	                  'display': 'none'
 	                });
 	              }
 	            } else {
-	              $("#hotspot_" + object.panoid).css({
+	              text.css({
 	                'display': 'block',
 	                'left': '-10px',
 	                'top': '0px',

@@ -3,8 +3,9 @@
     "title": "Entrance",
     "path": "../test/Dataset/panos-house/1/%s/%h_%v.jpg",
     "side_panel": true,
-    "start_position": 17,
-    "hotspot": [
+    "start_position": 15,
+    "fallback_image": "file:///Users/saurabhkathpalia/Housing_Panorama/test/Dataset/panos-house/1/1.jpg",
+    "hotspots": [
       {
         "to_id": 1,
         "angle": 65,
@@ -12,33 +13,28 @@
         "text": "Kitchen"
       }
     ],
-    "annotation": []
+    "annotations": []
   },
   "1": {
     "title": "Kitchen",
     "path": "../test/Dataset/panos-house/2/%s/%h_%v.jpg",
     "side_panel": true,
-    "start_position": 149,
-    "hotspot": [
+    "start_position": 138,
+    "fallback_image": "file:///Users/saurabhkathpalia/Housing_Panorama/test/Dataset/panos-house/2/2.jpg",
+    "hotspots": [
       {
         "to_id": 0,
         "angle": 220,
-        "error": 25,
+        "error": 24,
         "text": "Entrance"
       }
     ],
-    "annotation": [
+    "annotations": [
       {
-        "lon": 51,
-        "lat": -23,
+        "lon": 53,
+        "lat": -24,
         "title": "Washing Machine",
         "desc": "LG<br>5.5 Kg"
-      },
-      {
-        "lon": 243,
-        "lat": -3,
-        "title": "Fridge",
-        "desc": "LG<br>x Litres"
       }
     ]
   }

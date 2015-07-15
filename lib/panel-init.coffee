@@ -3,6 +3,7 @@ front_pano = undefined
 back_pano = undefined
 house_id = undefined
 position = undefined
+fallback_image = ""
 root.pano_paths = []
 
 root.full_dataset = {}
@@ -149,11 +150,12 @@ $("#save-data-button").click ->
 			"path": root.pano_paths[from_id],
 			"side_panel": to_show_side_panel,
 			"start_position" : position,
-			"hotspot": [],
-			"annotation": [],
+			"fallback_image": fallback_image,
+			"hotspots": [],
+			"annotations": [],
 		}
-	one_dataset[from_id]["annotation"] = root.annotation_angles
-	one_dataset[from_id]["hotspot"] = root.hotspots_angle
+	one_dataset[from_id]["annotations"] = root.annotation_angles
+	one_dataset[from_id]["hotspots"] = root.hotspots_angle
 	console.log(one_dataset)
 	console.log(root.full_dataset)
 	localStorage.setItem('full_dataset', JSON.stringify(one_dataset))
@@ -192,6 +194,10 @@ slider.on('change mousemove',->
 
 $("#set-position").on('click',->
 	position = parseInt(root.Config.lon)
+	return)
+
+$("#fallback-image-button").on('click',->
+	fallback_image = $("#fallback-image").val()
 	return)
 
 adjust = $("#adjust")

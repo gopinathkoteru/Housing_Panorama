@@ -1,4 +1,45 @@
 var full_dataset = {};
+var house = {
+  "0": {
+    "title": "Entrance",
+    "path": "../test/Dataset/panos-house/1/%s/%h_%v.jpg",
+    "side_panel": true,
+    "start_position": 15,
+    "fallback_image": "file:///Users/saurabhkathpalia/Housing_Panorama/test/Dataset/panos-house/1/1.jpg",
+    "hotspots": [
+      {
+        "to_id": 1,
+        "angle": 65,
+        "error": -26,
+        "text": "Kitchen"
+      }
+    ],
+    "annotations": []
+  },
+  "1": {
+    "title": "Kitchen",
+    "path": "../test/Dataset/panos-house/2/%s/%h_%v.jpg",
+    "side_panel": true,
+    "start_position": 138,
+    "fallback_image": "file:///Users/saurabhkathpalia/Housing_Panorama/test/Dataset/panos-house/2/2.jpg",
+    "hotspots": [
+      {
+        "to_id": 0,
+        "angle": 220,
+        "error": 24,
+        "text": "Entrance"
+      }
+    ],
+    "annotations": [
+      {
+        "lon": 53,
+        "lat": -24,
+        "title": "Washing Machine",
+        "desc": "LG<br>5.5 Kg"
+      }
+    ]
+  }
+};
 // full_dataset ={
 //	"panos-house": DirectPano,
 //	"panos": DirectPano,
@@ -15,12 +56,12 @@ for(var i=0;i<22;i++)
 }
 var DirectPano = 
 {
-	hotspots_angle : [[[1, 70, -26, "Kitchen"], [2, 340, -21, "Hall Entrance"]], [[0, 225, 0, "Main Door"]], [[0, 140, 0, "Main Door"], [3, 0, 0, "Hall Center"]], [[2, 190, 0, "Hall Entrance"], [4, 330, 0, "Hall Window"], [5, 53, 0]], [[3, 135, 0, "Hall Center"], [9, 332, 0]], [[3, 222, 0, "Hall Center"], [6, 315, 0, "Bedroom 1"], [11, 47, 0]], [[5, 120, 0], [7, 210, 0], [8, 295, 0]], [[6, 25, 0, "Bedroom 1"]], [[6, 123, 0, "Bedroom 1"], [9, 220, 0]], [[8, 70, 0], [4, 177, 0, "Hall Window"]], [[11, 340, 0]], [[12, 320, 0], [5, 230, 0], [10, 170, 0, "Bathroom 1"]], [[11, 135, 0], [13, 45, 0, "Bedroom 3"], [18, 313, 0, "Bedroom 2"]], [[12, 245, 0], [14, 130, 0], [16, 63, 0]], [[13, 305, 0, "Bedroom 3"], [15, 145, 0, "Bathroom 3"]], [[14, 305, 0]], [[13, 220, 0, "Bedroom 3"], [17, 75, 0]], [[16, 255, 0]], [[12, 130, 0], [19, 328, 0, "Bathroom 2"], [20, 10, 0]], [[18, 135, 0, "Bedroom 2"]], [[18, 182, 0, "Bedroom 2"], [21, 40, 0]], [[20, 215, 0]]],
+	//hotspots_angle : [[[1, 70, -26, "Kitchen"], [2, 340, -21, "Hall Entrance"]], [[0, 225, 0, "Main Door"]], [[0, 140, 0, "Main Door"], [3, 0, 0, "Hall Center"]], [[2, 190, 0, "Hall Entrance"], [4, 330, 0, "Hall Window"], [5, 53, 0]], [[3, 135, 0, "Hall Center"], [9, 332, 0]], [[3, 222, 0, "Hall Center"], [6, 315, 0, "Bedroom 1"], [11, 47, 0]], [[5, 120, 0], [7, 210, 0], [8, 295, 0]], [[6, 25, 0, "Bedroom 1"]], [[6, 123, 0, "Bedroom 1"], [9, 220, 0]], [[8, 70, 0], [4, 177, 0, "Hall Window"]], [[11, 340, 0]], [[12, 320, 0], [5, 230, 0], [10, 170, 0, "Bathroom 1"]], [[11, 135, 0], [13, 45, 0, "Bedroom 3"], [18, 313, 0, "Bedroom 2"]], [[12, 245, 0], [14, 130, 0], [16, 63, 0]], [[13, 305, 0, "Bedroom 3"], [15, 145, 0, "Bathroom 3"]], [[14, 305, 0]], [[13, 220, 0, "Bedroom 3"], [17, 75, 0]], [[16, 255, 0]], [[12, 130, 0], [19, 328, 0, "Bathroom 2"], [20, 10, 0]], [[18, 135, 0, "Bedroom 2"]], [[18, 182, 0, "Bedroom 2"], [21, 40, 0]], [[20, 215, 0]]],
 	pano_div_id : "container",
 	image_div_id : "fullscreen-image",
 	initial_width : 490,
 	initial_height : 336,
-	annotation_angles : [ [],
+	/*annotation_angles : [ [],
 						  [[250, 0,"Fridge", "Samsung <br>400 L "], [56, -20,"Washing Machine", "LG <br>5.5 Kg"]],
 						  [],
 						  [ [0, 18, "AC", "Samsung <br>1 Ton"], [75, 14, "AC", "Samsung <br>1 Ton"], [0, 0, "TV", "Phillips (LCD) <br> 32 inch"] ],
@@ -41,12 +82,15 @@ var DirectPano =
 						  [ [26, 14 ,  "AC", "Samsung <br>1 Ton"] ],
 						  [],
 						  [ [133, -20, "Bed", "Single <br>6' x 4'"], [200, 0, "Almirah",  "6' x 2' x 1'"] ]
-						],
-	pano: test_pano,
+						],*/
+	//pano: test_pano,
 	fallback_pano : fallback_pano
 
 };
 $.getJSON( "data.json", function( data ) {
+	//console.log("GONE");
+	//house = data;
+	/*
 	dpano = {};
 	hotspots_angle = [];
 	annotation_angles = [];
@@ -67,19 +111,20 @@ $.getJSON( "data.json", function( data ) {
 		path = Scene[k]["path"];
 		side_panel = Scene[k]["side_panel"]
 		start_position = Scene[k]["start_position"]
-		pano[mapping[k]] = [title, path, side_panel, start_position];
-		for(var i = 0; i < Scene[k]["hotspot"].length; i++)
+		fallback_image = Scene[k]["fallback_image"]
+		pano[mapping[k]] = [title, path, side_panel, start_position, fallback_image];
+		for(var i = 0; i < Scene[k]["hotspots"].length; i++)
 		{
-			new_dict = Scene[k]["hotspot"][i];
+			new_dict = Scene[k]["hotspots"][i];
 			if(new_dict["text"]!=undefined)
 				new_array = [mapping[new_dict["to_id"]], new_dict["angle"], new_dict["error"], new_dict["text"]];
 			else
 				new_array = [mapping[new_dict["to_id"]], new_dict["angle"], new_dict["error"]];
 			hotspots_angle[mapping[k]].push(new_array);
 		}
-		for(var i = 0; i < Scene[k]["annotation"].length; i++)
+		for(var i = 0; i < Scene[k]["annotations"].length; i++)
 		{
-			annotation = Scene[k]["annotation"][i];
+			annotation = Scene[k]["annotations"][i];
 			single_annotation = [annotation["lon"], annotation["lat"], annotation["title"], annotation["desc"]];
 			annotation_angles[mapping[k]].push(single_annotation);
 		}
@@ -87,5 +132,5 @@ $.getJSON( "data.json", function( data ) {
 	dpano["hotspots_angle"] = hotspots_angle;
 	dpano["annotation_angles"] = annotation_angles;
 	dpano["pano"] = pano;
-	full_dataset = dpano;
+	full_dataset = dpano;*/
 });

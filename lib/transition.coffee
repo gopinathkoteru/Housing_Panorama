@@ -1,10 +1,8 @@
 root = require("./annotation.js")
 class transition
-	constructor:(pano, hotspot_angles) ->
-		@pano =  pano
+	constructor:() ->
 		@current_pano = 0
 		@moving = false
-		@hotspot_angles = hotspot_angles
 		@destroy = false 
 		
 		root.clear_images = {}
@@ -12,7 +10,7 @@ class transition
 	
 		root.clear_images[@current_pano] = []
 
-		path = @pano[@current_pano][1]
+		path = root.house[@current_pano][PATH]
 
 		@blur_pano = new root.Pano(0,true)
 		@clear_pano = new root.Pano(0, false)
@@ -25,14 +23,13 @@ class transition
 				root.Config.isUserInteracting = false
 				return)
 
-		@preload_panel_images()
+		#@preload_panel_images()
 		@preload_images()
 
 		return
 
 	save_clear_images: ->
 		current_pano = @current_pano
-		pano = @pano
 		if not root.clear_images[current_pano]
 			root.clear_images[current_pano] = []	
 			i = 0
@@ -52,7 +49,7 @@ class transition
 								texture.needsUpdate = true
 								root.clear_images[current_pano][image_index][offset] = image
 								return
-							path = pano[current_pano][1]
+							path = root.house[current_pano][PATH]
 							path = path.replace("%s",root.Config.img_name[i])
 							path = path.replace("%v",j%2)
 							path = path.replace("%h",parseInt(j/2))
@@ -67,11 +64,9 @@ class transition
 	preload_images:->
 		i = 0
 		current_pano = @current_pano
-		hotspot_angles = @hotspot_angles
-		pano = @pano
-		while i < hotspot_angles[current_pano].length
+		while i < root.house[current_pano][HOTSPOTS].length
 			do ->
-				pano_id = hotspot_angles[current_pano][i][0]
+				pano_id = root.house[current_pano][HOTSPOTS][i][TO_ID]
 
 				if not root.blur_images[pano_id]
 					root.blur_images[pano_id] = []
@@ -94,7 +89,7 @@ class transition
 										texture.needsUpdate = true
 										root.blur_images[pano_id][image_index][offset] = image
 										return
-									fpath = pano[pano_id][1]
+									fpath = root.house[pano_id][PATH]
 									fpath = fpath.replace(/%s/g,"../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j])
 									fpath = fpath.replace(/%v/g,offset%2)
 									fpath = fpath.replace(/%h/g,parseInt(offset/2))
@@ -109,9 +104,8 @@ class transition
 
 	preload_panel_images: () ->
 		i = 0
-		pano = @pano
-		while i < pano.length
-			if pano[i][2] == true
+		while i < Object.keys(root.house).length
+			if root.house[i][SIDE_PANEL] == true
 				pano_id = i
 				if not root.blur_images[pano_id]
 					root.blur_images[pano_id] = []
@@ -133,7 +127,7 @@ class transition
 										texture.needsUpdate = true
 										root.blur_images[pano_id][image_index][offset] = image
 										return
-									fpath = pano[pano_id][1]
+									fpath = root.house[pano_id][PATH]
 									fpath = fpath.replace(/%s/g,"../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j])
 									fpath = fpath.replace(/%v/g,offset%2)
 									fpath = fpath.replace(/%h/g,parseInt(offset/2))
@@ -156,19 +150,19 @@ class transition
 		rotate_angle = 0
 		dist = 0
 		if hotspot_id != null
-			pano_id = @hotspot_angles[current_pano][hotspot_id][0]
-			hotspot_angle = @hotspot_angles[current_pano][hotspot_id][1]
-			error = @hotspot_angles[current_pano][hotspot_id][2]
+			pano_id = root.house[current_pano][HOTSPOTS][hotspot_id][TO_ID]
+			hotspot_angle = root.house[current_pano][HOTSPOTS][hotspot_id][ANGLE]
+			error = root.house[current_pano][HOTSPOTS][hotspot_id][ERROR]
 			dist = 60
 		else
 			pano_id = panoId
 			error = 0
 
 		$('div[id^=panos-list-entry-]').removeClass('active')
-		title = @pano[pano_id][0]
+		title = root.house[pano_id][TITLE]
 		i = 0
-		while i < @pano.length
-			if @pano[i][0] == title and @pano[i][2] == true
+		while i < Object.keys(root.house).length
+			if root.house[i][TITLE] == title and root.house[i][SIDE_PANEL] == true
 				$('#panos-list-entry-' + i).addClass('active')
 				break
 			i++
@@ -179,7 +173,7 @@ class transition
 		if hotspot_id!=null
 			rotate_angle = @find_rotation_angle(hotspot_angle)
 		else
-			root.Config.lon = @pano[pano_id][3]
+			root.Config.lon = root.house[pano_id][START_POSITION]
 			root.Config.lat = 0
 
 		root.Hotspot.remove_hotspots()
@@ -194,7 +188,6 @@ class transition
 		return
 		
 	find_rotation_angle : (hotspot_angle)->
-		console.log(hotspot_angle)
 		
 		rotate_angle = hotspot_angle - root.Config.lon
 
@@ -226,7 +219,7 @@ class transition
 		while i < 6
 			j = 0
 			while j < 4
-				path = @pano[@current_pano][1]
+				path = root.house[@current_pano][PATH]
 				path = path.replace(/%s/g,"../blur_" + (@current_pano + 1) + "/" +root.Config.img_name[i])
 				path = path.replace(/%v/g,j%2)
 				path = path.replace(/%h/g,parseInt(j/2))
@@ -258,7 +251,7 @@ class transition
 		while i < 6
 			j = 0
 			while j < 4
-				path = @pano[@current_pano][1]
+				path = root.house[@current_pano][PATH]
 				path = path.replace(/%s/g,root.Config.img_name[i])
 				path = path.replace(/%v/g,j%2)
 				path = path.replace(/%h/g,parseInt(j/2))
@@ -271,7 +264,6 @@ class transition
 		$.when.apply($, dfrd).done(->).promise()
 
 	old_pano_to_blur_pano :(error,hotspot_angle,rotate_angle,dist) ->
-		console.log(rotate_angle,root.Config.lon)
 		if @destroy
 			return
 		time1 = 0.1
