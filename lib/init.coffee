@@ -9,12 +9,19 @@ clear_images = {}
 active = undefined
 is_fullscreen = false
 Config = 
-	img_name: ['mobile_r'
-		'mobile_l'
-		'mobile_u'
-		'mobile_d'
-		'mobile_f'
-		'mobile_b'
+	img_name: ['r'
+		'l'
+		'u'
+		'd'
+		'f'
+		'b'
+	]
+	blur_offset : [256*3
+		256*5
+		256*1
+		256*0
+		256*4
+		256*2
 	]
 	isUserInteracting: false
 	lon: 0

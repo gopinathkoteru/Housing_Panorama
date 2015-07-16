@@ -12,3 +12,4 @@ var ANNOTATIONS = "annotations";
 var LON = "lon";
 var LAT = "lat";
 var DESC = "desc";
+var BLUR_PATH = "blur_image_path";
