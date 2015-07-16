@@ -10,7 +10,8 @@ class animation
 	
 	animate : ->
 		if not @destroy
-			requestAnimationFrame @animate.bind(this)
+			requestAnimationFrame =>
+				@animate()
 			@update()
 			root.Hotspot.update()
 			root.Annotation.update()

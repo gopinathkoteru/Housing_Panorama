@@ -333,7 +333,11 @@
 	          root.Config.isUserInteracting = false;
 	        });
 	      });
-	      this.preload_images();
+	      this.preload_panel_images().done((function(_this) {
+	        return function() {
+	          _this.preload_images();
+	        };
+	      })(this));
 	      return;
 	    }
 
@@ -422,7 +426,13 @@
 	    };
 
 	    transition.prototype.preload_panel_images = function() {
-	      var i, j, pano_id;
+	      var dfrd, i, j, pano_id;
+	      dfrd = [];
+	      i = 0;
+	      while (i < 24) {
+	        dfrd[i] = $.Deferred();
+	        i++;
+	      }
 	      i = 0;
 	      while (i < Object.keys(root.house).length) {
 	        if (root.house[i][SIDE_PANEL] === true) {
@@ -453,6 +463,7 @@
 	                    fpath = fpath.replace(/%v/g, offset % 2);
 	                    fpath = fpath.replace(/%h/g, parseInt(offset / 2));
 	                    image.src = fpath;
+	                    dfrd[4 * j + k].resolve();
 	                  })();
 	                  k++;
 	                }
@@ -463,10 +474,11 @@
 	        }
 	        i++;
 	      }
+	      return $.when.apply($, dfrd).done(function() {}).promise();
 	    };
 
 	    transition.prototype.start = function(hotspot_id, panoId) {
-	      var current_pano, dist, error, hotspot_angle, i, old_pano_to_blur_pano, pano_id, rotate_angle, title;
+	      var current_pano, dist, error, hotspot_angle, i, pano_id, rotate_angle, title;
 	      current_pano = this.current_pano;
 	      pano_id = null;
 	      error = 0;
@@ -503,11 +515,12 @@
 	      }
 	      root.Hotspot.remove_hotspots();
 	      root.Annotation.remove_annotations();
-	      old_pano_to_blur_pano = this.old_pano_to_blur_pano.bind(this);
 	      this.preload_images();
-	      this.load_blur_pano(error, hotspot_angle, dist).done(function() {
-	        old_pano_to_blur_pano(error, hotspot_angle, rotate_angle, dist);
-	      });
+	      this.load_blur_pano(error, hotspot_angle, dist).done((function(_this) {
+	        return function() {
+	          _this.old_pano_to_blur_pano(error, hotspot_angle, rotate_angle, dist);
+	        };
+	      })(this));
 	    };
 
 	    transition.prototype.find_rotation_angle = function(hotspot_angle) {
@@ -649,7 +662,7 @@
 	    };
 
 	    transition.prototype.check_new_pano_load = function(error) {
-	      var blur_pano_to_new_pano, i, j;
+	      var i, j;
 	      if (this.destroy) {
 	        return;
 	      }
@@ -666,10 +679,11 @@
 	        }
 	        i++;
 	      }
-	      blur_pano_to_new_pano = this.blur_pano_to_new_pano.bind(this);
-	      this.load_clear_pano(error).done(function() {
-	        blur_pano_to_new_pano(error);
-	      });
+	      this.load_clear_pano(error).done((function(_this) {
+	        return function() {
+	          _this.blur_pano_to_new_pano(error);
+	        };
+	      })(this));
 	    };
 
 	    transition.prototype.blur_pano_to_new_pano = function(error) {
@@ -715,23 +729,20 @@
 	      }
 	    };
 
-	    transition.prototype.alter_moving = function() {
-	      return this.moving = false;
-	    };
-
 	    transition.prototype.complete = function(error) {
-	      var alter_moving, pano_id;
+	      var pano_id;
 	      if (this.destroy) {
 	        return;
 	      }
 	      this.clear_pano.mesh.rotation.y = 0;
 	      root.Config.lon += error;
 	      pano_id = this.current_pano;
-	      alter_moving = this.alter_moving.bind(this);
-	      root.Hotspot.add_hotspots(pano_id).done(function() {
-	        root.Annotation.add_annotations(pano_id);
-	        alter_moving();
-	      });
+	      root.Hotspot.add_hotspots(pano_id).done((function(_this) {
+	        return function() {
+	          root.Annotation.add_annotations(pano_id);
+	          _this.moving = false;
+	        };
+	      })(this));
 	    };
 
 	    transition.prototype.destroy_transition = function() {
@@ -1332,7 +1343,11 @@
 	    animation.prototype.animate = function() {
 	      var duration;
 	      if (!this.destroy) {
-	        requestAnimationFrame(this.animate.bind(this));
+	        requestAnimationFrame((function(_this) {
+	          return function() {
+	            return _this.animate();
+	          };
+	        })(this));
 	        this.update();
 	        root.Hotspot.update();
 	        root.Annotation.update();

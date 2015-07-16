@@ -23,8 +23,9 @@ class transition
 				root.Config.isUserInteracting = false
 				return)
 
-		#@preload_panel_images()
-		@preload_images()
+		@preload_panel_images().done =>
+			@preload_images()
+			return
 
 		return
 
@@ -103,6 +104,11 @@ class transition
 		return
 
 	preload_panel_images: () ->
+		dfrd = []
+		i = 0
+		while i < 24
+			dfrd[i] = $.Deferred()
+			i++
 		i = 0
 		while i < Object.keys(root.house).length
 			if root.house[i][SIDE_PANEL] == true
@@ -132,12 +138,13 @@ class transition
 									fpath = fpath.replace(/%v/g,offset%2)
 									fpath = fpath.replace(/%h/g,parseInt(offset/2))
 									image.src = fpath
+									dfrd[4*j+k].resolve()
 									return
 								k++
 							return
 						j++
 			i++
-		return
+		$.when.apply($, dfrd).done(->).promise()
 
 
 	
@@ -178,11 +185,10 @@ class transition
 
 		root.Hotspot.remove_hotspots()
 		root.Annotation.remove_annotations()
-		
-		old_pano_to_blur_pano = @old_pano_to_blur_pano.bind(this)
+
 		@preload_images()
-		@load_blur_pano(error,hotspot_angle,dist).done ->
-			old_pano_to_blur_pano(error,hotspot_angle,rotate_angle,dist)
+		@load_blur_pano(error,hotspot_angle,dist).done =>
+			@old_pano_to_blur_pano(error,hotspot_angle,rotate_angle,dist)
 			return
 	
 		return
@@ -310,9 +316,8 @@ class transition
 				j++
 			i++
 
-		blur_pano_to_new_pano = @blur_pano_to_new_pano.bind(this)
-		@load_clear_pano(error).done ->
-			blur_pano_to_new_pano(error)
+		@load_clear_pano(error).done =>
+			@blur_pano_to_new_pano(error)
 			return
 		return
 
@@ -341,10 +346,7 @@ class transition
 				j++
 			i++
 		return
-	
-	alter_moving : ->
-		@moving = false
-	
+
 	complete : (error)->
 		if @destroy
 			return
@@ -352,10 +354,9 @@ class transition
 		@clear_pano.mesh.rotation.y = 0
 		root.Config.lon += error
 		pano_id = @current_pano
-		alter_moving = @alter_moving.bind(this)
-		root.Hotspot.add_hotspots(pano_id).done ->
+		root.Hotspot.add_hotspots(pano_id).done =>
 			root.Annotation.add_annotations(pano_id)
-			alter_moving()
+			@moving = false
 			return
 		return
 
