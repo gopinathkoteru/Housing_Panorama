@@ -7,15 +7,14 @@ class transition
 		
 		root.clear_images = {}
 		root.blur_images = {}
-	
-		root.clear_images[@current_pano] = []
 
 		path = root.house[@current_pano][PATH]
+		blur_path = root.house[@current_pano][BLUR_PATH]
 
 		@blur_pano = new root.Pano(0,true)
 		@clear_pano = new root.Pano(0, false)
 
-		@blur_pano.create_pano( path, 0.0)
+		@blur_pano.create_pano( blur_path, 0.0)
 		@clear_pano.create_pano(path, 1.0).done ->
 			time = 1000
 			$("#start-image").fadeTo(time, 0,->
@@ -31,35 +30,35 @@ class transition
 
 	save_clear_images: ->
 		current_pano = @current_pano
-		if not root.clear_images[current_pano]
-			root.clear_images[current_pano] = []	
-			i = 0
-			while i < 6
-				do ->
-					texture = new THREE.Texture( root.texture_placeholder )
-					image_index = i
-					root.clear_images[current_pano][image_index] = {}
-					j = 0
-					while j < 4
-						do ->
-							offset = j
+		num_slices = (@clear_pano.img_width / @clear_pano.tile_width) * (@clear_pano.img_width / @clear_pano.tile_width)
+		i = 0
+		while i < 6
+			do ->
+				texture = new THREE.Texture( root.texture_placeholder )
+				image_index = i
+				j = 0
+				while j < num_slices
+					do ->
+						offset = j
+						path = root.house[current_pano][PATH]
+						path = path.replace(/%s/g,root.Config.img_name[i])
+						path = path.replace(/%h/g,j%2 + 1)
+						path = path.replace(/%v/g,parseInt(j/2) + 1)
+						if not root.clear_images[path]
 							image = new Image()
 							image.onload = ->
 								image.onload = null
 								texture.image = this
 								texture.needsUpdate = true
-								root.clear_images[current_pano][image_index][offset] = image
+								console.log(path)
+								root.clear_images[path] = image
 								return
-							path = root.house[current_pano][PATH]
-							path = path.replace("%s",root.Config.img_name[i])
-							path = path.replace("%v",j%2)
-							path = path.replace("%h",parseInt(j/2))
 							
 							image.src = path
-							return
-						j++
-					return
-				i++
+						return
+					j++
+				return
+			i++
 		return
 
 	preload_images:->
@@ -68,86 +67,42 @@ class transition
 		while i < root.house[current_pano][HOTSPOTS].length
 			do ->
 				pano_id = root.house[current_pano][HOTSPOTS][i][TO_ID]
-
-				if not root.blur_images[pano_id]
-					root.blur_images[pano_id] = []
-					
-					j = 0
-					while j < 6
-						do ->
-							texture = new THREE.Texture( root.texture_placeholder )
-							image_index = j
-							root.blur_images[pano_id][image_index] = {}
-							k = 0
-							while k < 4
-								do ->
-									offset = k
-
-									image = new Image()
-									image.onload = ->
-										image.onload = null
-										texture.image = this
-										texture.needsUpdate = true
-										root.blur_images[pano_id][image_index][offset] = image
-										return
-									fpath = root.house[pano_id][PATH]
-									fpath = fpath.replace(/%s/g,"../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j])
-									fpath = fpath.replace(/%v/g,offset%2)
-									fpath = fpath.replace(/%h/g,parseInt(offset/2))
-									image.src = fpath
-									return
-								k++
-							return
-						j++
+				fpath = root.house[pano_id][BLUR_PATH]
+				if not root.blur_images[fpath]
+					texture = new THREE.Texture( root.texture_placeholder )
+					image = new Image()
+					image.onload = ->
+						image.onload = null
+						texture.image = this
+						texture.needsUpdate = true
+						root.blur_images[fpath] = image
+						return
+									
+					image.src = fpath
 				return
 			i++
 		return
 
 	preload_panel_images: () ->
-		dfrd = []
-		i = 0
-		while i < 24
-			dfrd[i] = $.Deferred()
-			i++
 		i = 0
 		while i < Object.keys(root.house).length
 			if root.house[i][SIDE_PANEL] == true
 				pano_id = i
-				if not root.blur_images[pano_id]
-					root.blur_images[pano_id] = []
-					j = 0
-					while j < 6
-						do ->
-							texture = new THREE.Texture( root.texture_placeholder )
-							image_index = j
-							root.blur_images[pano_id][image_index] = {}
-							k = 0
-							while k < 4
-								do ->
-									offset = k
-
-									image = new Image()
-									image.onload = ->
-										image.onload = null
-										texture.image = this
-										texture.needsUpdate = true
-										root.blur_images[pano_id][image_index][offset] = image
-										return
-									fpath = root.house[pano_id][PATH]
-									fpath = fpath.replace(/%s/g,"../blur_" + (pano_id + 1) + "/" + root.Config.img_name[j])
-									fpath = fpath.replace(/%v/g,offset%2)
-									fpath = fpath.replace(/%h/g,parseInt(offset/2))
-									image.src = fpath
-									dfrd[4*j+k].resolve()
-									return
-								k++
-							return
-						j++
+					
+				fpath = root.house[pano_id][BLUR_PATH]
+				if not root.blur_images[fpath]
+					texture = new THREE.Texture( root.texture_placeholder )
+					image = new Image()
+					image.onload = ->
+						image.onload = null
+						texture.image = this
+						texture.needsUpdate = true
+						root.blur_images[fpath] = image
+						return
+									
+					image.src = fpath
 			i++
-		$.when.apply($, dfrd).done(->).promise()
-
-
-	
+		$.when().done(->).promise()
 
 	start : (hotspot_id, panoId) ->
 		current_pano = @current_pano
@@ -215,22 +170,31 @@ class transition
 		if @destroy
 			return $.when().done(->).promise()
 		dfrd = []
+		num_slices = (@blur_pano.img_width / @blur_pano.tile_width) * (@blur_pano.img_width / @blur_pano.tile_width)
 		i = 0
-		while i < 24
+		while i < 6*num_slices
 			dfrd[i] = $.Deferred()
 			i++
-
+		
 		@blur_pano.pano_id = @current_pano
 		i = 0
 		while i < 6
 			j = 0
-			while j < 4
+			while j < num_slices
 				path = root.house[@current_pano][PATH]
-				path = path.replace(/%s/g,"../blur_" + (@current_pano + 1) + "/" +root.Config.img_name[i])
-				path = path.replace(/%v/g,j%2)
-				path = path.replace(/%h/g,parseInt(j/2))
+				path = path.replace(/%s/g,root.Config.img_name[i])
+				path = path.replace(/%h/g,j%2 + 1)
+				path = path.replace(/%v/g,parseInt(j/2) + 1)
+				console.log(path)
+				
 				@blur_pano.mesh.children[i].children[j].material.map.dispose()
-				@blur_pano.mesh.children[i].children[j].material.map = @blur_pano.get_texture(@pano_id,path, dfrd[4*i + j], i,j)
+				
+				if root.clear_images[path]
+					@blur_pano.mesh.children[i].children[j].material.map = @blur_pano.load_clear_texture(path, dfrd[num_slices*i + j])
+				else
+					path = root.house[@current_pano][BLUR_PATH]
+					@blur_pano.mesh.children[i].children[j].material.map = @blur_pano.load_blur_texture(path, dfrd[num_slices*i + j] , i)
+				
 				@blur_pano.mesh.children[i].children[j].material.opacity = 0
 				j++
 			i++
@@ -247,22 +211,25 @@ class transition
 		
 		
 		dfrd = []
+		num_slices = (@clear_pano.img_width / @clear_pano.tile_width) * (@clear_pano.img_width / @clear_pano.tile_width)
 		i = 0
-		while i < 24
+		while i < 6*num_slices
 			dfrd[i] = $.Deferred()
 			i++
+		
 		@clear_pano.pano_id = @current_pano
 		@clear_pano.mesh.rotation.y = THREE.Math.degToRad(error)
 		i = 0
 		while i < 6
 			j = 0
-			while j < 4
+			while j < num_slices
 				path = root.house[@current_pano][PATH]
 				path = path.replace(/%s/g,root.Config.img_name[i])
-				path = path.replace(/%v/g,j%2)
-				path = path.replace(/%h/g,parseInt(j/2))
+				path = path.replace(/%h/g,j%2 + 1)
+				path = path.replace(/%v/g,parseInt(j/2) + 1)
+				console.log(path)
 				@clear_pano.mesh.children[i].children[j].material.map.dispose()
-				@clear_pano.mesh.children[i].children[j].material.map = @clear_pano.get_texture(@pano_id,path, dfrd[4*i + j], i,j)
+				@clear_pano.mesh.children[i].children[j].material.map = @clear_pano.load_clear_texture(path, dfrd[num_slices*i + j])
 				@clear_pano.mesh.children[i].children[j].material.opacity = 0
 				j++
 			i++
@@ -270,6 +237,7 @@ class transition
 		$.when.apply($, dfrd).done(->).promise()
 
 	old_pano_to_blur_pano :(error,hotspot_angle,rotate_angle,dist) ->
+		console.log(dist)
 		if @destroy
 			return
 		time1 = 0.1
@@ -287,12 +255,21 @@ class transition
 
 		TweenLite.to(blur_pano.mesh.position, time, {x: 0, z: 0, delay:del,ease: Expo.easeOut})
 
+		blur_num_slices = (@blur_pano.img_width / @blur_pano.tile_width) * (@blur_pano.img_width / @blur_pano.tile_width)
 		i = 0
 		while i < 6
 			j = 0
-			while j < 4	
-				TweenLite.to(clear_pano.mesh.children[i].children[j].material, time, {opacity: 0,delay:del, ease: Expo.easeOut})
+			while j < blur_num_slices
 				TweenLite.to(blur_pano.mesh.children[i].children[j].material, time, {opacity: 1, delay:del,ease: Expo.easeOut})
+				j++
+			i++
+
+		clear_num_slices = (@clear_pano.img_width / @clear_pano.tile_width) * (@clear_pano.img_width / @clear_pano.tile_width)
+		i = 0
+		while i < 6
+			j = 0
+			while j < clear_num_slices
+				TweenLite.to(clear_pano.mesh.children[i].children[j].material, time, {opacity: 0,delay:del, ease: Expo.easeOut})
 				j++
 			i++
 		TweenLite.to(clear_pano.mesh.position, time, {x:-1*dist*Math.cos(THREE.Math.degToRad(hotspot_angle )),z:-1*dist*Math.sin(THREE.Math.degToRad(hotspot_angle )),delay:del,ease: Expo.easeOut,onComplete: @check_new_pano_load.bind(this),onCompleteParams : [error]})
@@ -306,12 +283,20 @@ class transition
 		@clear_pano.mesh.position.x = 0
 		@clear_pano.mesh.position.z = 0
 
+		clear_num_slices = (@clear_pano.img_width / @clear_pano.tile_width) * (@clear_pano.img_width / @clear_pano.tile_width)
 		i = 0
 		while i < 6
 			j = 0
-			while j < 4
+			while j < clear_num_slices
 				@clear_pano.mesh.children[i].children[j].material.opacity = 0
 				@clear_pano.mesh.children[i].children[j].material.map.dispose()
+				j++
+			i++
+
+		blur_num_slices = (@blur_pano.img_width / @blur_pano.tile_width) * (@blur_pano.img_width / @blur_pano.tile_width)
+		while i < 6
+			j = 0
+			while j < blur_num_slices
 				@blur_pano.mesh.children[i].children[j].material.opacity = 1
 				j++
 			i++
@@ -327,19 +312,21 @@ class transition
 		blur_pano = @blur_pano
 		clear_pano = @clear_pano
 		time = 0.5
+		blur_num_slices = (@blur_pano.img_width / @blur_pano.tile_width) * (@blur_pano.img_width / @blur_pano.tile_width)
 		i = 0
 		while i < 6
 			j = 0
-			while j < 4
+			while j < blur_num_slices
 				TweenLite.to(blur_pano.mesh.children[i].children[j].material, time, {opacity: 0, ease: Power0.easeOut})
 				j++
 			i++
 		i = 0
 
+		clear_num_slices = (@clear_pano.img_width / @clear_pano.tile_width) * (@clear_pano.img_width / @clear_pano.tile_width)
 		while i < 6
 			j = 0
-			while j < 4
-				if i is 5 and j is 3
+			while j < clear_num_slices
+				if i is 5 and j is (clear_num_slices-1)
 					TweenLite.to(clear_pano.mesh.children[i].children[j].material, time, {opacity: 1, ease: Power0.easeOut, onComplete: @complete.bind(this),onCompleteParams : [error]})
 				else
 					TweenLite.to(clear_pano.mesh.children[i].children[j].material, time, {opacity: 1, ease: Power0.easeOut})

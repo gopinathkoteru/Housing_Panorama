@@ -16,13 +16,13 @@ class hotspot
 		return material
 
 	add_hotspot :(angle, hotspotId, dfrd) ->
-		geometry = new THREE.PlaneBufferGeometry( 10, 10, 10 )
+		geometry = new THREE.PlaneBufferGeometry( 5, 5, 5 )
 		material = @load_texture()
 		hotspot = new THREE.Mesh( geometry, material )
 		rad_angle = THREE.Math.degToRad( angle )
-		hotspot.position.x = 60*Math.cos(rad_angle)
-		hotspot.position.y = -50
-		hotspot.position.z = 60*Math.sin(rad_angle)
+		hotspot.position.x = 40*Math.cos(rad_angle)
+		hotspot.position.y = -10
+		hotspot.position.z = 40*Math.sin(rad_angle)
 		hotspot.renderOrder = 1
 		v = new (THREE.Vector3)(-hotspot.position.x, 400, -hotspot.position.z)
 		hotspot.lookAt(v)
