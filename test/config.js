@@ -32,8 +32,8 @@ var house = {
     ],
     "annotations": [
       {
-        "lon": 53,
-        "lat": -24,
+        "lon": 56,
+        "lat": -20,
         "title": "Washing Machine",
         "desc": "LG<br>5.5 Kg"
       }

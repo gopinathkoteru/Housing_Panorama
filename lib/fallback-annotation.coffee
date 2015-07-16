@@ -14,11 +14,11 @@ class Annotation
 		anno_div1 = $("<div></div>",{id : annotation_id})
 		anno_div1.prepend("<img class='annotation' height='40px' width='40px' src='../test/images/info.png'></img>
 			<div class='hotspot-title'>
-				<div class='hotspot-text'>" + root.annotation_angles[pano_id][anno_id][2] +
+				<div class='hotspot-text'>" + root.house[pano_id][ANNOTATIONS][anno_id][TITLE] +
 				"</div>
 			</div>
 			<div class='info-hotspot'>
-				" + root.annotation_angles[pano_id][anno_id][3] +
+				" + root.house[pano_id][ANNOTATIONS][anno_id][DESC] +
 			"</div>
 			")	
 		anno_div1.on('click' , ->
@@ -42,11 +42,11 @@ class Annotation
 		anno_div2 = $("<div></div>",{id : annotation_id})
 		anno_div2.prepend("<img class='annotation' height='40px' width='40px' src='../test/images/info.png'></img>
 			<div class='hotspot-title'>
-				<div class='hotspot-text'>" + root.annotation_angles[pano_id][anno_id][2] +
+				<div class='hotspot-text'>" + root.house[pano_id][ANNOTATIONS][anno_id][TITLE] +
 				"</div>
 			</div>
 			<div class='info-hotspot'>
-				" + root.annotation_angles[pano_id][anno_id][3] +
+				" + root.house[pano_id][ANNOTATIONS][anno_id][DESC] +
 			"</div>
 			")
 		anno_div2.on('click', ->
@@ -68,12 +68,11 @@ class Annotation
 	
 	add_annotations:()->
 		pano_id = @pano_id
-		@length = root.annotation_angles[pano_id].length
+		@length = root.house[pano_id][ANNOTATIONS].length
 		i = 0
 		while i < @length
-			top = (root.height/2 - 2*root.annotation_angles[pano_id][i][1]) + 'px'
-			console.log(root.annotation_angles[pano_id][i][1] , top)
-			angle = (root.annotation_angles[pano_id][i][0] + 80)%360
+			top = (root.height/2 - 2*root.house[pano_id][ANNOTATIONS][i][LAT]) + 'px'
+			angle = (root.house[pano_id][ANNOTATIONS][i][LON] + 80)%360
 			left = ((angle/360)*1500) + 'px'
 			@add_annotation(i,top,left)
 			i++

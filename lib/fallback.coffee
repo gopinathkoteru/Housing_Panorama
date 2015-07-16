@@ -124,7 +124,7 @@ update_dimensions = ->
 	$("#image-screen2_" + root.pano.pano_id).css({
 		height : root.height + 30
 		})
-	num_hotspots = root.hotspot_angles[root.hotspot.pano_id].length
+	num_hotspots = root.house[root.hotspot.pano_id][HOTSPOTS].length
 	i = 0
 	while i < num_hotspots
 		$("#hotspot_" + i + "_0").css({
@@ -135,10 +135,10 @@ update_dimensions = ->
 			})
 		i++
 
-	num_annotations = root.annotation_angles[root.annotation.pano_id].length
+	num_annotations = root.house[root.annotation.pano_id][ANNOTATIONS].length
 	i = 0
 	while i < num_annotations
-		offset = root.annotation_angles[root.annotation.pano_id][i][1]
+		offset = root.house[root.annotation.pano_id][ANNOTATIONS][i][LAT]
 		$("#annotation_1_" + i).css({
 			top : root.height/2 - 2*offset
 			})
@@ -203,9 +203,7 @@ DirectPano.show_fallback_pano = ->
 	$("#drag").offset({
 		left : 0
 		})
-	root.hotspot_angles = DirectPano.hotspots_angle
-	root.hotspot_text = DirectPano.hotspot_text
-	root.annotation_angles = DirectPano.annotation_angles
+	root.house = house
 	root.pano = new root.Pano(0)
 	root.pano.load_pano().done ->
 		$(document).ready(->

@@ -5,7 +5,7 @@ class Hotspot
 	
 	add_hotspot: (left, top, i, div1, div2) ->
 		old_id = @pano_id
-		new_id = root.hotspot_angles[old_id][i][0]
+		new_id = root.house[old_id][HOTSPOTS][i][TO_ID]
 		hotspot_div1 = $("<div></div>", {
 			id: "hotspot_" + i + "_0",
 			class: "hotspot"
@@ -13,7 +13,7 @@ class Hotspot
 		hotspot =  $("<img  src='../test/images/logo.png' id='hotspot_" + i + "_0'/>")
 		hotspot.css('height', '50')
 		hotspot.css('width', '50')
-		hotspot_annotation1 = $("<p>" + root.hotspot_angles[old_id][i][3] + "</p>")
+		hotspot_annotation1 = $("<p>" + root.house[old_id][HOTSPOTS][i][TEXT] + "</p>")
 		hotspot_annotation1.css('color', 'Yellow')
 		hotspot_div1.prepend(hotspot)
 		hotspot_div1.append(hotspot_annotation1)
@@ -29,7 +29,7 @@ class Hotspot
 		hotspot =  $("<img  src='../test/images/logo.png' id='hotspot_" + i + "_1'/>")
 		hotspot.css('height', '50')
 		hotspot.css('width', '50')
-		hotspot_annotation2 = $("<p>" + root.hotspot_angles[old_id][i][3] + "</p>")
+		hotspot_annotation2 = $("<p>" + root.house[old_id][HOTSPOTS][i][TEXT] + "</p>")
 		hotspot_annotation2.css('color', 'Yellow')
 		hotspot_div2.append(hotspot)
 		hotspot_div2.append(hotspot_annotation2)
@@ -49,12 +49,12 @@ class Hotspot
 
 	add_hotspots: () ->
 		pano_id = @pano_id
-		num_hotspots = root.hotspot_angles[pano_id].length
+		num_hotspots = root.house[pano_id][HOTSPOTS].length
 		img1 = $("#screen1")
 		img2 = $("#screen2")
 		i = 0
 		while i < num_hotspots
-			angle = (root.hotspot_angles[pano_id][i][1] + 85)%360
+			angle = (root.house[pano_id][HOTSPOTS][i][ANGLE] + 85)%360
 			left = ((angle/360)*1500) + 'px'
 			top = root.height/2 + 'px'
 			@add_hotspot(left, top, i, img1, img2)
@@ -65,7 +65,7 @@ class Hotspot
 		$(".hotspot").remove()
 		i = 0
 		pano_id = @pano_id
-		num_hotspots = root.hotspot_angles[pano_id].length
+		num_hotspots = root.house[pano_id][HOTSPOTS].length
 		while i < num_hotspots
 			$("#hotspot_" + i + "_0").off()
 			$("#hotspot_" + i + "_1").off()
