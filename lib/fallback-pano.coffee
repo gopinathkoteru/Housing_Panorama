@@ -29,9 +29,7 @@ class Pano
 		img2.css("top","0px")
 		img2.css("opacity", "0")
 
-		console.log(DirectPano.fallback_pano)
-		path = DirectPano.fallback_pano[pano_id] + (pano_id+1) + ".jpg"
-		console.log(path)
+		path = root.house[pano_id][FALLBACK_IMAGE]
 		img1.attr("src",path)
 		img2.attr("src",path)
 

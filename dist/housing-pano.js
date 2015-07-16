@@ -53,7 +53,7 @@
 	  anim = void 0;
 
 	  DirectPano.show_pano = function() {
-	    var i, image, panos_list;
+	    var image, panos_list;
 	    image = $("<img id='start-image'/>");
 	    image.css({
 	      'visibility': 'visible',
@@ -69,30 +69,33 @@
 	    $("#panos-list").remove();
 	    $("#" + DirectPano.pano_div_id).append("<div id='panos-list'></div>");
 	    panos_list = $("#panos-list");
-	    i = 0;
-	    while (i < Object.keys(house).length) {
-	      if (house[i][SIDE_PANEL] === true) {
-	        panos_list.append("<div id='panos-list-entry-" + i + "'>" + house[i][TITLE] + "</div>");
-	        $("#panos-list-entry-" + i).attr('pano_id', parseInt(i));
-	        $("#panos-list-entry-" + i).bind('click touchstart', function() {
-	          if (root.Transition.moving === false) {
-	            root.Transition.start(null, this.getAttribute('pano_id'));
-	          }
-	        });
-	      }
-	      i++;
-	    }
 	    root = __webpack_require__(1);
-	    root.house = house;
-	    root.Annotation = new root.annotation();
-	    root.Annotation.add_annotations(0);
-	    root.scene.children.length = 0;
-	    root.add_listeners();
-	    root.Hotspot = new root.hotspot();
-	    root.Transition = new root.transition();
-	    root.Hotspot.add_hotspots(0);
-	    anim = new root.animation();
-	    root.Config.isUserInteracting = true;
+	    $.getJSON('data.json', function(data) {
+	      var i;
+	      root.house = data;
+	      i = 0;
+	      while (i < Object.keys(root.house).length) {
+	        if (root.house[i][SIDE_PANEL] === true) {
+	          panos_list.append("<div id='panos-list-entry-" + i + "'>" + root.house[i][TITLE] + "</div>");
+	          $("#panos-list-entry-" + i).attr('pano_id', parseInt(i));
+	          $("#panos-list-entry-" + i).bind('click touchstart', function() {
+	            if (root.Transition.moving === false) {
+	              root.Transition.start(null, this.getAttribute('pano_id'));
+	            }
+	          });
+	        }
+	        i++;
+	      }
+	      root.Annotation = new root.annotation();
+	      root.Annotation.add_annotations(0);
+	      root.scene.children.length = 0;
+	      root.add_listeners();
+	      root.Hotspot = new root.hotspot();
+	      root.Transition = new root.transition();
+	      root.Hotspot.add_hotspots(0);
+	      anim = new root.animation();
+	      root.Config.isUserInteracting = true;
+	    });
 	  };
 
 	  DirectPano.remove_pano = function() {

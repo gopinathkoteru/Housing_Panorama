@@ -17,3 +17,4 @@ lib/panel-listeners.js
 lib/panel-pano.js
 lib/panel-annotation.js
 lib/panel-hotspot.js
+test/panos/*

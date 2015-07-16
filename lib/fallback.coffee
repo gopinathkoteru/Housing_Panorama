@@ -203,26 +203,28 @@ DirectPano.show_fallback_pano = ->
 	$("#drag").offset({
 		left : 0
 		})
-	root.house = house
-	root.pano = new root.Pano(0)
-	root.pano.load_pano().done ->
-		$(document).ready(->
-			$("#image-screen1_0").fadeTo(3000, 1)
-			$("#image-screen2_0").fadeTo(3000 , 1, ->
-				root.hotspot = new root.Hotspot(0)
-				root.hotspot.add_hotspots()
-				root.annotation = new root.Annotation(0)
-				root.annotation.add_annotations()
+	$.getJSON 'data.json', (data) ->
+		root.house = data
+		root.pano = new root.Pano(0)
+		root.pano.load_pano().done ->
+			$(document).ready(->
+				$("#image-screen1_0").fadeTo(3000, 1)
+				$("#image-screen2_0").fadeTo(3000 , 1, ->
+					root.hotspot = new root.Hotspot(0)
+					root.hotspot.add_hotspots()
+					root.annotation = new root.Annotation(0)
+					root.annotation.add_annotations()
+					return)
 				return)
-			return)
+			return
+
+		div2.offset({
+			top:0,
+			left:-1500
+		})
+
+		div.dragabble()
 		return
-
-	div2.offset({
-		top:0,
-		left:-1500
-	})
-
-	div.dragabble()
 	return
 
 DirectPano.remove_fallback_pano = ->

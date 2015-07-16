@@ -16,33 +16,35 @@ DirectPano.show_pano = ()->
 	$("#panos-list").remove()
 	$("#" + DirectPano.pano_div_id).append("<div id='panos-list'></div>")
 	panos_list = $("#panos-list")
-	i = 0
-	while i < Object.keys(house).length
-		if house[i][SIDE_PANEL] == true
-			panos_list.append("<div id='panos-list-entry-" + i + "'>" + house[i][TITLE] + "</div>")
-			$("#panos-list-entry-" + i).attr('pano_id', parseInt(i))
-			$("#panos-list-entry-" + i).bind 'click touchstart', ->
-				if root.Transition.moving == false
-					root.Transition.start(null, this.getAttribute('pano_id'))
-				return
-		i++
 
 	root = require("./listeners.js")
-	root.house = house;
+	$.getJSON 'data.json', (data) ->
+		root.house = data
+		i = 0
+		while i < Object.keys(root.house).length
+			if root.house[i][SIDE_PANEL] == true
+				panos_list.append("<div id='panos-list-entry-" + i + "'>" + root.house[i][TITLE] + "</div>")
+				$("#panos-list-entry-" + i).attr('pano_id', parseInt(i))
+				$("#panos-list-entry-" + i).bind 'click touchstart', ->
+					if root.Transition.moving == false
+						root.Transition.start(null, this.getAttribute('pano_id'))
+					return
+			i++
 
-	root.Annotation = new root.annotation()
-	root.Annotation.add_annotations(0)
+		root.Annotation = new root.annotation()
+		root.Annotation.add_annotations(0)
 	
-	root.scene.children.length = 0
+		root.scene.children.length = 0
 
-	root.add_listeners()
+		root.add_listeners()
 
-	root.Hotspot = new root.hotspot()
-	root.Transition = new root.transition()
-	root.Hotspot.add_hotspots(0)
+		root.Hotspot = new root.hotspot()
+		root.Transition = new root.transition()
+		root.Hotspot.add_hotspots(0)
 
-	anim = new root.animation()
-	root.Config.isUserInteracting = true
+		anim = new root.animation()
+		root.Config.isUserInteracting = true
+		return
 	return
 
 DirectPano.remove_pano = ->

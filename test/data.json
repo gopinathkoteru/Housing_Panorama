@@ -1,41 +1,66 @@
 {
   "0": {
-    "title": "Entrance",
-    "path": "../test/Dataset/panos-house/1/%s/%h_%v.jpg",
-    "side_panel": true,
-    "start_position": 15,
-    "fallback_image": "file:///Users/saurabhkathpalia/Housing_Panorama/test/Dataset/panos-house/1/1.jpg",
+    "title": "",
+    "path": "panos/1.tiles/%s/l1/%v/l1_%s_%v_%h.jpg",
+    "blur_image_path" : "panos/1.tiles/preview.jpg",
+    "fallback_image": "",
+    "side_panel": false,
+    "start_position": 37,
     "hotspots": [
       {
         "to_id": 1,
-        "angle": 65,
-        "error": -26,
-        "text": "Kitchen"
-      }
-    ],
-    "annotations": []
-  },
-  "1": {
-    "title": "Kitchen",
-    "path": "../test/Dataset/panos-house/2/%s/%h_%v.jpg",
-    "side_panel": true,
-    "start_position": 138,
-    "fallback_image": "file:///Users/saurabhkathpalia/Housing_Panorama/test/Dataset/panos-house/2/2.jpg",
-    "hotspots": [
-      {
-        "to_id": 0,
-        "angle": 220,
-        "error": 24,
-        "text": "Entrance"
+        "angle": 104,
+        "error": -92,
+        "text": "pano2"
       }
     ],
     "annotations": [
       {
-        "lon": 53,
-        "lat": -24,
-        "title": "Washing Machine",
-        "desc": "LG<br>5.5 Kg"
+        "lon": 291,
+        "lat": -1,
+        "title": "white board",
+        "desc": "4 X 4"
       }
     ]
+  },
+  "1": {
+    "title": "",
+    "path": "panos/2.tiles/%s/l1/%v/l1_%s_%v_%h.jpg",
+    "blur_image_path" : "panos/2.tiles/preview.jpg",
+    "fallback_image": "",
+    "side_panel": false,
+    "start_position": 276,
+    "hotspots": [
+      {
+        "to_id": 0,
+        "angle": 210,
+        "error": 84,
+        "text": "pano1"
+      },
+      {
+        "to_id": 2,
+        "angle": 73,
+        "error": 72,
+        "text": "pano2"
+      }
+    ],
+    "annotations": []
+  },
+  "2": {
+    "title": "",
+    "path": "panos/3.tiles/%s/l1/%v/l1_%s_%v_%h.jpg",
+    "blur_image_path" : "panos/3.tiles/preview.jpg",
+    "fallback_image": "",
+    "side_panel": false,
+    "start_position": 276,
+    "hotspots": [
+      {
+        "to_id": 1,
+        "angle": 342,
+        "error": -100,
+        "text": "pano2"
+      }
+    ],
+    "annotations": []
   }
 }
