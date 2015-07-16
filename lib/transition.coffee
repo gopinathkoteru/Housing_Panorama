@@ -22,8 +22,8 @@ class transition
 				root.Config.isUserInteracting = false
 				return)
 
-		@preload_panel_images().done =>
-			@preload_images()
+		@preload_images().done =>
+			@preload_panel_images()
 			return
 
 		return
@@ -63,10 +63,13 @@ class transition
 
 	preload_images:->
 		i = 0
+		j = 0
+		dfrd = []
 		current_pano = @current_pano
 		while i < root.house[current_pano][HOTSPOTS].length
 			do ->
 				pano_id = root.house[current_pano][HOTSPOTS][i][TO_ID]
+				dfrd[j++] = $.Deferred()
 				fpath = root.house[pano_id][BLUR_PATH]
 				if not root.blur_images[fpath]
 					texture = new THREE.Texture( root.texture_placeholder )
@@ -76,12 +79,13 @@ class transition
 						texture.image = this
 						texture.needsUpdate = true
 						root.blur_images[fpath] = image
+						dfrd[j-1].resolve()
 						return
 									
 					image.src = fpath
 				return
 			i++
-		return
+		$.when.apply($, dfrd).done(->).promise()
 
 	preload_panel_images: () ->
 		i = 0
@@ -99,10 +103,9 @@ class transition
 						texture.needsUpdate = true
 						root.blur_images[fpath] = image
 						return
-									
 					image.src = fpath
 			i++
-		$.when().done(->).promise()
+		return
 
 	start : (hotspot_id, panoId) ->
 		current_pano = @current_pano

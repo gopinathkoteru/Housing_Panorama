@@ -336,9 +336,9 @@
 	          root.Config.isUserInteracting = false;
 	        });
 	      });
-	      this.preload_panel_images().done((function(_this) {
+	      this.preload_images().done((function(_this) {
 	        return function() {
-	          _this.preload_images();
+	          _this.preload_panel_images();
 	        };
 	      })(this));
 	      return;
@@ -383,13 +383,16 @@
 	    };
 
 	    transition.prototype.preload_images = function() {
-	      var current_pano, i;
+	      var current_pano, dfrd, i, j;
 	      i = 0;
+	      j = 0;
+	      dfrd = [];
 	      current_pano = this.current_pano;
 	      while (i < root.house[current_pano][HOTSPOTS].length) {
 	        (function() {
 	          var fpath, image, pano_id, texture;
 	          pano_id = root.house[current_pano][HOTSPOTS][i][TO_ID];
+	          dfrd[j++] = $.Deferred();
 	          fpath = root.house[pano_id][BLUR_PATH];
 	          if (!root.blur_images[fpath]) {
 	            texture = new THREE.Texture(root.texture_placeholder);
@@ -399,12 +402,14 @@
 	              texture.image = this;
 	              texture.needsUpdate = true;
 	              root.blur_images[fpath] = image;
+	              dfrd[j - 1].resolve();
 	            };
 	            image.src = fpath;
 	          }
 	        })();
 	        i++;
 	      }
+	      return $.when.apply($, dfrd).done(function() {}).promise();
 	    };
 
 	    transition.prototype.preload_panel_images = function() {
@@ -428,7 +433,6 @@
 	        }
 	        i++;
 	      }
-	      return $.when().done(function() {}).promise();
 	    };
 
 	    transition.prototype.start = function(hotspot_id, panoId) {
