@@ -62,9 +62,10 @@
 	      'z-index': '1',
 	      'position': 'absolute',
 	      'left': '0px',
-	      'top': '0px'
+	      'top': '0px',
+	      'background-image': './panos/1.tiles/mobile_l.jpg',
+	      'background-size': 'cover'
 	    });
-	    image.attr("src", "./Dataset/panos-house/start.jpg");
 	    $("#" + DirectPano.pano_div_id).append(image);
 	    $("#panos-list").remove();
 	    $("#" + DirectPano.pano_div_id).append("<div id='panos-list'></div>");
