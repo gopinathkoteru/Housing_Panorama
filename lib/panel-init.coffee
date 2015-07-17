@@ -5,6 +5,7 @@ house_id = undefined
 position = undefined
 fallback_image = ""
 root.pano_paths = []
+root.blur_paths = []
 
 root.full_dataset = {}
 localStorage.setItem('full_dataset', JSON.stringify(root.full_dataset))
@@ -14,12 +15,12 @@ one_dataset = {
 }
 
 root.Config = 
-	img_name: ['mobile_r'
-		'mobile_l' 
-		'mobile_u' 
-		'mobile_d' 
-		'mobile_f' 
-		'mobile_b'
+	img_name: ['r'
+		'l' 
+		'u' 
+		'd' 
+		'f' 
+		'b'
 	]
 	webgl : true
 	lon : 0
@@ -77,7 +78,7 @@ change_pano = (id,value) ->
 		catch error
 			front_pano = undefined
 		  
-		front_pano = new root.Pano(value-1,false)
+		front_pano = new root.Pano(value-1)
 		front_pano.create_pano(opc)
 	else
 		try
@@ -86,7 +87,7 @@ change_pano = (id,value) ->
 		catch error
 			back_pano = undefined
 
-		back_pano = new root.Pano(value-1,false)
+		back_pano = new root.Pano(value-1)
 		back_pano.create_pano(1-opc)
 		error_value = $("#adjust")[0].value
 		back_pano.mesh.rotation.y = THREE.Math.degToRad(error_value)
@@ -106,9 +107,12 @@ $("#xml-submit").on('click',->
 
 	num_panos = xmlDoc.getElementsByTagName("scene").length
 	root.pano_paths = []
+	root.blur_paths = []
 	i = 0
 	while i < num_panos
-		root.pano_paths[i] = xmlDoc.getElementsByTagName("scene")[i].childNodes[2].childNodes[0].childNodes[0].getAttribute("url")
+		xml_scene = xmlDoc.getElementsByTagName("scene")[i]
+		root.blur_paths[i] = xml_scene.getElementsByTagName("preview")[0].getAttribute("url")
+		root.pano_paths[i] = xml_scene.getElementsByTagName("image")[0].getElementsByTagName("level")[1].getElementsByTagName("cube")[0].getAttribute("url")
 		i++
 	
 	init("list1",num_panos)
@@ -148,6 +152,7 @@ $("#save-data-button").click ->
 		one_dataset[from_id] = {
 			"title": title,    # Title of the scene e.g. Hall
 			"path": root.pano_paths[from_id],
+			"blur_image_path" : root.blur_paths[from_id],
 			"side_panel": to_show_side_panel,
 			"start_position" : position,
 			"fallback_image": fallback_image,
@@ -185,7 +190,7 @@ slider.on('change mousemove',->
 	i = 0
 	while i < 6
 		j = 0
-		while j < 4
+		while j < 1
 			front_pano.mesh.children[i].children[j].material.opacity = opacity
 			back_pano.mesh.children[i].children[j].material.opacity = 1 - opacity
 			j++
