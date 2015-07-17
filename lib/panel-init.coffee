@@ -36,7 +36,7 @@ renderer.setPixelRatio window.devicePixelRatio
 
 container.append(renderer.domElement)
 renderer.setSize container.outerWidth(), container.outerHeight()
-camera = new (THREE.PerspectiveCamera)(65, container.outerWidth() / container.outerHeight(), 1, 1100)
+camera = new (THREE.PerspectiveCamera)(90, container.outerWidth() / container.outerHeight(), 1, 1100)
 camera.target = new (THREE.Vector3)(0, 0, 0)
 
 animate = ->
@@ -52,6 +52,7 @@ animate = ->
 
 update = ->
 	root.Config.lon = (root.Config.lon + 360)%360
+	root.Config.lat = Math.max(-35, Math.min(35, root.Config.lat))
 	phi = THREE.Math.degToRad(90 - (root.Config.lat))
 	theta = THREE.Math.degToRad(root.Config.lon)
 	camera.target.x = 500 * Math.sin(phi) * Math.cos(theta)
