@@ -21,12 +21,7 @@ class Annotation
 				" + root.house[pano_id][ANNOTATIONS][anno_id][DESC] +
 			"</div>
 			")	
-		anno_div1.on('click' , ->
-			if anno_div1.find('.info-hotspot').css('visibility') == 'visible'
-				anno_div1.find('.info-hotspot').css('visibility', 'hidden')
-			else
-				anno_div1.find('.info-hotspot').css('visibility', 'visible')
-			return)
+
 		
 		anno_div1.css('display', 'inline')
 		anno_div1.css('position', 'absolute')
@@ -34,6 +29,34 @@ class Annotation
 		anno_div1.css('top', top)
 		anno_div1.css('font-family': "'Helvetica Neue', Helvetica, Arial, sans-serif")
 		anno_div1.css('font-size', '16px')
+
+		anno_div1.bind 'click touchstart', ->
+			if anno_div1.find('.info-hotspot').css('visibility') == 'visible'
+				anno_div1.find('.info-hotspot').css('visibility', 'hidden')
+				anno_div1.find('.hotspot-title').css('visibility', 'hidden')
+				anno_div1.find('.hotspot-title').css('opacity', '0')
+				anno_div1.find('.annotation').css('border-radius', '100px')
+				return
+			else
+				anno_div1.find('.info-hotspot').css('visibility', 'visible')
+				anno_div1.find('.hotspot-title').css('visibility', 'visible')
+				anno_div1.find('.hotspot-title').css('opacity', '1')
+				anno_div1.find('.hotspot-title').css('border-radius', '0px 10px 0px 0px')
+				anno_div1.find('.annotation').css('border-radius', '10px 0px 0px 0px')
+				return
+		anno_div1.hover (->
+			anno_div1.find('.hotspot-title').css('visibility', 'visible')
+			anno_div1.find('.hotspot-title').css('opacity', '1')
+			if anno_div1.find('.info-hotspot').css('visibility') == 'hidden'
+				anno_div1.find('.hotspot-title').css('border-radius', '0px 10px 10px 0px')
+				anno_div1.find('.annotation').css('border-radius', '10px 0px 0px 10px')
+			return
+		), ->
+			if anno_div1.find('.info-hotspot').css('visibility') == 'hidden'
+				anno_div1.find('.hotspot-title').css('visibility', 'hidden')
+				anno_div1.find('.hotspot-title').css('opacity', '0')
+				anno_div1.find('.annotation').css('border-radius', '100px')
+			return
 
 		div1.append(anno_div1)
 
@@ -49,12 +72,6 @@ class Annotation
 				" + root.house[pano_id][ANNOTATIONS][anno_id][DESC] +
 			"</div>
 			")
-		anno_div2.on('click', ->
-			if anno_div2.find('.info-hotspot').css('visibility') == 'visible'
-				anno_div2.find('.info-hotspot').css('visibility', 'hidden')
-			else
-				anno_div2.find('.info-hotspot').css('visibility', 'visible')
-			return)
 
 		anno_div2.css('display', 'inline')
 		anno_div2.css('position', 'absolute')
@@ -62,6 +79,34 @@ class Annotation
 		anno_div2.css('top', top)
 		anno_div2.css('font-family': "'Helvetica Neue', Helvetica, Arial, sans-serif")
 		anno_div2.css('font-size', '16px')
+
+		anno_div2.bind 'click touchstart', ->
+			if anno_div2.find('.info-hotspot').css('visibility') == 'visible'
+				anno_div2.find('.info-hotspot').css('visibility', 'hidden')
+				anno_div2.find('.hotspot-title').css('visibility', 'hidden')
+				anno_div2.find('.hotspot-title').css('opacity', '0')
+				anno_div2.find('.annotation').css('border-radius', '100px')
+				return
+			else
+				anno_div2.find('.info-hotspot').css('visibility', 'visible')
+				anno_div2.find('.hotspot-title').css('visibility', 'visible')
+				anno_div2.find('.hotspot-title').css('opacity', '1')
+				anno_div2.find('.hotspot-title').css('border-radius', '0px 10px 0px 0px')
+				anno_div2.find('.annotation').css('border-radius', '10px 0px 0px 0px')
+				return
+		anno_div2.hover (->
+			anno_div2.find('.hotspot-title').css('visibility', 'visible')
+			anno_div2.find('.hotspot-title').css('opacity', '1')
+			if anno_div2.find('.info-hotspot').css('visibility') == 'hidden'
+				anno_div2.find('.hotspot-title').css('border-radius', '0px 10px 10px 0px')
+				anno_div2.find('.annotation').css('border-radius', '10px 0px 0px 10px')
+			return
+		), ->
+			if anno_div2.find('.info-hotspot').css('visibility') == 'hidden'
+				anno_div2.find('.hotspot-title').css('visibility', 'hidden')
+				anno_div2.find('.hotspot-title').css('opacity', '0')
+				anno_div2.find('.annotation').css('border-radius', '100px')
+			return
 		
 		div2.append(anno_div2)
 		return

@@ -5,7 +5,7 @@ Instructions to make Panorama using panel
 - There will be a tour.xml also in the same vtour Directory, this xml file is used as input for panel.
 - Now open the panel by opening `lib/panel.html`, on the top left there is an input box where the path of the xml file should be added and then click submit, this will load the pano.
 - Now hotspots and annotations can be added. Don't reload the panel.html at any point of time, othrewise the data would be lost
-- After all th data is filled through the panel, Just open the console and run the following commands `house = localStorage.getItem('full_dataset');`, `house = JSON.parse(house);` and  `copy(house);`.
+- After all the data is filled through the panel, Just open the console and run the following commands `house = localStorage.getItem('full_dataset');`, `house = JSON.parse(house);` and  `copy(house);`.
 - These commands will copy the json data to the clipboard and then this data can be copied to the `test/data.json` file and you can now run it.
 
 Now you need to edit `test/config.js` as per your Dataset

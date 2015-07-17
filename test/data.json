@@ -3,7 +3,7 @@
     "title": "",
     "path": "panos/1.tiles/%s/l1/%v/l1_%s_%v_%h.jpg",
     "blur_image_path" : "panos/1.tiles/preview.jpg",
-    "fallback_image": "",
+    "fallback_image": "panos/1.jpg",
     "side_panel": false,
     "start_position": 37,
     "hotspots": [
@@ -27,7 +27,7 @@
     "title": "",
     "path": "panos/2.tiles/%s/l1/%v/l1_%s_%v_%h.jpg",
     "blur_image_path" : "panos/2.tiles/preview.jpg",
-    "fallback_image": "",
+    "fallback_image": "panos/2.jpg",
     "side_panel": false,
     "start_position": 276,
     "hotspots": [
@@ -50,7 +50,7 @@
     "title": "",
     "path": "panos/3.tiles/%s/l1/%v/l1_%s_%v_%h.jpg",
     "blur_image_path" : "panos/3.tiles/preview.jpg",
-    "fallback_image": "",
+    "fallback_image": "panos/3.jpg",
     "side_panel": false,
     "start_position": 276,
     "hotspots": [
